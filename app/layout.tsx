@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ReplyAI — Risposte automatiche alle recensioni Google",
-  description: "Genera risposte professionali alle tue recensioni Google in pochi secondi.",
+  title: "ReplyAI — Automated Google Review Replies",
+  description: "Generate professional replies to your Google reviews in seconds.",
 };
 
 export default function RootLayout({

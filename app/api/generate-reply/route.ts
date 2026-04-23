@@ -1,39 +1,51 @@
 import Anthropic from '@anthropic-ai/sdk'
 
 const TONE_LABELS: Record<string, string> = {
-  professionale: 'professionale e formale',
-  caloroso: 'caloroso, amichevole e personale',
-  diretto: 'diretto, sintetico e al punto',
+  professional: 'professional and formal',
+  warm: 'warm, friendly and personal',
+  direct: 'direct, concise and to the point',
 }
 
-// Sistema stabile → viene messo in cache prompt (ephemeral)
-const SYSTEM_PROMPT = `Sei un esperto di customer care per attività italiane. Il tuo compito è scrivere risposte alle recensioni Google in italiano, come se fossi il titolare dell'attività.
+const SYSTEM_PROMPT = `You are a customer care expert helping business owners craft replies to Google reviews.
 
-Regole:
-- Scrivi sempre in italiano corretto e naturale
-- Personalizza la risposta in base al contenuto specifico della recensione (non essere generico)
-- Ringrazia il cliente e, se ha lasciato un feedback negativo, mostra empatia e proponi una soluzione
-- Adatta perfettamente il registro al tono richiesto
-- Non superare le 80-120 parole
-- Rispondi ESCLUSIVAMENTE con il testo della risposta, senza introduzioni, titoli o commenti`
+Before writing, infer the review's sentiment from its content and adjust your reply style accordingly:
+- Positive (4–5 star feel): be enthusiastic and grateful, echo what the customer loved
+- Negative (1–2 star feel): lead with genuine empathy, acknowledge the specific issue, and invite the customer to resolve it directly
+- Neutral (3 star feel): appreciate the feedback while constructively addressing the concern
+
+Rules:
+- Always reply in the same language as the review — detect it automatically and match it exactly
+- Personalize the reply based on the specific content of the review — never be generic
+- If a tone is specified, apply it precisely; otherwise let the detected sentiment guide the tone naturally
+- If a business name is provided, weave it in naturally (once only)
+- Keep the reply between 80 and 120 words
+- Respond with the reply text ONLY — no introduction, title, or commentary`
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { business, review, tone } = body as {
-      business: string
+    const { review, tone, business } = body as {
       review: string
-      tone: string
+      tone?: string
+      business?: string
     }
 
-    if (!business?.trim() || !review?.trim() || !tone) {
-      return Response.json({ error: 'Parametri mancanti' }, { status: 400 })
+    if (!review?.trim()) {
+      return Response.json({ error: 'Missing review' }, { status: 400 })
     }
 
-    const toneLabel = TONE_LABELS[tone] ?? 'professionale'
+    const toneLabel = tone ? (TONE_LABELS[tone] ?? tone) : null
 
-    console.log("API KEY:", process.env.ANTHROPIC_API_KEY)
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+    const userContent = [
+      `Review received:\n"${review.trim()}"`,
+      toneLabel ? `Requested tone: ${toneLabel}` : null,
+      business?.trim() ? `Business name: ${business.trim()}` : null,
+      'Write the reply to this review.',
+    ]
+      .filter(Boolean)
+      .join('\n\n')
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
@@ -45,19 +57,7 @@ export async function POST(request: Request) {
           cache_control: { type: 'ephemeral' },
         },
       ],
-      messages: [
-        {
-          role: 'user',
-          content: `Attività: ${business.trim()}
-
-Recensione ricevuta:
-"${review.trim()}"
-
-Tono richiesto: ${toneLabel}
-
-Scrivi la risposta alla recensione.`,
-        },
-      ],
+      messages: [{ role: 'user', content: userContent }],
     })
 
     const reply = message.content
@@ -67,18 +67,15 @@ Scrivi la risposta alla recensione.`,
 
     return Response.json({ reply })
   } catch (error) {
-    console.error('Errore API Claude:', error)
+    console.error('Claude API error:', error)
 
     if (error instanceof Anthropic.AuthenticationError) {
-      console.error('AuthenticationError:', JSON.stringify(error, null, 2))
-      return Response.json({ error: 'API key non valida' }, { status: 401 })
+      return Response.json({ error: 'Invalid API key' }, { status: 401 })
     }
     if (error instanceof Anthropic.RateLimitError) {
-      console.error('RateLimitError:', JSON.stringify(error, null, 2))
-      return Response.json({ error: 'Troppe richieste, riprova tra poco' }, { status: 429 })
+      return Response.json({ error: 'Too many requests, please try again shortly' }, { status: 429 })
     }
 
-    console.error('Errore generico:', JSON.stringify(error, null, 2))
-    return Response.json({ error: 'Errore nella generazione della risposta' }, { status: 500 })
+    return Response.json({ error: 'Failed to generate a reply' }, { status: 500 })
   }
 }
