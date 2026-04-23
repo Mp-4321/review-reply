@@ -17,8 +17,10 @@ Rules:
 - Always reply in the same language as the review — detect it automatically and match it exactly
 - Personalize the reply based on the specific content of the review — never be generic
 - If a tone is specified, apply it precisely; otherwise let the detected sentiment guide the tone naturally
-- If a business name is provided, weave it in naturally (once only)
-- Keep the reply between 80 and 120 words
+- If a business name is provided: include it once naturally in plain text (no markdown, no bold, no formatting); also infer the type of business from the name and adapt your vocabulary and context accordingly (e.g. "Hotel Bella Vista" → hospitality language, "Studio Dentistico Rossi" → professional medical language, "Palestra FitZone" → fitness and wellness language, "Ristorante Da Mario" → restaurant language)
+- Never use markdown formatting of any kind — no bold, no italics, no symbols
+- Keep the reply to 4–5 lines maximum regardless of tone — this applies to all tones including Professional
+- If the tone is "direct, concise and to the point": aim for 2–3 lines, no filler phrases, no emoji
 - Respond with the reply text ONLY — no introduction, title, or commentary`
 
 export async function POST(request: Request) {

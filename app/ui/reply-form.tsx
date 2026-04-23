@@ -1,6 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, Fragment } from 'react'
+
+// ── Types & data ───────────────────────────────────────────────────────────
+
+type Example = { stars: 1 | 3 | 5; label: string; text: string }
+
+const GENERIC_FIVE: Example[] = [
+  { stars: 5, label: 'Amazing service!', text: 'Absolutely incredible experience from start to finish! The team was so attentive and welcoming, the quality was outstanding, and every detail felt carefully considered. We left feeling genuinely impressed. Will definitely be back and recommending to everyone. Five stars without hesitation!' },
+  { stars: 5, label: 'Best experience ever', text: 'One of the best experiences I have had in years. Everything was immaculate, the staff anticipated our needs before we even asked, and the whole process was seamless. I rarely leave reviews but this genuinely deserves recognition. Will be recommending to friends and family.' },
+  { stars: 5, label: 'Highly recommend', text: 'From the moment I arrived I felt genuinely taken care of. The team was professional, warm, and incredibly knowledgeable. The quality exceeded what I expected at this price point. Every small detail was handled with care. This is the standard I will now measure everything else against.' },
+  { stars: 5, label: 'Will come back!', text: 'I came in with high expectations and they were surpassed. The facility was spotless, the staff were genuinely friendly and helpful, and the results spoke for themselves. Booking was easy, communication was prompt, and the whole visit felt effortless. Already planning my next appointment.' },
+]
+
+const GENERIC_THREE: Example[] = [
+  { stars: 3, label: 'Service was slow', text: 'The overall experience was decent — the quality of the work was acceptable, but we had to wait much longer than expected and communication could have been better. Not bad, but there is definitely room for improvement. Might give it another chance.' },
+  { stars: 3, label: 'Mixed experience', text: 'Some aspects were genuinely good — the product itself was fine and the location is convenient. But the staff seemed distracted and our questions were answered vaguely. I did not leave feeling impressed. For the price I expected a bit more attention to detail.' },
+  { stars: 3, label: 'Just average', text: 'Nothing wrong exactly, but nothing memorable either. The service was adequate, the wait was longer than stated, and the follow-up left something to be desired. A solid option if you have no alternatives, but I am not sure I would actively choose it again.' },
+  { stars: 3, label: 'Room for improvement', text: 'The quality of the core service was acceptable, but the experience around it let things down. Booking was unnecessarily complicated, the space felt a bit neglected, and I had to ask twice for basic things. There is real potential here, but it needs work to match the pricing.' },
+]
+
+const GENERIC_ONE: Example[] = [
+  { stars: 1, label: 'Staff was rude', text: 'Very unpleasant experience. The staff was dismissive and unprofessional from the moment we arrived. Our concerns were ignored and we were made to feel unwelcome. I expected a basic level of courtesy and did not receive it. Would not recommend.' },
+  { stars: 1, label: 'Very disappointed', text: 'I had high hopes based on the reviews but the reality was completely different. The service was slow, the quality was poor, and when I raised my concerns I was met with indifference. I paid a premium price for a below-average experience. I will not be returning.' },
+  { stars: 1, label: 'Avoid this place', text: 'Appalling from start to finish. The facility was not as advertised, promises made at booking were not honoured, and getting a response from the team was nearly impossible. I raised a complaint and it was ignored. This level of service is simply not acceptable.' },
+  { stars: 1, label: 'Terrible service', text: 'Completely unprofessional. My appointment was rescheduled twice with no explanation, the work was done carelessly, and when I raised concerns I was dismissed. They charged full price for a job that was half done. I would strongly advise anyone to look elsewhere.' },
+]
 
 const TONES = [
   { value: 'professional', label: 'Professional' },
@@ -8,23 +33,30 @@ const TONES = [
   { value: 'direct', label: 'Direct & concise' },
 ]
 
-const EXAMPLES = [
-  {
-    label: '⭐⭐⭐⭐⭐ Amazing service!',
-    text: 'Absolutely incredible experience from start to finish! The team was so attentive and welcoming, the quality was outstanding, and every detail felt carefully considered. We left feeling genuinely impressed. Will definitely be back and recommending to everyone. Five stars without hesitation!',
-  },
-  {
-    label: '⭐⭐ Food was cold...',
-    text: "Really disappointed with our visit. We waited over 40 minutes for our order, and when it arrived the food was cold and not what we expected at this price point. Staff seemed overwhelmed and didn't check on us once. Expected much better based on the reviews.",
-  },
-]
+function pickRandom<T>(pool: T[]): T {
+  return pool[Math.floor(Math.random() * pool.length)]
+}
+
+function StarRow({ count }: { count: number }) {
+  return (
+    <span className="flex shrink-0 items-center gap-px">
+      {Array.from({ length: count }).map((_, i) => (
+        <svg key={i} className="h-3 w-3" viewBox="0 0 24 24" fill="#D97706">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      ))}
+    </span>
+  )
+}
+
+// ── Component ──────────────────────────────────────────────────────────────
 
 export default function ReplyForm() {
   const [review, setReview] = useState('')
-  const [tone, setTone] = useState('')
+  const [tone, setTone] = useState('professional')
   const [business, setBusiness] = useState('')
   const [reply, setReply] = useState('')
-  const [lastParams, setLastParams] = useState({ tone: '', business: '' })
+  const [keywords, setKeywords] = useState<string[]>([])
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [loadingInitial, setLoadingInitial] = useState(false)
@@ -32,8 +64,12 @@ export default function ReplyForm() {
 
   const loading = loadingInitial || loadingRegen
   const canGenerate = review.trim().length > 0
-  const showRegenerate =
-    reply.length > 0 && (tone !== lastParams.tone || business !== lastParams.business)
+
+  // Fixed random selection at mount — generic examples only
+  const examples = useMemo(
+    () => [pickRandom(GENERIC_FIVE), pickRandom(GENERIC_THREE), pickRandom(GENERIC_ONE)],
+    []
+  )
 
   async function callApi(params: { tone: string; business: string }) {
     setError('')
@@ -42,35 +78,79 @@ export default function ReplyForm() {
       const res = await fetch('/api/generate-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ review, tone: params.tone, business: params.business }),
+        body: JSON.stringify({
+          review,
+          tone: params.tone,
+          business: params.business,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
         setError(data.error ?? 'Failed to generate a reply')
       } else {
         setReply(data.reply)
-        setLastParams(params)
+        fetchKeywords(review)
       }
     } catch {
       setError('Network error — check your connection and try again.')
     }
   }
 
+  async function fetchKeywords(reviewText: string) {
+    setKeywords([])
+    try {
+      const res = await fetch('/api/extract-keywords', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review: reviewText }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setKeywords(Array.isArray(data.keywords) ? data.keywords : [])
+      }
+    } catch {
+      // silently fail — highlights are a visual enhancement only
+    }
+  }
+
   async function handleGenerate() {
     if (!canGenerate) return
     setReply('')
-    setTone('')
+    setKeywords([])
     setBusiness('')
-    setLastParams({ tone: '', business: '' })
     setLoadingInitial(true)
-    await callApi({ tone: '', business: '' })
+    await callApi({ tone, business: '' })
     setLoadingInitial(false)
   }
 
   async function handleRegenerate() {
+    setKeywords([])
     setLoadingRegen(true)
     await callApi({ tone, business })
     setLoadingRegen(false)
+  }
+
+  function renderReply(text: string) {
+    const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    const kwPattern = escaped.length
+      ? new RegExp(`(${escaped.join('|')})`, 'gi')
+      : null
+
+    return text.split(/\*\*(.+?)\*\*/g).map((part, i) => {
+      if (i % 2 === 1) {
+        return <strong key={i} className="font-semibold">{part}</strong>
+      }
+      if (!kwPattern) return <Fragment key={i}>{part}</Fragment>
+      return (
+        <Fragment key={i}>
+          {part.split(kwPattern).map((seg, j) =>
+            j % 2 === 1
+              ? <span key={j} className="rounded bg-yellow-100 px-0.5 text-yellow-800">{seg}</span>
+              : seg
+          )}
+        </Fragment>
+      )
+    })
   }
 
   async function handleCopy() {
@@ -82,15 +162,16 @@ export default function ReplyForm() {
   return (
     <div className="space-y-5 text-left">
       {/* Example pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-medium text-slate-400">Try an example:</span>
-        {EXAMPLES.map((ex) => (
+      <div className="flex items-center gap-2 overflow-hidden">
+        <span className="shrink-0 text-xs font-medium text-slate-700">Try an example:</span>
+        {examples.map((ex) => (
           <button
             key={ex.label}
             onClick={() => setReview(ex.text)}
-            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-500 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+            className="flex min-w-0 shrink items-center gap-1.5 rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs text-slate-600 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700"
           >
-            {ex.label}
+            <StarRow count={ex.stars} />
+            <span className="truncate">{ex.label}</span>
           </button>
         ))}
       </div>
@@ -103,7 +184,7 @@ export default function ReplyForm() {
         <textarea
           value={review}
           onChange={(e) => setReview(e.target.value)}
-          placeholder="Paste the Google review here..."
+          placeholder="Paste an existing review or type one..."
           rows={5}
           className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 transition focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
@@ -162,69 +243,64 @@ export default function ReplyForm() {
               )}
             </button>
           </div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800">{reply}</p>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800">{renderReply(reply)}</p>
         </div>
       )}
 
-      {/* Refinement panel — shown after first generation */}
+      {/* Refinement panel */}
       {reply && (
         <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-600">
             Refine (optional)
           </p>
+
           <div className="flex flex-col gap-3 sm:flex-row">
-            {/* Tone selector */}
-            <div className="relative flex-1">
-              <select
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-                className="w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-8 text-sm text-slate-700 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-              >
-                <option value="">Refine tone...</option>
-                {TONES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
+              <div className="relative flex-1">
+                <select
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-8 text-sm text-slate-700 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                >
+                  {TONES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={business}
+                onChange={(e) => setBusiness(e.target.value)}
+                placeholder="Business name..."
+                className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
             </div>
 
-            {/* Business name */}
-            <input
-              type="text"
-              value={business}
-              onChange={(e) => setBusiness(e.target.value)}
-              placeholder="Add business name..."
-              className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 placeholder-slate-400 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            />
-          </div>
-
-          {/* Regenerate — only when params changed */}
-          {showRegenerate && (
-            <button
-              onClick={handleRegenerate}
-              disabled={loading}
-              className="mt-3 w-full rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-700 focus:ring-offset-1 disabled:opacity-40"
-            >
-              {loadingRegen ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                  </svg>
-                  Regenerating...
-                </span>
-              ) : (
-                'Regenerate →'
-              )}
-            </button>
-          )}
+          {/* Regenerate */}
+          <button
+            onClick={handleRegenerate}
+            disabled={loading}
+            className="mt-3 w-full rounded-lg border border-blue-900 bg-white px-4 py-2.5 text-sm font-semibold text-blue-900 transition hover:bg-blue-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-1 disabled:opacity-40"
+          >
+            {loadingRegen ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                Regenerating...
+              </span>
+            ) : (
+              'Regenerate reply →'
+            )}
+          </button>
         </div>
       )}
     </div>
