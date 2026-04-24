@@ -1,0 +1,207 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+
+type ToneLabel = 'Professional' | 'Friendly' | 'Concise'
+
+const SLIDES = [
+  {
+    tone: 'Professional' as ToneLabel,
+    business: 'The Meridian Hotel',
+    businessType: '🏨 Hotel',
+    stars: 1,
+    reviewer: 'James R.',
+    initials: 'JR',
+    color: '#6366f1',
+    review:
+      "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken. Despite repeated calls to reception, nothing was fixed during our 3-night stay.",
+    keywords: ['James', 'The Meridian Hotel', 'experience'],
+    reply:
+      "Dear James, we sincerely apologize for your experience at The Meridian Hotel. Your concerns have been escalated to our management team and we want to make this right. Please reach out at hello@meridianhotel.com.",
+  },
+  {
+    tone: 'Friendly' as ToneLabel,
+    business: 'Bloom Florist',
+    businessType: '🌸 Florist',
+    stars: 3,
+    reviewer: 'Emma T.',
+    initials: 'ET',
+    color: '#f59e0b',
+    review:
+      "The flowers were beautiful, but my order arrived 2 hours late with no warning and I had to rearrange the whole event. Lovely products — just need to sort out the delivery.",
+    keywords: ['Emma', 'Bloom Florist', 'flowers', 'delivery'],
+    reply:
+      "Hi Emma! Your kind words about our flowers mean the world to the whole team at Bloom Florist. We are truly sorry the delivery let you down — we are already fixing it. Please come back soon!",
+  },
+  {
+    tone: 'Concise' as ToneLabel,
+    business: 'Smile Dental Clinic',
+    businessType: '🦷 Dental Clinic',
+    stars: 5,
+    reviewer: 'Karen M.',
+    initials: 'KM',
+    color: '#ec4899',
+    review:
+      "Always anxious about dentist visits, but the team here made me feel completely at ease. Professional, gentle, and thorough. I'll be back.",
+    keywords: ['Karen', 'Smile Dental Clinic', 'comfortable'],
+    reply:
+      "Thank you, Karen! The whole team at Smile Dental Clinic looks forward to your next visit.",
+  },
+]
+
+const TONES: ToneLabel[] = ['Professional', 'Friendly', 'Concise']
+
+function ReplyText({ text, typing }: { text: string; typing: boolean }) {
+  const paragraphs = text.split('\n')
+  return (
+    <>
+      {paragraphs.map((p, i) => (
+        <span key={i} className="block">
+          {p}
+          {i === paragraphs.length - 1 && typing && (
+            <span className="inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-blue-500 align-middle" />
+          )}
+        </span>
+      ))}
+    </>
+  )
+}
+
+
+function StarRow({ count }: { count: number }) {
+  return (
+    <span className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg key={i} className="h-3.5 w-3.5" viewBox="0 0 24 24" fill={i < count ? '#D97706' : '#E2E8F0'}>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      ))}
+    </span>
+  )
+}
+
+export default function DemoCarousel() {
+  const [slideIndex, setSlideIndex]         = useState(0)
+  const [displayedReply, setDisplayedReply] = useState('')
+  const [contentVisible, setContentVisible] = useState(true)
+  const [typing, setTyping]                 = useState(false)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const timeoutRef  = useRef<ReturnType<typeof setTimeout>  | null>(null)
+
+  function clearAll() {
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
+    if (timeoutRef.current)  { clearTimeout(timeoutRef.current);   timeoutRef.current  = null }
+  }
+
+  function startSequence(idx: number) {
+    timeoutRef.current = setTimeout(() => {
+      setTyping(true)
+      const text = SLIDES[idx].reply
+      let i = 0
+      intervalRef.current = setInterval(() => {
+        i++
+        setDisplayedReply(text.slice(0, i))
+        if (i >= text.length) {
+          clearInterval(intervalRef.current!)
+          intervalRef.current = null
+          setTyping(false)
+          const wait = idx === SLIDES.length - 1 ? 3000 : 4000
+          timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % SLIDES.length), wait)
+        }
+      }, 25)
+    }, 1500)
+  }
+
+  function goToSlide(idx: number) {
+    clearAll()
+    setContentVisible(false)
+    timeoutRef.current = setTimeout(() => {
+      setSlideIndex(idx)
+      setDisplayedReply('')
+      setTyping(false)
+      setContentVisible(true)
+      startSequence(idx)
+    }, 250)
+  }
+
+  useEffect(() => {
+    startSequence(0)
+    return clearAll
+  }, [])
+
+  const slide = SLIDES[slideIndex]
+
+  return (
+    <div className="mt-14">
+      <p className="mb-5 text-center text-sm font-semibold uppercase tracking-widest text-slate-400">
+        See it in action
+      </p>
+
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+        {/* Tone selector */}
+        <div className="flex items-center gap-2 px-5 py-3">
+          <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
+          {TONES.map((t) => (
+            <span
+              key={t}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-300 ${
+                slide.tone === t ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-400'
+              }`}
+            >
+              {t}
+            </span>
+          ))}
+          <span className="ml-auto text-xs text-slate-500">{slide.businessType}</span>
+        </div>
+
+        <div className="mx-5 h-px bg-slate-100" />
+
+        {/* Split body — fixed min-height so card never resizes between slides */}
+        <div
+          className="flex min-h-[12rem] items-start"
+          style={{
+            opacity: contentVisible ? 1 : 0,
+            filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
+            transition: 'opacity 250ms ease, filter 250ms ease',
+          }}
+        >
+          {/* Left — review */}
+          <div className="flex-1 px-5 pb-3 pt-1 text-left">
+            <div className="mb-3 flex min-h-[2.75rem] items-center gap-2.5">
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                style={{ backgroundColor: slide.color }}
+              >
+                {slide.initials}
+              </span>
+              <div>
+                <p className="text-sm font-semibold leading-tight text-slate-800">{slide.reviewer}</p>
+                <StarRow count={slide.stars} />
+              </div>
+            </div>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+              {slide.review}
+            </p>
+          </div>
+
+          {/* Vertical divider */}
+          <div className="my-5 w-px self-stretch bg-slate-100" />
+
+          {/* Right — AI reply */}
+          <div className="flex-1 px-5 pb-3 pt-1 text-left">
+            <div className="mb-3 flex min-h-[2.75rem] items-center gap-1.5">
+              <svg className="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
+            </div>
+            <div className="text-sm leading-relaxed text-slate-800">
+              <ReplyText text={displayedReply} typing={typing} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

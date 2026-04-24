@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, Fragment } from 'react'
+import { useState, useMemo, Fragment, useEffect } from 'react'
 
 // ── Types & data ───────────────────────────────────────────────────────────
 
@@ -49,6 +49,32 @@ function StarRow({ count }: { count: number }) {
   )
 }
 
+// ── Constants ──────────────────────────────────────────────────────────────
+
+const FREE_LIMIT = 5
+const USAGE_KEY = 'replyai_usage_count'
+
+const PLANS = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: '$29',
+    period: '/mo',
+    bullets: ['1 location', 'Unlimited replies', 'All tones'],
+    priceId: 'price_1TPet7RsAeMyWnyUt4yhcicH',
+    highlight: false,
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: '$59',
+    period: '/mo',
+    bullets: ['Up to 5 locations', 'Unlimited replies', 'Brand tone per location', 'Priority support'],
+    priceId: 'price_1TPeu0RsAeMyWnyU3KOK1Tbm',
+    highlight: true,
+  },
+]
+
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function ReplyForm() {
@@ -57,6 +83,9 @@ export default function ReplyForm() {
   const [business, setBusiness] = useState('')
   const [reply, setReply] = useState('')
   const [keywords, setKeywords] = useState<string[]>([])
+  const [usageCount, setUsageCount] = useState(0)
+  const [paywallOpen, setPaywallOpen] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [loadingInitial, setLoadingInitial] = useState(false)
@@ -64,6 +93,13 @@ export default function ReplyForm() {
 
   const loading = loadingInitial || loadingRegen
   const canGenerate = review.trim().length > 0
+  const isOverLimit = usageCount >= FREE_LIMIT
+  const repliesLeft = Math.max(0, FREE_LIMIT - usageCount)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(USAGE_KEY)
+    if (stored) setUsageCount(parseInt(stored, 10))
+  }, [])
 
   // Fixed random selection at mount — generic examples only
   const examples = useMemo(
@@ -90,6 +126,9 @@ export default function ReplyForm() {
       } else {
         setReply(data.reply)
         fetchKeywords(review)
+        const next = usageCount + 1
+        setUsageCount(next)
+        localStorage.setItem(USAGE_KEY, String(next))
       }
     } catch {
       setError('Network error — check your connection and try again.')
@@ -115,6 +154,7 @@ export default function ReplyForm() {
 
   async function handleGenerate() {
     if (!canGenerate) return
+    if (isOverLimit) { setPaywallOpen(true); return }
     setReply('')
     setKeywords([])
     setBusiness('')
@@ -123,7 +163,25 @@ export default function ReplyForm() {
     setLoadingInitial(false)
   }
 
+  async function handleUpgrade(priceId: string) {
+    setCheckoutLoading(priceId)
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+    } catch {
+      // silently fail — user stays on page
+    } finally {
+      setCheckoutLoading(null)
+    }
+  }
+
   async function handleRegenerate() {
+    if (isOverLimit) { setPaywallOpen(true); return }
     setKeywords([])
     setLoadingRegen(true)
     await callApi({ tone, business })
@@ -208,6 +266,21 @@ export default function ReplyForm() {
           'Generate reply instantly →'
         )}
       </button>
+
+      {/* Usage counter */}
+      {usageCount > 0 && !isOverLimit && (
+        <p className={`-mt-2 text-center text-xs ${repliesLeft <= 1 ? 'text-red-500' : 'text-slate-400'}`}>
+          {repliesLeft} free {repliesLeft === 1 ? 'reply' : 'replies'} remaining
+        </p>
+      )}
+      {isOverLimit && (
+        <p className="-mt-2 text-center text-xs text-red-500">
+          Free limit reached —{' '}
+          <button onClick={() => setPaywallOpen(true)} className="underline hover:text-red-700">
+            upgrade to continue
+          </button>
+        </p>
+      )}
 
       {/* Error */}
       {error && (
@@ -301,6 +374,81 @@ export default function ReplyForm() {
               'Regenerate reply →'
             )}
           </button>
+        </div>
+      )}
+
+      {/* Paywall modal */}
+      {paywallOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setPaywallOpen(false)} />
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+            <button
+              onClick={() => setPaywallOpen(false)}
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+              <svg className="h-5 w-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h2 className="mt-4 text-xl font-bold text-slate-900">
+              You've used your {FREE_LIMIT} free replies.
+            </h2>
+            <p className="mt-1.5 text-sm text-slate-500">
+              Upgrade to keep generating professional replies for every review.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              {PLANS.map((plan) => (
+                <button
+                  key={plan.id}
+                  onClick={() => handleUpgrade(plan.priceId)}
+                  disabled={checkoutLoading !== null}
+                  className={`flex flex-1 flex-col items-center rounded-xl border-2 px-4 py-5 transition focus:outline-none disabled:opacity-60 ${
+                    plan.highlight
+                      ? 'border-blue-900 bg-blue-900 text-white hover:bg-blue-800'
+                      : 'border-slate-200 bg-white text-slate-900 hover:border-blue-900 hover:bg-slate-50'
+                  }`}
+                >
+                  {checkoutLoading === plan.priceId ? (
+                    <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                  ) : (
+                    <>
+                      <span className="text-base font-bold">{plan.name}</span>
+                      <span className="mt-0.5 text-2xl font-extrabold tracking-tight">
+                        {plan.price}<span className="text-sm font-medium">{plan.period}</span>
+                      </span>
+                      <ul className={`mt-2 space-y-1 text-left text-xs leading-snug ${plan.highlight ? 'text-blue-200' : 'text-slate-500'}`}>
+                        {plan.bullets.map((b) => (
+                          <li key={b} className="flex items-center gap-1.5">
+                            <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setPaywallOpen(false)}
+              className="mt-4 w-full text-center text-xs text-slate-400 hover:text-slate-600"
+            >
+              Maybe later
+            </button>
+          </div>
         </div>
       )}
     </div>
