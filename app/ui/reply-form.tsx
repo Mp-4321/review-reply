@@ -51,7 +51,7 @@ function StarRow({ count }: { count: number }) {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-const FREE_LIMIT = 5
+const FREE_LIMIT = 3
 const USAGE_KEY = 'replyai_usage_count'
 
 const PLANS = [
@@ -60,7 +60,7 @@ const PLANS = [
     name: 'Starter',
     price: '$29',
     period: '/mo',
-    bullets: ['1 location', 'Unlimited replies', 'All tones'],
+    bullets: ['1 location', '100 replies', 'All tones'],
     priceId: 'price_1TPet7RsAeMyWnyUt4yhcicH',
     highlight: false,
   },
@@ -397,11 +397,9 @@ export default function ReplyForm() {
               </svg>
             </div>
             <h2 className="mt-4 text-xl font-bold text-slate-900">
-              You've used your {FREE_LIMIT} free replies.
+              You've used your {FREE_LIMIT} free replies.<br />
+              Start your <span className="font-extrabold">7-day free trial</span> to keep going.
             </h2>
-            <p className="mt-1.5 text-sm text-slate-500">
-              Upgrade to keep generating professional replies for every review.
-            </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               {PLANS.map((plan) => (
@@ -409,24 +407,21 @@ export default function ReplyForm() {
                   key={plan.id}
                   onClick={() => handleUpgrade(plan.priceId)}
                   disabled={checkoutLoading !== null}
-                  className={`flex flex-1 flex-col items-center rounded-xl border-2 px-4 py-5 transition focus:outline-none disabled:opacity-60 ${
+                  className={`flex flex-1 flex-col items-start rounded-xl border-2 px-4 py-4 transition focus:outline-none disabled:opacity-60 ${
                     plan.highlight
                       ? 'border-blue-900 bg-blue-900 text-white hover:bg-blue-800'
                       : 'border-slate-200 bg-white text-slate-900 hover:border-blue-900 hover:bg-slate-50'
                   }`}
                 >
                   {checkoutLoading === plan.priceId ? (
-                    <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <svg className="h-5 w-5 animate-spin self-center" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
                   ) : (
                     <>
-                      <span className="text-base font-bold">{plan.name}</span>
-                      <span className="mt-0.5 text-2xl font-extrabold tracking-tight">
-                        {plan.price}<span className="text-sm font-medium">{plan.period}</span>
-                      </span>
-                      <ul className={`mt-2 space-y-1 text-left text-xs leading-snug ${plan.highlight ? 'text-blue-200' : 'text-slate-500'}`}>
+                      <span className="text-sm font-bold">{plan.name} — {plan.price}/mo</span>
+                      <ul className={`mt-2 space-y-1 text-xs leading-snug ${plan.highlight ? 'text-blue-200' : 'text-slate-500'}`}>
                         {plan.bullets.map((b) => (
                           <li key={b} className="flex items-center gap-1.5">
                             <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -442,9 +437,11 @@ export default function ReplyForm() {
               ))}
             </div>
 
+            <p className="mt-3 text-center text-xs text-slate-400">No charge for 7 days. Cancel anytime.</p>
+
             <button
               onClick={() => setPaywallOpen(false)}
-              className="mt-4 w-full text-center text-xs text-slate-400 hover:text-slate-600"
+              className="mt-3 w-full text-center text-xs text-slate-400 hover:text-slate-600"
             >
               Maybe later
             </button>

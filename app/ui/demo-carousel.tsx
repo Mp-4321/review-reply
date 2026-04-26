@@ -49,6 +49,53 @@ const SLIDES = [
   },
 ]
 
+const SLIDE_ALTERNATIVES = [
+  {
+    tone: 'Professional' as ToneLabel,
+    business: 'Iron Flow Fitness',
+    businessType: '🏋️ Gym',
+    stars: 1,
+    reviewer: 'Daniel K.',
+    initials: 'DK',
+    color: '#10b981',
+    review:
+      "The equipment is decent but the locker rooms are rarely cleaned. I reported the issue to staff twice with no result. For the monthly fee, I expected much better upkeep.",
+    keywords: ['Daniel', 'Iron Flow Fitness'],
+    reply:
+      "Dear Daniel, we apologize for your experience at Iron Flow Fitness. This is not our standard. Please email us at hello@ironflowfitness.com — we will make it right.",
+  },
+  {
+    tone: 'Friendly' as ToneLabel,
+    business: 'La Piazza',
+    businessType: '🍝 Restaurant',
+    stars: 3,
+    reviewer: 'Sophie L.',
+    initials: 'SL',
+    color: '#f97316',
+    review:
+      "The pasta was incredible and the atmosphere so warm and cozy. Our waiter was a little slow but made up for it with great recommendations. Will definitely be back!",
+    keywords: ['Sophie', 'La Piazza', 'pasta'],
+    reply:
+      "Hi Sophie! Hearing that you loved the pasta and the atmosphere means the world to the whole team at La Piazza. We are working hard to make service even faster — we cannot wait to welcome you back!",
+  },
+  {
+    tone: 'Concise' as ToneLabel,
+    business: 'The Style Co.',
+    businessType: '🛍️ Retail Store',
+    stars: 5,
+    reviewer: 'Tom B.',
+    initials: 'TB',
+    color: '#8b5cf6',
+    review:
+      "Great selection and super helpful staff. Found exactly what I needed in minutes. Highly recommend.",
+    keywords: ['Tom', 'The Style Co.'],
+    reply:
+      "Thank you, Tom! The whole team at The Style Co. looks forward to your next visit.",
+  },
+]
+
+const SLIDE_PAIRS = SLIDES.map((slide, i) => [slide, SLIDE_ALTERNATIVES[i]])
+
 const TONES: ToneLabel[] = ['Professional', 'Friendly', 'Concise']
 
 function ReplyText({ text, typing }: { text: string; typing: boolean }) {
@@ -81,6 +128,10 @@ function StarRow({ count }: { count: number }) {
 }
 
 export default function DemoCarousel() {
+  const slidesRef = useRef(
+    SLIDE_PAIRS.map(pair => pair[Math.floor(Math.random() * 2)])
+  )
+  const slides = slidesRef.current
   const [slideIndex, setSlideIndex]         = useState(0)
   const [displayedReply, setDisplayedReply] = useState('')
   const [contentVisible, setContentVisible] = useState(true)
@@ -96,7 +147,7 @@ export default function DemoCarousel() {
   function startSequence(idx: number) {
     timeoutRef.current = setTimeout(() => {
       setTyping(true)
-      const text = SLIDES[idx].reply
+      const text = slides[idx].reply
       let i = 0
       intervalRef.current = setInterval(() => {
         i++
@@ -105,8 +156,8 @@ export default function DemoCarousel() {
           clearInterval(intervalRef.current!)
           intervalRef.current = null
           setTyping(false)
-          const wait = idx === SLIDES.length - 1 ? 3000 : 4000
-          timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % SLIDES.length), wait)
+          const wait = idx === slides.length - 1 ? 3000 : 4000
+          timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % slides.length), wait)
         }
       }, 25)
     }, 1500)
@@ -129,7 +180,7 @@ export default function DemoCarousel() {
     return clearAll
   }, [])
 
-  const slide = SLIDES[slideIndex]
+  const slide = slides[slideIndex]
 
   return (
     <div className="mt-14">
@@ -142,11 +193,12 @@ export default function DemoCarousel() {
         {/* Tone selector */}
         <div className="flex items-center gap-2 px-5 py-3">
           <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
-          {TONES.map((t) => (
+          {TONES.map((t, i) => (
             <span
               key={t}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-300 ${
-                slide.tone === t ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-400'
+              onClick={() => { if (slide.tone !== t) goToSlide(i) }}
+              className={`cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-300 ${
+                slide.tone === t ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
               }`}
             >
               {t}

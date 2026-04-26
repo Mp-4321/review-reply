@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
+      subscription_data: { trial_period_days: 7 },
       success_url: 'http://localhost:3000?checkout=success',
       cancel_url: 'http://localhost:3000',
     })

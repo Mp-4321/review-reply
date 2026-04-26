@@ -101,8 +101,8 @@ export default function Home() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-500">
-          Reply to every review with smart responses that boost your rating
-          and win more customers.
+          Reply to every review with smart responses that boost your rating<br />
+          and help you win more customers.
         </p>
 
         {/* Feature pills */}
@@ -122,7 +122,17 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-6 pb-20">
         <DemoCarousel />
 
-        <div id="tool" className="mt-14 rounded-3xl bg-white p-8 shadow-2xl shadow-blue-100/60 ring-1 ring-slate-100 sm:p-10">
+        <div className="mt-10 flex flex-col items-center gap-2">
+          <a
+            href="/sign-up"
+            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+          >
+            Generate your reply instantly
+          </a>
+          <p className="text-xs text-slate-400">Try for free · Cancel anytime</p>
+        </div>
+
+        <div id="tool" className="mt-10 rounded-3xl bg-white p-8 shadow-2xl shadow-blue-100/60 ring-1 ring-slate-100 sm:p-10">
           <ReplyForm />
         </div>
       </section>
