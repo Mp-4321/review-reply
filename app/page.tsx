@@ -152,23 +152,19 @@ export default function Home() {
           </h2>
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { stat: '35%', label: 'more revenue', desc: 'Businesses that respond to reviews earn significantly more revenue', source: 'Womply / Constant Contact', href: 'https://www.constantcontact.com/blog/claiming-your-business-listings-and-reviews/' },
-              { stat: '88%', label: 'of consumers', desc: 'prefer businesses that respond to all their reviews', source: 'BrightLocal 2026', href: 'https://www.brightlocal.com/research/local-consumer-review-survey/' },
-              { stat: '20%', label: 'of ranking', desc: 'Review signals influence Google\'s local search ranking algorithm', source: 'Whitespark / BrightLocal', href: 'https://whitespark.ca/local-search-ranking-factors/' },
-              { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal 2026', href: 'https://www.brightlocal.com/research/local-consumer-review-survey/' },
+              { stat: '45%', label: 'of consumers', desc: 'are more likely to visit a business that replies to negative reviews', source: 'ReviewTrackers' },
+              { stat: '89%', label: 'of consumers', desc: 'prefer businesses that respond to all their reviews', source: 'BrightLocal 2026' },
+              { stat: '20%', label: 'of ranking', desc: 'Review signals influence Google\'s local search ranking algorithm', source: 'Whitespark / BrightLocal' },
+              { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal 2026' },
             ].map((item) => (
               <div key={item.stat + item.label} className="flex h-full flex-col rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
                 <p className="text-4xl font-extrabold tracking-tight text-blue-600">{item.stat}</p>
                 <p className="mt-0.5 text-sm font-semibold text-slate-700">{item.label}</p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.desc}</p>
-                <a
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto pt-3 text-xs text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-slate-700 hover:decoration-slate-500"
-                >
-                  {item.source}
-                </a>
+                <div className="mt-auto pt-4">
+                  <div className="mb-2 w-6 border-t border-slate-200" />
+                  <p className="text-xs text-slate-400">Source: {item.source}</p>
+                </div>
               </div>
             ))}
           </div>
