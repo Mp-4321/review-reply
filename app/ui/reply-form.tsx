@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useMemo, Fragment, useEffect } from 'react'
+import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 // ── Types & data ───────────────────────────────────────────────────────────
 
@@ -51,8 +53,8 @@ function StarRow({ count }: { count: number }) {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-const FREE_LIMIT = 3
-const USAGE_KEY = 'replyai_usage_count'
+const TRIAL_LIMIT = 50
+const TRIAL_KEY_PREFIX = 'replyai_trial_'
 
 const PLANS = [
   {
@@ -77,14 +79,22 @@ const PLANS = [
 
 // ── Component ──────────────────────────────────────────────────────────────
 
+type SubStatus = 'loading' | 'active' | 'trialing' | 'expired' | 'no_subscription'
+type PaywallMode = 'no_subscription' | 'trial_limit'
+
 export default function ReplyForm() {
+  const { user, isLoaded } = useUser()
+  const router = useRouter()
+
   const [review, setReview] = useState('')
   const [tone, setTone] = useState('professional')
   const [business, setBusiness] = useState('')
   const [reply, setReply] = useState('')
   const [keywords, setKeywords] = useState<string[]>([])
-  const [usageCount, setUsageCount] = useState(0)
+  const [subStatus, setSubStatus] = useState<SubStatus>('loading')
+  const [trialUsed, setTrialUsed] = useState(0)
   const [paywallOpen, setPaywallOpen] = useState(false)
+  const [paywallMode, setPaywallMode] = useState<PaywallMode>('no_subscription')
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -93,13 +103,25 @@ export default function ReplyForm() {
 
   const loading = loadingInitial || loadingRegen
   const canGenerate = review.trim().length > 0
-  const isOverLimit = usageCount >= FREE_LIMIT
-  const repliesLeft = Math.max(0, FREE_LIMIT - usageCount)
+  const isTrialOver = subStatus === 'trialing' && trialUsed >= TRIAL_LIMIT
+  const trialLeft = Math.max(0, TRIAL_LIMIT - trialUsed)
 
   useEffect(() => {
-    const stored = localStorage.getItem(USAGE_KEY)
-    if (stored) setUsageCount(parseInt(stored, 10))
-  }, [])
+    if (!isLoaded) return
+    if (!user) { setSubStatus('no_subscription'); return }
+
+    const key = TRIAL_KEY_PREFIX + user.id
+    const stored = localStorage.getItem(key)
+    if (stored) setTrialUsed(parseInt(stored, 10))
+
+    fetch('/api/subscription-status')
+      .then(r => r.json())
+      .then((data: { status: SubStatus }) => {
+        setSubStatus(data.status)
+        if (data.status === 'expired') router.push('/pricing')
+      })
+      .catch(() => setSubStatus('no_subscription'))
+  }, [isLoaded, user])
 
   // Fixed random selection at mount — generic examples only
   const examples = useMemo(
@@ -126,9 +148,11 @@ export default function ReplyForm() {
       } else {
         setReply(data.reply)
         fetchKeywords(review)
-        const next = usageCount + 1
-        setUsageCount(next)
-        localStorage.setItem(USAGE_KEY, String(next))
+        if (subStatus === 'trialing' && user) {
+          const next = trialUsed + 1
+          setTrialUsed(next)
+          localStorage.setItem(TRIAL_KEY_PREFIX + user.id, String(next))
+        }
       }
     } catch {
       setError('Network error — check your connection and try again.')
@@ -154,7 +178,9 @@ export default function ReplyForm() {
 
   async function handleGenerate() {
     if (!canGenerate) return
-    if (isOverLimit) { setPaywallOpen(true); return }
+    if (!user) { router.push('/sign-up'); return }
+    if (subStatus === 'no_subscription') { setPaywallMode('no_subscription'); setPaywallOpen(true); return }
+    if (isTrialOver) { setPaywallMode('trial_limit'); setPaywallOpen(true); return }
     setReply('')
     setKeywords([])
     setBusiness('')
@@ -181,7 +207,7 @@ export default function ReplyForm() {
   }
 
   async function handleRegenerate() {
-    if (isOverLimit) { setPaywallOpen(true); return }
+    if (isTrialOver) { setPaywallMode('trial_limit'); setPaywallOpen(true); return }
     setKeywords([])
     setLoadingRegen(true)
     await callApi({ tone, business })
@@ -215,6 +241,28 @@ export default function ReplyForm() {
     await navigator.clipboard.writeText(reply)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  if (isLoaded && !user) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-8 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+          <svg className="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-base font-semibold text-slate-800">Sign in to generate replies</p>
+          <p className="mt-1 text-sm text-slate-500">Create a free account and get 3 replies on us.</p>
+        </div>
+        <a
+          href="/sign-up"
+          className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+        >
+          Get started free →
+        </a>
+      </div>
+    )
   }
 
   return (
@@ -267,16 +315,16 @@ export default function ReplyForm() {
         )}
       </button>
 
-      {/* Usage counter */}
-      {usageCount > 0 && !isOverLimit && (
-        <p className={`-mt-2 text-center text-xs ${repliesLeft <= 1 ? 'text-red-500' : 'text-slate-400'}`}>
-          {repliesLeft} free {repliesLeft === 1 ? 'reply' : 'replies'} remaining
+      {/* Trial usage counter */}
+      {subStatus === 'trialing' && trialUsed > 0 && !isTrialOver && (
+        <p className={`-mt-2 text-center text-xs ${trialLeft <= 5 ? 'text-amber-500' : 'text-slate-400'}`}>
+          Trial: {trialUsed}/{TRIAL_LIMIT} replies used
         </p>
       )}
-      {isOverLimit && (
+      {isTrialOver && (
         <p className="-mt-2 text-center text-xs text-red-500">
-          Free limit reached —{' '}
-          <button onClick={() => setPaywallOpen(true)} className="underline hover:text-red-700">
+          Trial limit reached —{' '}
+          <button onClick={() => { setPaywallMode('trial_limit'); setPaywallOpen(true) }} className="underline hover:text-red-700">
             upgrade to continue
           </button>
         </p>
@@ -397,8 +445,12 @@ export default function ReplyForm() {
               </svg>
             </div>
             <h2 className="mt-4 text-xl font-bold text-slate-900">
-              You've used your {FREE_LIMIT} free replies.<br />
-              Start your <span className="font-extrabold">7-day free trial</span> to keep going.
+              {paywallMode === 'trial_limit' ? (
+                <>You've reached your trial limit.<br />Upgrade to continue.</>
+              ) : (
+                <>You've used your {TRIAL_LIMIT} free replies.<br />
+                Start your <span className="font-extrabold">7-day free trial</span> to keep going.</>
+              )}
             </h2>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
