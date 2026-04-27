@@ -143,6 +143,31 @@ export default function Home() {
         </Show>
       </section>
 
+      {/* Stats */}
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-5xl px-6">
+          <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">Why it matters</p>
+          <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+            Why replying to Google reviews matters
+          </h2>
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { stat: '35%', label: 'more revenue', desc: 'Businesses that respond to reviews earn significantly more revenue', source: 'BrightLocal' },
+              { stat: '88%', label: 'of consumers', desc: 'prefer businesses that respond to all their reviews', source: 'BrightLocal' },
+              { stat: '20%', label: 'of ranking', desc: 'Review signals influence Google\'s local search ranking algorithm', source: 'BrightLocal' },
+              { stat: '52%', label: 'of customers', desc: 'expect a reply within 7 days of leaving a review', source: 'BrightLocal' },
+            ].map((item) => (
+              <div key={item.stat + item.label} className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
+                <p className="text-4xl font-extrabold tracking-tight text-blue-600">{item.stat}</p>
+                <p className="mt-0.5 text-sm font-semibold text-slate-700">{item.label}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.desc}</p>
+                <p className="mt-3 text-xs text-slate-400">{item.source}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="bg-white py-20">
         <div className="mx-auto max-w-5xl px-6">
