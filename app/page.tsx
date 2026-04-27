@@ -155,7 +155,7 @@ export default function Home() {
               { stat: '35%', label: 'more revenue', desc: 'Businesses that respond to reviews earn significantly more revenue', source: 'BrightLocal' },
               { stat: '88%', label: 'of consumers', desc: 'prefer businesses that respond to all their reviews', source: 'BrightLocal' },
               { stat: '20%', label: 'of ranking', desc: 'Review signals influence Google\'s local search ranking algorithm', source: 'BrightLocal' },
-              { stat: '52%', label: 'of customers', desc: 'expect a reply within 7 days of leaving a review', source: 'BrightLocal' },
+              { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal' },
             ].map((item) => (
               <div key={item.stat + item.label} className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
                 <p className="text-4xl font-extrabold tracking-tight text-blue-600">{item.stat}</p>
