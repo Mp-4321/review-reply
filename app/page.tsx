@@ -152,7 +152,7 @@ export default function Home() {
           </h2>
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { stat: '45%', label: 'of consumers', desc: 'are more likely to visit a business that replies to negative reviews', source: 'ReviewTrackers' },
+              { stat: '45%', label: 'of consumers', desc: 'are more likely to visit a business that replies to negative reviews', source: 'ReviewTrackers 2024' },
               { stat: '89%', label: 'of consumers', desc: 'prefer businesses that respond to all their reviews', source: 'BrightLocal 2026' },
               { stat: '20%', label: 'of ranking', desc: 'Review signals influence Google\'s local search ranking algorithm', source: 'Whitespark / BrightLocal' },
               { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal 2026' },
@@ -162,7 +162,7 @@ export default function Home() {
                 <p className="mt-0.5 text-sm font-semibold text-slate-700">{item.label}</p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.desc}</p>
                 <div className="mt-auto pt-4">
-                  <div className="mb-2 w-6 border-t border-slate-200" />
+                  <div className="mb-2 w-16 border-t border-slate-300" />
                   <p className="text-xs text-slate-400">Source: {item.source}</p>
                 </div>
               </div>
