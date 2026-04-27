@@ -157,7 +157,7 @@ export default function Home() {
               { stat: '20%', label: 'of ranking', desc: 'Review signals influence Google\'s local search ranking algorithm', source: 'Whitespark / BrightLocal', href: 'https://whitespark.ca/local-search-ranking-factors/' },
               { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal 2026', href: 'https://www.brightlocal.com/research/local-consumer-review-survey/' },
             ].map((item) => (
-              <div key={item.stat + item.label} className="flex flex-col rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
+              <div key={item.stat + item.label} className="flex h-full flex-col rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
                 <p className="text-4xl font-extrabold tracking-tight text-blue-600">{item.stat}</p>
                 <p className="mt-0.5 text-sm font-semibold text-slate-700">{item.label}</p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.desc}</p>
