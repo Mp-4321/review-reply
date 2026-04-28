@@ -257,7 +257,7 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
             <StepCardContent step={step} />
           </div>
         ) : (
-          <div className="rounded-xl bg-white/80 p-6 ring-1 ring-slate-100 transition-shadow hover:shadow-md min-w-[180px]">
+          <div className="rounded-xl bg-slate-50 p-6 border border-slate-300 transition-shadow hover:shadow-md">
             <StepCardContent step={step} />
           </div>
         )}
@@ -272,7 +272,7 @@ function DesktopCells({ step }: { step: StepDef }) {
     return (
       <div className="relative z-10 col-span-3 flex flex-col items-center pb-6 pt-2">
         <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-5 w-full max-w-3xl rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-8 shadow-2xl shadow-blue-200/50">
+        <div className="mt-5 w-full rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-8 shadow-2xl shadow-blue-200/50">
           <StepCardContent step={step} />
         </div>
       </div>
@@ -280,7 +280,7 @@ function DesktopCells({ step }: { step: StepDef }) {
   }
 
   const card = (
-    <div className="rounded-2xl bg-white/80 p-6 ring-1 ring-slate-100 transition-shadow hover:shadow-md min-w-[180px]">
+    <div className="rounded-2xl bg-slate-50 p-6 border border-slate-300 transition-shadow hover:shadow-md">
       <StepCardContent step={step} />
     </div>
   )
@@ -292,7 +292,7 @@ function DesktopCells({ step }: { step: StepDef }) {
 
   if (step.side === 'left') return (
     <>
-      <div className="pb-7 pr-10">{card}</div>
+      <div className="pb-7 pr-6">{card}</div>
       {node}
       <div className="pb-7" />
     </>
@@ -302,7 +302,7 @@ function DesktopCells({ step }: { step: StepDef }) {
     <>
       <div className="pb-7" />
       {node}
-      <div className="pb-7 pl-10">{card}</div>
+      <div className="pb-7 pl-6">{card}</div>
     </>
   )
 }
@@ -404,11 +404,13 @@ export default function Home() {
           </div>
 
           {/* Desktop: zig-zag with central line */}
-          <div className="relative mt-14 hidden items-start lg:grid lg:grid-cols-[1fr_4rem_1fr]">
-            <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200" />
-            {HOW_IT_WORKS_STEPS.map((step) => (
-              <DesktopCells key={step.n} step={step} />
-            ))}
+          <div className="mt-14 hidden lg:block">
+            <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr] items-start">
+              <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-blue-400 via-blue-400 to-transparent" />
+              {HOW_IT_WORKS_STEPS.map((step) => (
+                <DesktopCells key={step.n} step={step} />
+              ))}
+            </div>
           </div>
         </div>
       </section>
