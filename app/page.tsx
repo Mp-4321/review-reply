@@ -231,8 +231,8 @@ const HOW_IT_WORKS_STEPS: StepDef[] = [
 function StepNode({ step }: { step: StepDef }) {
   return (
     <div className={step.featured
-      ? 'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200'
-      : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-400 ring-2 ring-slate-100'
+      ? 'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-200'
+      : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-400 ring-2 ring-slate-200'
     }>
       <svg className={step.featured ? 'h-5 w-5' : 'h-4 w-4'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         {step.icon}
@@ -260,11 +260,11 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
         <StepNode step={step} />
-        {!isLast && <div className="mt-2 w-px flex-1 bg-slate-100" />}
+        {!isLast && <div className="mt-2 w-px flex-1 bg-slate-200" />}
       </div>
-      <div className={`flex-1 ${isLast ? '' : 'pb-10'}`}>
+      <div className={`flex-1 ${isLast ? '' : 'pb-7'}`}>
         {step.featured ? (
-          <div className="rounded-2xl bg-blue-50/50 p-5 ring-1 ring-blue-100">
+          <div className="rounded-2xl bg-blue-50/60 p-6 ring-1 ring-blue-200 shadow-md shadow-blue-100/50">
             <StepCardContent step={step} />
           </div>
         ) : (
@@ -281,9 +281,9 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
 function DesktopCells({ step }: { step: StepDef }) {
   if (step.featured) {
     return (
-      <div className="col-span-3 flex flex-col items-center pb-12 pt-2">
+      <div className="col-span-3 flex flex-col items-center pb-10 pt-2">
         <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-6 w-full max-w-2xl rounded-2xl bg-blue-50/50 p-6 ring-1 ring-blue-100">
+        <div className="mt-5 w-full max-w-2xl rounded-2xl bg-blue-50/60 p-7 ring-1 ring-blue-200 shadow-md shadow-blue-100/50">
           <StepCardContent step={step} />
         </div>
       </div>
@@ -291,29 +291,29 @@ function DesktopCells({ step }: { step: StepDef }) {
   }
 
   const card = (
-    <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-100">
+    <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-100">
       <StepCardContent step={step} />
     </div>
   )
   const node = (
-    <div className="relative z-10 flex justify-center pt-5">
+    <div className="relative z-10 flex justify-center pt-4">
       <StepNode step={step} />
     </div>
   )
 
   if (step.side === 'left') return (
     <>
-      <div className="pb-10 pr-10">{card}</div>
+      <div className="pb-7 pr-10">{card}</div>
       {node}
-      <div className="pb-10" />
+      <div className="pb-7" />
     </>
   )
 
   return (
     <>
-      <div className="pb-10" />
+      <div className="pb-7" />
       {node}
-      <div className="pb-10 pl-10">{card}</div>
+      <div className="pb-7 pl-10">{card}</div>
     </>
   )
 }
@@ -416,7 +416,7 @@ export default function Home() {
 
           {/* Desktop: zig-zag with central line */}
           <div className="relative mt-14 hidden items-start lg:grid lg:grid-cols-[1fr_3rem_1fr]">
-            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-100" />
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200" />
             {HOW_IT_WORKS_STEPS.map((step) => (
               <DesktopCells key={step.n} step={step} />
             ))}
