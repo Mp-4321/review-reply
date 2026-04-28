@@ -199,15 +199,14 @@ type StepDef = {
   desc: string
   mock: ReactNode
   featured?: boolean
-  comingSoon?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
-  { n: 1, side: 'left',   title: 'Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
-  { n: 2, side: 'right',  title: 'Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2, comingSoon: true },
-  { n: 3, side: 'center', title: 'Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true, comingSoon: true },
-  { n: 4, side: 'right',  title: 'Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4, comingSoon: true },
-  { n: 5, side: 'left',   title: 'Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5, comingSoon: true },
+  { n: 1, side: 'left',   title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
+  { n: 2, side: 'right',  title: '🔔 Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2 },
+  { n: 3, side: 'center', title: '⚡ Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true },
+  { n: 4, side: 'right',  title: '✏️ Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
+  { n: 5, side: 'left',   title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
 
 // ——— Components ———
@@ -226,14 +225,9 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <div className="flex items-center gap-2">
-        <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
-          Step {step.n}
-        </p>
-        {step.comingSoon && (
-          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-600">Coming soon</span>
-        )}
-      </div>
+      <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
+        Step {step.n}
+      </p>
       <p className={`mt-1 font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
         {step.title}
       </p>
@@ -285,7 +279,7 @@ function DesktopCells({ step }: { step: StepDef }) {
     </div>
   )
   const node = (
-    <div className="relative z-10 flex justify-center pt-4">
+    <div className="relative z-10 flex items-center justify-center pb-7">
       <StepNode step={step} />
     </div>
   )
@@ -405,8 +399,8 @@ export default function Home() {
 
           {/* Desktop: zig-zag with central line */}
           <div className="mt-14 hidden lg:block">
-            <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr] items-start">
-              <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-blue-400 via-blue-400 to-transparent" />
+            <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr]">
+              <div className="pointer-events-none absolute inset-y-10 left-1/2 z-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-400 to-transparent" />
               {HOW_IT_WORKS_STEPS.map((step) => (
                 <DesktopCells key={step.n} step={step} />
               ))}
