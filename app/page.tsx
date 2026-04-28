@@ -89,33 +89,68 @@ const FAQS = [
   },
 ]
 
-const STEPS = [
+type HowItWorksStepData = { n: number; title: string; desc: string }
+type HowItWorksPhaseData = { phase: string; comingSoon: boolean; steps: HowItWorksStepData[] }
+
+const HOW_IT_WORKS: HowItWorksPhaseData[] = [
   {
-    title: 'Connect your Google Business Profile',
-    desc: 'Link your account and ReplyAI automatically syncs your reviews in real time.',
-    badge: null,
+    phase: 'Setup',
+    comingSoon: false,
+    steps: [
+      { n: 1, title: 'Connect your Google Business Profile', desc: 'Link your account once — your reviews sync automatically from that point on.' },
+    ],
   },
   {
-    title: 'Get notified instantly',
-    desc: 'Receive an email the moment a new review lands — no more checking manually.',
-    badge: 'Coming soon',
+    phase: 'Automation',
+    comingSoon: true,
+    steps: [
+      { n: 2, title: 'Get notified when reviews arrive', desc: 'An email alert lands in your inbox the moment a new review is posted.' },
+      { n: 3, title: 'Generate replies — one or many', desc: 'Select a review or a batch, choose a tone, and get a polished draft for each.' },
+    ],
   },
   {
-    title: 'Reply in bulk, safely',
-    desc: 'Select multiple reviews and generate replies at once. ReplyAI automatically limits to 3–4 replies per day to stay within Google\'s guidelines and protect your profile.',
-    badge: 'Coming soon',
-  },
-  {
-    title: 'Review and approve',
-    desc: 'ReplyAI drafts a smart, on-brand response for each review. Edit it if you want, or approve it as-is.',
-    badge: 'Coming soon',
-  },
-  {
-    title: 'Post with one click',
-    desc: 'Your replies go live on Google instantly. No copy-pasting, no switching tabs.',
-    badge: 'Coming soon',
+    phase: 'Publish',
+    comingSoon: true,
+    steps: [
+      { n: 4, title: 'Review before you post', desc: 'Read each draft, adjust the tone if needed, and approve with one click.' },
+      { n: 5, title: 'Post directly to Google', desc: 'Your reply goes live immediately — no copy-pasting, no switching tabs.' },
+    ],
   },
 ]
+
+function HowItWorksStep({ n, title, desc }: HowItWorksStepData) {
+  return (
+    <div className="flex gap-3">
+      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-medium text-slate-400">
+        {n}
+      </span>
+      <div>
+        <p className="text-sm font-semibold text-slate-900">{title}</p>
+        <p className="mt-1 text-sm leading-relaxed text-slate-500">{desc}</p>
+      </div>
+    </div>
+  )
+}
+
+function HowItWorksPhase({ phase, comingSoon, steps }: HowItWorksPhaseData) {
+  return (
+    <div className="flex flex-col gap-5 border-t-2 border-blue-100 pt-5">
+      <div className="flex items-center gap-2.5">
+        <p className="text-xs font-semibold uppercase tracking-widest text-blue-600">{phase}</p>
+        {comingSoon && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+            Coming soon
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-4">
+        {steps.map((step) => (
+          <HowItWorksStep key={step.title} {...step} />
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function Home() {
   return (
@@ -203,27 +238,12 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            How ReplyAI works
+            Set up once. Reply in seconds.
           </h2>
-
-          <div className="relative mt-14">
-            <div className="absolute inset-x-[10%] top-5 hidden h-px bg-slate-200 lg:block" />
-            <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
-              {STEPS.map((step, i) => (
-                <div key={step.title} className="relative flex flex-1 flex-col items-center px-2 text-center">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white ring-4 ring-white">
-                    {i + 1}
-                  </div>
-                  <h3 className="mt-4 text-sm font-semibold text-slate-900">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{step.desc}</p>
-                  {step.badge && (
-                    <span className="mt-3 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                      {step.badge}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="mt-14 grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-8">
+            {HOW_IT_WORKS.map((p) => (
+              <HowItWorksPhase key={p.phase} {...p} />
+            ))}
           </div>
         </div>
       </section>
