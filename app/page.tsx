@@ -129,22 +129,22 @@ const StepMock2 = (
 )
 
 const StepMock3 = (
-  <div className="mt-4 flex gap-2 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 text-xs">
-    <div className="flex-1 rounded-lg bg-white p-3 ring-1 ring-slate-200">
+  <div className="mt-4 flex gap-3 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200 text-xs">
+    <div className="flex-1 rounded-lg bg-white p-3.5 ring-1 ring-slate-200">
       <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Review</p>
       <p className="mb-2 text-sm leading-none text-amber-400">★☆☆☆☆</p>
-      <p className="leading-snug text-slate-700">"Waited 45 minutes. No one apologised."</p>
+      <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
     </div>
-    <div className="flex items-center justify-center px-1">
-      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm">
-        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <div className="flex items-center justify-center px-0.5">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200">
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </div>
     </div>
-    <div className="flex-1 rounded-lg bg-blue-50 p-3 ring-1 ring-blue-200">
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-blue-500">AI reply</p>
-      <p className="leading-snug text-slate-700">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
+    <div className="flex-1 rounded-lg bg-blue-600 p-3.5">
+      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
+      <p className="leading-snug text-white">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
     </div>
   </div>
 )
@@ -204,7 +204,7 @@ const HOW_IT_WORKS_STEPS: StepDef[] = [
 function StepNode({ step }: { step: StepDef }) {
   return (
     <div className={step.featured
-      ? 'flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-lg shadow-blue-300/50'
+      ? 'flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-lg shadow-blue-300/50 ring-4 ring-blue-100'
       : 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-500 ring-2 ring-slate-200'
     }>
       {step.n}
@@ -221,7 +221,7 @@ function StepCardContent({ step }: { step: StepDef }) {
       <p className={`mt-1 font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
         {step.title}
       </p>
-      <p className="mt-0.5 text-sm text-slate-500">{step.desc}</p>
+      <p className={`mt-0.5 text-sm ${step.featured ? 'text-slate-600' : 'text-slate-500'}`}>{step.desc}</p>
       {step.mock}
     </>
   )
@@ -237,7 +237,7 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
       </div>
       <div className={`flex-1 ${isLast ? '' : 'pb-7'}`}>
         {step.featured ? (
-          <div className="rounded-2xl bg-blue-50 p-6 ring-1 ring-blue-200 shadow-lg shadow-blue-100/60">
+          <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/60 p-6 ring-1 ring-blue-200 shadow-lg shadow-blue-100/60">
             <StepCardContent step={step} />
           </div>
         ) : (
@@ -256,7 +256,7 @@ function DesktopCells({ step }: { step: StepDef }) {
     return (
       <div className="col-span-3 flex flex-col items-center pb-10 pt-2">
         <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-5 w-full max-w-2xl rounded-2xl bg-blue-50 p-8 ring-1 ring-blue-200 shadow-lg shadow-blue-200/50">
+        <div className="mt-5 w-full max-w-3xl rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/60 p-8 ring-1 ring-blue-200 shadow-lg shadow-blue-200/50">
           <StepCardContent step={step} />
         </div>
       </div>
@@ -373,7 +373,7 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="py-20">
+      <section className="bg-white py-20">
         <div className="mx-auto max-w-4xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
