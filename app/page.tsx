@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Show } from '@clerk/nextjs'
 import ReplyForm from './ui/reply-form'
 import DemoCarousel from './ui/demo-carousel'
@@ -89,64 +90,113 @@ const FAQS = [
   },
 ]
 
-type HowItWorksStepData = { n: number; title: string; desc: string }
-type HowItWorksPhaseData = { phase: string; comingSoon: boolean; steps: HowItWorksStepData[] }
+type StepDef = {
+  n: number
+  icon: ReactNode
+  title: string
+  desc: string
+  featured?: boolean
+  comingSoon?: boolean
+}
 
-const HOW_IT_WORKS: HowItWorksPhaseData[] = [
+const HOW_IT_WORKS_STEPS: StepDef[] = [
   {
-    phase: 'Setup',
-    comingSoon: false,
-    steps: [
-      { n: 1, title: 'Connect your Google Business Profile', desc: 'Link your account once — your reviews sync automatically from that point on.' },
-    ],
+    n: 1,
+    icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />,
+    title: 'Connect your profile',
+    desc: 'Link Google Business once — reviews sync automatically.',
+    comingSoon: true,
   },
   {
-    phase: 'Automation',
+    n: 2,
+    icon: <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />,
+    title: 'Get notified instantly',
+    desc: 'Email alert the moment a new review lands.',
     comingSoon: true,
-    steps: [
-      { n: 2, title: 'Get notified when reviews arrive', desc: 'An email alert lands in your inbox the moment a new review is posted.' },
-      { n: 3, title: 'Generate replies — one or many', desc: 'Select a review or a batch, choose a tone, and get a polished draft for each.' },
-    ],
   },
   {
-    phase: 'Publish',
+    n: 3,
+    icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />,
+    title: 'Generate your reply',
+    desc: 'Choose a tone, get a polished reply in seconds.',
+    featured: true,
+  },
+  {
+    n: 4,
+    icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />,
+    title: 'Review and approve',
+    desc: 'Read the draft, adjust if needed, approve.',
     comingSoon: true,
-    steps: [
-      { n: 4, title: 'Review before you post', desc: 'Read each draft, adjust the tone if needed, and approve with one click.' },
-      { n: 5, title: 'Post directly to Google', desc: 'Your reply goes live immediately — no copy-pasting, no switching tabs.' },
-    ],
+  },
+  {
+    n: 5,
+    icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />,
+    title: 'Post to Google',
+    desc: 'Reply goes live instantly — no copy-pasting.',
+    comingSoon: true,
   },
 ]
 
-function HowItWorksStep({ n, title, desc }: HowItWorksStepData) {
+function TimelineStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
+  const { n, icon, title, desc, featured, comingSoon } = step
   return (
-    <div className="flex gap-3">
-      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-medium text-slate-400">
-        {n}
-      </span>
-      <div>
-        <p className="text-sm font-semibold text-slate-900">{title}</p>
-        <p className="mt-1 text-sm leading-relaxed text-slate-500">{desc}</p>
+    <div className="flex gap-5">
+      {/* Icon + vertical connector */}
+      <div className="flex flex-col items-center">
+        <div
+          className={
+            featured
+              ? 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-200'
+              : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500'
+          }
+        >
+          <svg
+            className={featured ? 'h-5 w-5' : 'h-4 w-4'}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            {icon}
+          </svg>
+        </div>
+        {!isLast && <div className="mt-2 w-px flex-1 bg-slate-100" />}
       </div>
-    </div>
-  )
-}
 
-function HowItWorksPhase({ phase, comingSoon, steps }: HowItWorksPhaseData) {
-  return (
-    <div className="flex flex-col gap-5 border-t-2 border-blue-100 pt-5">
-      <div className="flex items-center gap-2.5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-600">{phase}</p>
-        {comingSoon && (
-          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-            Coming soon
-          </span>
+      {/* Content */}
+      <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-10'}`}>
+        {featured ? (
+          <div className="rounded-2xl bg-blue-50/50 p-5 ring-1 ring-blue-100">
+            <p className="mb-1 text-xs font-medium text-blue-400">Step {n}</p>
+            <p className="font-semibold text-slate-900">{title}</p>
+            <p className="mt-0.5 text-sm text-slate-500">{desc}</p>
+            {/* Mini mock: review → AI reply */}
+            <div className="mt-4 flex gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-100 text-xs">
+              <div className="flex-1 rounded-lg bg-slate-50 p-3">
+                <p className="mb-1.5 text-base leading-none text-amber-400">★☆☆☆☆</p>
+                <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
+              </div>
+              <div className="flex items-center text-slate-300">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+              <div className="flex-1 rounded-lg bg-blue-50 p-3">
+                <p className="leading-snug text-slate-700">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="pt-0.5">
+            <div className="mb-1 flex items-center gap-2">
+              <p className="text-xs text-slate-400">Step {n}</p>
+              {comingSoon && (
+                <span className="rounded-full bg-amber-100 px-1.5 py-px text-xs font-medium text-amber-600">
+                  Coming soon
+                </span>
+              )}
+            </div>
+            <p className="text-sm font-semibold text-slate-900">{title}</p>
+            <p className="mt-0.5 text-sm leading-relaxed text-slate-500">{desc}</p>
+          </div>
         )}
-      </div>
-      <div className="flex flex-col gap-4">
-        {steps.map((step) => (
-          <HowItWorksStep key={step.title} {...step} />
-        ))}
       </div>
     </div>
   )
@@ -235,14 +285,14 @@ export default function Home() {
 
       {/* How it works */}
       <section className="py-20">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="mx-auto max-w-2xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
             Set up once. Reply in seconds.
           </h2>
-          <div className="mt-14 grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-8">
-            {HOW_IT_WORKS.map((p) => (
-              <HowItWorksPhase key={p.phase} {...p} />
+          <div className="mt-14">
+            {HOW_IT_WORKS_STEPS.map((step, i) => (
+              <TimelineStep key={step.n} step={step} isLast={i === HOW_IT_WORKS_STEPS.length - 1} />
             ))}
           </div>
         </div>
