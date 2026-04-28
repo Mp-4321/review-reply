@@ -94,19 +94,22 @@ const FAQS = [
 
 const StepMock1 = (
   <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
-    <div className="flex items-center gap-2.5 p-3">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100">
-        <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
+    <div className="flex items-center justify-between p-3">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+          <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <div>
+          <p className="font-medium text-slate-800">My Business</p>
+          <p className="text-[10px] text-slate-400">Google Business Profile</p>
+        </div>
       </div>
-      <div>
-        <p className="font-medium text-slate-800">My Business</p>
-        <p className="text-[10px] text-slate-400">Google Business Profile</p>
-      </div>
+      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-600">Connected</span>
     </div>
     <div className="border-t border-slate-100 px-3 pb-3 pt-2.5">
-      <div className="rounded-md bg-blue-600 px-3 py-1.5 text-center font-medium text-white">Connect account →</div>
+      <div className="rounded-md bg-blue-600 px-3 py-1.5 text-center font-medium text-white">Connect Google Business</div>
     </div>
   </div>
 )
@@ -131,7 +134,7 @@ const StepMock2 = (
 const StepMock3 = (
   <div className="mt-4 flex gap-4 rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200 text-sm">
     <div className="flex-1 rounded-lg bg-white p-4 border border-slate-200">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Review</p>
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
       <p className="mb-2 text-base leading-none text-amber-400">★☆☆☆☆</p>
       <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
     </div>
@@ -144,7 +147,14 @@ const StepMock3 = (
     </div>
     <div className="flex-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg shadow-blue-400/30">
       <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-      <p className="leading-snug text-white">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
+      <p className="mb-3 leading-snug text-white">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
+      <div className="flex items-center gap-1.5 rounded-md bg-blue-700/50 px-2.5 py-1.5 text-[11px] text-blue-200">
+        <span>Tone:</span>
+        <span className="font-semibold text-white">Friendly</span>
+        <svg className="ml-auto h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
   </div>
 )
@@ -189,14 +199,15 @@ type StepDef = {
   desc: string
   mock: ReactNode
   featured?: boolean
+  comingSoon?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   { n: 1, side: 'left',   title: 'Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
-  { n: 2, side: 'right',  title: 'Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2 },
-  { n: 3, side: 'center', title: 'Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true },
-  { n: 4, side: 'right',  title: 'Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
-  { n: 5, side: 'left',   title: 'Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
+  { n: 2, side: 'right',  title: 'Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2, comingSoon: true },
+  { n: 3, side: 'center', title: 'Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true, comingSoon: true },
+  { n: 4, side: 'right',  title: 'Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4, comingSoon: true },
+  { n: 5, side: 'left',   title: 'Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5, comingSoon: true },
 ]
 
 // ——— Components ———
@@ -215,9 +226,14 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
-        Step {step.n}
-      </p>
+      <div className="flex items-center gap-2">
+        <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
+          Step {step.n}
+        </p>
+        {step.comingSoon && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-600">Coming soon</span>
+        )}
+      </div>
       <p className={`mt-1 font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
         {step.title}
       </p>
