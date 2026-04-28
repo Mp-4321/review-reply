@@ -186,44 +186,43 @@ type StepDef = {
   desc: string
   mock: ReactNode
   featured?: boolean
-  comingSoon?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   {
     n: 1, side: 'left',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />,
-    title: 'Connect your profile',
-    desc: 'Link Google Business once — reviews sync automatically.',
-    mock: StepMock1, comingSoon: true,
+    title: 'Connect your business',
+    desc: 'Link your Google Business once — your reviews sync automatically.',
+    mock: StepMock1,
   },
   {
     n: 2, side: 'right',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />,
-    title: 'Get notified instantly',
-    desc: 'Email alert the moment a new review lands.',
-    mock: StepMock2, comingSoon: true,
+    title: 'Never miss a review',
+    desc: 'Get notified the moment a new review is posted.',
+    mock: StepMock2,
   },
   {
     n: 3, side: 'center',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />,
     title: 'Generate your reply',
-    desc: 'Choose a tone, get a polished reply in seconds.',
+    desc: 'Pick a tone. Get a reply ready to post in seconds.',
     mock: StepMock3, featured: true,
   },
   {
     n: 4, side: 'right',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />,
-    title: 'Review and approve',
-    desc: 'Read the draft, adjust if needed, approve.',
-    mock: StepMock4, comingSoon: true,
+    title: 'Review before sending',
+    desc: 'Edit the reply or approve it as-is in one click.',
+    mock: StepMock4,
   },
   {
     n: 5, side: 'left',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />,
-    title: 'Post to Google',
-    desc: 'Reply goes live instantly — no copy-pasting.',
-    mock: StepMock5, comingSoon: true,
+    title: 'Post to Google instantly',
+    desc: 'Publish your reply without copy-pasting or switching tabs.',
+    mock: StepMock5,
   },
 ]
 
@@ -247,9 +246,6 @@ function StepCardContent({ step }: { step: StepDef }) {
     <>
       <div className="flex items-center gap-2">
         <p className="text-xs text-slate-400">Step {step.n}</p>
-        {step.comingSoon && (
-          <span className="rounded-full bg-amber-50 px-1.5 py-px text-[10px] font-medium text-amber-500">Coming soon</span>
-        )}
       </div>
       <p className="mt-1 font-semibold text-slate-900">{step.title}</p>
       <p className="mt-0.5 text-sm text-slate-500">{step.desc}</p>
