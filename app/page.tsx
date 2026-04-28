@@ -129,21 +129,21 @@ const StepMock2 = (
 )
 
 const StepMock3 = (
-  <div className="mt-4 flex gap-3 rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200 text-xs">
-    <div className="flex-1 rounded-lg bg-white p-3.5 border border-slate-200">
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Review</p>
-      <p className="mb-2 text-sm leading-none text-amber-400">★☆☆☆☆</p>
+  <div className="mt-4 flex gap-4 rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200 text-sm">
+    <div className="flex-1 rounded-lg bg-white p-4 border border-slate-200">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Review</p>
+      <p className="mb-2 text-base leading-none text-amber-400">★☆☆☆☆</p>
       <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
     </div>
     <div className="flex items-center justify-center px-0.5">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200 scale-125">
-        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200 scale-125">
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </div>
     </div>
-    <div className="flex-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-3.5 shadow-lg shadow-blue-400/30">
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
+    <div className="flex-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg shadow-blue-400/30">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
       <p className="leading-snug text-white">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
     </div>
   </div>
@@ -189,15 +189,14 @@ type StepDef = {
   desc: string
   mock: ReactNode
   featured?: boolean
-  comingSoon?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   { n: 1, side: 'left',   title: 'Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
-  { n: 2, side: 'right',  title: 'Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2, comingSoon: true },
-  { n: 3, side: 'center', title: 'Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true, comingSoon: true },
-  { n: 4, side: 'right',  title: 'Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4, comingSoon: true },
-  { n: 5, side: 'left',   title: 'Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5, comingSoon: true },
+  { n: 2, side: 'right',  title: 'Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2 },
+  { n: 3, side: 'center', title: 'Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true },
+  { n: 4, side: 'right',  title: 'Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
+  { n: 5, side: 'left',   title: 'Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
 
 // ——— Components ———
@@ -216,16 +215,9 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <div className="flex items-center gap-2">
-        <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
-          Step {step.n}
-        </p>
-        {step.comingSoon && (
-          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-600">
-            Coming soon
-          </span>
-        )}
-      </div>
+      <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
+        Step {step.n}
+      </p>
       <p className={`mt-1 font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
         {step.title}
       </p>
@@ -249,7 +241,7 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
             <StepCardContent step={step} />
           </div>
         ) : (
-          <div className="rounded-xl bg-white/80 p-4 ring-1 ring-slate-100 transition-shadow hover:shadow-md">
+          <div className="rounded-xl bg-white/80 p-6 ring-1 ring-slate-100 transition-shadow hover:shadow-md min-w-[180px]">
             <StepCardContent step={step} />
           </div>
         )}
@@ -262,9 +254,9 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
 function DesktopCells({ step }: { step: StepDef }) {
   if (step.featured) {
     return (
-      <div className="col-span-3 flex flex-col items-center pb-6 pt-2">
+      <div className="relative z-10 col-span-3 flex flex-col items-center pb-6 pt-2">
         <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-5 w-full max-w-3xl rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-12 shadow-2xl shadow-blue-200/50">
+        <div className="mt-5 w-full max-w-3xl rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-8 shadow-2xl shadow-blue-200/50">
           <StepCardContent step={step} />
         </div>
       </div>
@@ -272,7 +264,7 @@ function DesktopCells({ step }: { step: StepDef }) {
   }
 
   const card = (
-    <div className="rounded-2xl bg-white/80 p-4 ring-1 ring-slate-100 transition-shadow hover:shadow-md">
+    <div className="rounded-2xl bg-white/80 p-6 ring-1 ring-slate-100 transition-shadow hover:shadow-md min-w-[180px]">
       <StepCardContent step={step} />
     </div>
   )
@@ -397,7 +389,7 @@ export default function Home() {
 
           {/* Desktop: zig-zag with central line */}
           <div className="relative mt-14 hidden items-start lg:grid lg:grid-cols-[1fr_4rem_1fr]">
-            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-[3px] -translate-x-1/2 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200" />
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 z-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200" />
             {HOW_IT_WORKS_STEPS.map((step) => (
               <DesktopCells key={step.n} step={step} />
             ))}
