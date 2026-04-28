@@ -124,8 +124,7 @@ const StepMock2 = (
       </div>
       <div className="min-w-0">
         <p className="font-medium text-slate-800">New review received</p>
-        <p className="mt-0.5 text-[10px] text-amber-500">★★☆☆☆ · just now</p>
-        <p className="mt-1 truncate text-[10px] text-slate-400">"The service was slow and..."</p>
+        <p className="mt-0.5 text-[10px] text-amber-500">★☆☆☆☆ · just now</p>
       </div>
     </div>
   </div>
@@ -225,10 +224,7 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <p className={step.featured ? 'text-[11px] font-semibold text-blue-500' : 'text-[11px] text-slate-400'}>
-        Step {step.n}
-      </p>
-      <p className={`mt-1 font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
+      <p className={`font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
         {step.title}
       </p>
       <p className={`mt-0.5 text-sm ${step.featured ? 'text-slate-600' : 'text-slate-500'}`}>{step.desc}</p>
@@ -251,7 +247,7 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
             <StepCardContent step={step} />
           </div>
         ) : (
-          <div className="rounded-xl bg-slate-50 p-6 border border-slate-300 transition-shadow hover:shadow-md">
+          <div className="step-card-hover rounded-xl bg-slate-50 p-5 border border-slate-200">
             <StepCardContent step={step} />
           </div>
         )}
@@ -266,7 +262,7 @@ function DesktopCells({ step }: { step: StepDef }) {
     return (
       <div className="relative z-10 col-span-3 flex flex-col items-center pb-6 pt-2">
         <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-5 w-full rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-8 shadow-2xl shadow-blue-200/50">
+        <div className="mt-5 w-full rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-7 shadow-2xl shadow-blue-200/50">
           <StepCardContent step={step} />
         </div>
       </div>
@@ -274,7 +270,7 @@ function DesktopCells({ step }: { step: StepDef }) {
   }
 
   const card = (
-    <div className="rounded-2xl bg-slate-50 p-6 border border-slate-300 transition-shadow hover:shadow-md">
+    <div className="step-card-hover rounded-2xl bg-slate-50 p-5 border border-slate-200">
       <StepCardContent step={step} />
     </div>
   )
@@ -384,6 +380,36 @@ export default function Home() {
 
       {/* How it works */}
       <section className="bg-white py-20">
+        <style dangerouslySetInnerHTML={{ __html: `
+          @property --border-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+          }
+          @keyframes border-spin {
+            to { --border-angle: 360deg; }
+          }
+          .step-card-hover {
+            position: relative;
+            isolation: isolate;
+          }
+          .step-card-hover::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: conic-gradient(from var(--border-angle), transparent 35%, #93c5fd 50%, #a78bfa 65%, transparent 80%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            animation: border-spin 2.5s linear infinite;
+            animation-play-state: paused;
+          }
+          .step-card-hover:hover::before {
+            opacity: 1;
+            animation-play-state: running;
+          }
+        ` }} />
         <div className="mx-auto max-w-4xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
