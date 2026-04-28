@@ -89,6 +89,34 @@ const FAQS = [
   },
 ]
 
+const STEPS = [
+  {
+    title: 'Connect your Google Business Profile',
+    desc: 'Link your account and ReplyAI automatically syncs your reviews in real time.',
+    badge: null,
+  },
+  {
+    title: 'Get notified instantly',
+    desc: 'Receive an email the moment a new review lands — no more checking manually.',
+    badge: 'Coming soon',
+  },
+  {
+    title: 'Reply in bulk, safely',
+    desc: 'Select multiple reviews and generate replies at once. ReplyAI automatically limits to 3–4 replies per day to stay within Google\'s guidelines and protect your profile.',
+    badge: 'Coming soon',
+  },
+  {
+    title: 'Review and approve',
+    desc: 'ReplyAI drafts a smart, on-brand response for each review. Edit it if you want, or approve it as-is.',
+    badge: 'Coming soon',
+  },
+  {
+    title: 'Post with one click',
+    desc: 'Your replies go live on Google instantly. No copy-pasting, no switching tabs.',
+    badge: 'Coming soon',
+  },
+]
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-100 via-blue-50 to-white">
@@ -166,6 +194,36 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="py-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
+          <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+            How ReplyAI works
+          </h2>
+
+          <div className="relative mt-14">
+            <div className="absolute inset-x-[10%] top-5 hidden h-px bg-slate-200 lg:block" />
+            <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
+              {STEPS.map((step, i) => (
+                <div key={step.title} className="relative flex flex-1 flex-col items-center px-2 text-center">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white ring-4 ring-white">
+                    {i + 1}
+                  </div>
+                  <h3 className="mt-4 text-sm font-semibold text-slate-900">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{step.desc}</p>
+                  {step.badge && (
+                    <span className="mt-3 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                      {step.badge}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
