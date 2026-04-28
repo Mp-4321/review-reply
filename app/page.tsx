@@ -237,7 +237,7 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
       </div>
       <div className={`flex-1 ${isLast ? '' : 'pb-7'}`}>
         {step.featured ? (
-          <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/60 p-6 ring-1 ring-blue-200 shadow-lg shadow-blue-100/60">
+          <div className="rounded-2xl bg-slate-100 p-8 ring-1 ring-slate-200 shadow-lg shadow-slate-100/60">
             <StepCardContent step={step} />
           </div>
         ) : (
@@ -256,7 +256,7 @@ function DesktopCells({ step }: { step: StepDef }) {
     return (
       <div className="col-span-3 flex flex-col items-center pb-10 pt-2">
         <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-5 w-full max-w-3xl rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/60 p-8 ring-1 ring-blue-200 shadow-lg shadow-blue-200/50">
+        <div className="mt-5 w-full max-w-3xl rounded-2xl bg-slate-100 p-10 ring-1 ring-slate-200 shadow-lg shadow-slate-200/50">
           <StepCardContent step={step} />
         </div>
       </div>
