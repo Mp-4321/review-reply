@@ -90,115 +90,235 @@ const FAQS = [
   },
 ]
 
+// ——— Step mocks (static UI previews) ———
+
+const StepMock1 = (
+  <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
+    <div className="flex items-center gap-2.5 p-3">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+        <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      </div>
+      <div>
+        <p className="font-medium text-slate-800">My Business</p>
+        <p className="text-[10px] text-slate-400">Google Business Profile</p>
+      </div>
+    </div>
+    <div className="border-t border-slate-100 px-3 pb-3 pt-2.5">
+      <div className="rounded-md bg-blue-600 px-3 py-1.5 text-center font-medium text-white">Connect account →</div>
+    </div>
+  </div>
+)
+
+const StepMock2 = (
+  <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
+    <div className="flex items-start gap-2.5 p-3">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-50">
+        <svg className="h-3.5 w-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </div>
+      <div className="min-w-0">
+        <p className="font-medium text-slate-800">New review received</p>
+        <p className="mt-0.5 text-[10px] text-amber-500">★★☆☆☆ · just now</p>
+        <p className="mt-1 truncate text-[10px] text-slate-400">"The service was slow and..."</p>
+      </div>
+    </div>
+  </div>
+)
+
+const StepMock3 = (
+  <div className="mt-4 flex gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-100 text-xs">
+    <div className="flex-1 rounded-lg bg-slate-50 p-3">
+      <p className="mb-1.5 text-base leading-none text-amber-400">★☆☆☆☆</p>
+      <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
+    </div>
+    <div className="flex items-center text-slate-300">
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </div>
+    <div className="flex-1 rounded-lg bg-blue-50 p-3">
+      <p className="leading-snug text-slate-700">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
+    </div>
+  </div>
+)
+
+const StepMock4 = (
+  <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
+    <div className="border-b border-slate-50 p-3">
+      <p className="mb-1 text-[10px] text-slate-400">Generated reply</p>
+      <p className="leading-snug text-slate-700">"Thank you for your feedback. We're sorry about your experience and would like to make it right..."</p>
+    </div>
+    <div className="flex gap-2 p-2.5">
+      <div className="flex-1 rounded-md border border-slate-200 py-1.5 text-center font-medium text-slate-500">Edit</div>
+      <div className="flex-1 rounded-md bg-emerald-500 py-1.5 text-center font-medium text-white">✓ Approve</div>
+    </div>
+  </div>
+)
+
+const StepMock5 = (
+  <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
+    <div className="p-3">
+      <div className="flex items-center gap-2">
+        <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+          <svg className="h-3 w-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p className="font-medium text-slate-800">Reply posted on Google</p>
+      </div>
+      <p className="mt-2 text-[10px] text-slate-400">
+        <span className="text-amber-400">★★★★☆</span>{'  '}Google Maps · just now
+      </p>
+    </div>
+  </div>
+)
+
+// ——— Type + data ———
+
 type StepDef = {
   n: number
   icon: ReactNode
+  side: 'left' | 'right' | 'center'
   title: string
   desc: string
+  mock: ReactNode
   featured?: boolean
   comingSoon?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   {
-    n: 1,
+    n: 1, side: 'left',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />,
     title: 'Connect your profile',
     desc: 'Link Google Business once — reviews sync automatically.',
-    comingSoon: true,
+    mock: StepMock1, comingSoon: true,
   },
   {
-    n: 2,
+    n: 2, side: 'right',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />,
     title: 'Get notified instantly',
     desc: 'Email alert the moment a new review lands.',
-    comingSoon: true,
+    mock: StepMock2, comingSoon: true,
   },
   {
-    n: 3,
+    n: 3, side: 'center',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />,
     title: 'Generate your reply',
     desc: 'Choose a tone, get a polished reply in seconds.',
-    featured: true,
+    mock: StepMock3, featured: true,
   },
   {
-    n: 4,
+    n: 4, side: 'right',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0" />,
     title: 'Review and approve',
     desc: 'Read the draft, adjust if needed, approve.',
-    comingSoon: true,
+    mock: StepMock4, comingSoon: true,
   },
   {
-    n: 5,
+    n: 5, side: 'left',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />,
     title: 'Post to Google',
     desc: 'Reply goes live instantly — no copy-pasting.',
-    comingSoon: true,
+    mock: StepMock5, comingSoon: true,
   },
 ]
 
-function TimelineStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
-  const { n, icon, title, desc, featured, comingSoon } = step
+// ——— Components ———
+
+function StepNode({ step }: { step: StepDef }) {
   return (
-    <div className="flex gap-5">
-      {/* Icon + vertical connector */}
+    <div className={step.featured
+      ? 'flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200'
+      : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-400 ring-2 ring-slate-100'
+    }>
+      <svg className={step.featured ? 'h-5 w-5' : 'h-4 w-4'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        {step.icon}
+      </svg>
+    </div>
+  )
+}
+
+function StepCardContent({ step }: { step: StepDef }) {
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <p className="text-xs text-slate-400">Step {step.n}</p>
+        {step.comingSoon && (
+          <span className="rounded-full bg-amber-50 px-1.5 py-px text-[10px] font-medium text-amber-500">Coming soon</span>
+        )}
+      </div>
+      <p className="mt-1 font-semibold text-slate-900">{step.title}</p>
+      <p className="mt-0.5 text-sm text-slate-500">{step.desc}</p>
+      {step.mock}
+    </>
+  )
+}
+
+// Mobile: single-column, left-side timeline
+function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
+  return (
+    <div className="flex gap-4">
       <div className="flex flex-col items-center">
-        <div
-          className={
-            featured
-              ? 'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-200'
-              : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500'
-          }
-        >
-          <svg
-            className={featured ? 'h-5 w-5' : 'h-4 w-4'}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            {icon}
-          </svg>
-        </div>
+        <StepNode step={step} />
         {!isLast && <div className="mt-2 w-px flex-1 bg-slate-100" />}
       </div>
-
-      {/* Content */}
-      <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-10'}`}>
-        {featured ? (
+      <div className={`flex-1 ${isLast ? '' : 'pb-10'}`}>
+        {step.featured ? (
           <div className="rounded-2xl bg-blue-50/50 p-5 ring-1 ring-blue-100">
-            <p className="mb-1 text-xs font-medium text-blue-400">Step {n}</p>
-            <p className="font-semibold text-slate-900">{title}</p>
-            <p className="mt-0.5 text-sm text-slate-500">{desc}</p>
-            {/* Mini mock: review → AI reply */}
-            <div className="mt-4 flex gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-100 text-xs">
-              <div className="flex-1 rounded-lg bg-slate-50 p-3">
-                <p className="mb-1.5 text-base leading-none text-amber-400">★☆☆☆☆</p>
-                <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
-              </div>
-              <div className="flex items-center text-slate-300">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-              <div className="flex-1 rounded-lg bg-blue-50 p-3">
-                <p className="leading-snug text-slate-700">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
-              </div>
-            </div>
+            <StepCardContent step={step} />
           </div>
         ) : (
           <div className="pt-0.5">
-            <div className="mb-1 flex items-center gap-2">
-              <p className="text-xs text-slate-400">Step {n}</p>
-              {comingSoon && (
-                <span className="rounded-full bg-amber-100 px-1.5 py-px text-xs font-medium text-amber-600">
-                  Coming soon
-                </span>
-              )}
-            </div>
-            <p className="text-sm font-semibold text-slate-900">{title}</p>
-            <p className="mt-0.5 text-sm leading-relaxed text-slate-500">{desc}</p>
+            <StepCardContent step={step} />
           </div>
         )}
       </div>
     </div>
+  )
+}
+
+// Desktop: renders 3 grid cells (or col-span-3 for the featured step)
+function DesktopCells({ step }: { step: StepDef }) {
+  if (step.featured) {
+    return (
+      <div className="col-span-3 flex flex-col items-center pb-12 pt-2">
+        <div className="relative z-10"><StepNode step={step} /></div>
+        <div className="mt-6 w-full max-w-2xl rounded-2xl bg-blue-50/50 p-6 ring-1 ring-blue-100">
+          <StepCardContent step={step} />
+        </div>
+      </div>
+    )
+  }
+
+  const card = (
+    <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-100">
+      <StepCardContent step={step} />
+    </div>
+  )
+  const node = (
+    <div className="relative z-10 flex justify-center pt-5">
+      <StepNode step={step} />
+    </div>
+  )
+
+  if (step.side === 'left') return (
+    <>
+      <div className="pb-10 pr-10">{card}</div>
+      {node}
+      <div className="pb-10" />
+    </>
+  )
+
+  return (
+    <>
+      <div className="pb-10" />
+      {node}
+      <div className="pb-10 pl-10">{card}</div>
+    </>
   )
 }
 
@@ -285,14 +405,24 @@ export default function Home() {
 
       {/* How it works */}
       <section className="py-20">
-        <div className="mx-auto max-w-2xl px-6">
+        <div className="mx-auto max-w-4xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
             Set up once. Reply in seconds.
           </h2>
-          <div className="mt-14">
+
+          {/* Mobile: vertical left-aligned timeline */}
+          <div className="mt-14 lg:hidden">
             {HOW_IT_WORKS_STEPS.map((step, i) => (
-              <TimelineStep key={step.n} step={step} isLast={i === HOW_IT_WORKS_STEPS.length - 1} />
+              <MobileStep key={step.n} step={step} isLast={i === HOW_IT_WORKS_STEPS.length - 1} />
+            ))}
+          </div>
+
+          {/* Desktop: zig-zag with central line */}
+          <div className="relative mt-14 hidden items-start lg:grid lg:grid-cols-[1fr_3rem_1fr]">
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-100" />
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <DesktopCells key={step.n} step={step} />
             ))}
           </div>
         </div>
