@@ -3,6 +3,7 @@ import { Show } from '@clerk/nextjs'
 import ReplyForm from './ui/reply-form'
 import DemoCarousel from './ui/demo-carousel'
 import Navbar from './ui/navbar'
+import { AnimatedStepCard } from './ui/step-card'
 
 const FEATURES = [
   {
@@ -195,13 +196,13 @@ type StepDef = {
   n: number
   side: 'left' | 'right' | 'center'
   title: string
-  desc: string
+  desc: ReactNode
   mock: ReactNode
   featured?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
-  { n: 1, side: 'left',   title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
+  { n: 1, side: 'left',   title: '🔗 Connect your business',    desc: <>Link your Google Business once.<br />Your reviews sync automatically.</>, mock: StepMock1 },
   { n: 2, side: 'right',  title: '🔔 Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2 },
   { n: 3, side: 'center', title: '⚡ Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true },
   { n: 4, side: 'right',  title: '✏️ Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
@@ -247,9 +248,9 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
             <StepCardContent step={step} />
           </div>
         ) : (
-          <div className="step-card-hover rounded-xl bg-slate-50 p-5 border border-slate-200">
+          <AnimatedStepCard outerClassName="rounded-xl" innerClassName="rounded-[10px]">
             <StepCardContent step={step} />
-          </div>
+          </AnimatedStepCard>
         )}
       </div>
     </div>
@@ -270,9 +271,9 @@ function DesktopCells({ step }: { step: StepDef }) {
   }
 
   const card = (
-    <div className="step-card-hover rounded-2xl bg-slate-50 p-5 border border-slate-200">
+    <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px]">
       <StepCardContent step={step} />
-    </div>
+    </AnimatedStepCard>
   )
   const node = (
     <div className="relative z-10 flex items-center justify-center pb-7">
@@ -380,36 +381,7 @@ export default function Home() {
 
       {/* How it works */}
       <section className="bg-white py-20">
-        <style dangerouslySetInnerHTML={{ __html: `
-          @property --border-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-          }
-          @keyframes border-spin {
-            to { --border-angle: 360deg; }
-          }
-          .step-card-hover {
-            position: relative;
-            isolation: isolate;
-          }
-          .step-card-hover::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            background: conic-gradient(from var(--border-angle), transparent 35%, #93c5fd 50%, #a78bfa 65%, transparent 80%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            animation: border-spin 2.5s linear infinite;
-            animation-play-state: paused;
-          }
-          .step-card-hover:hover::before {
-            opacity: 1;
-            animation-play-state: running;
-          }
-        ` }} />
+        <style dangerouslySetInnerHTML={{ __html: '@keyframes card-border-spin { to { transform: rotate(360deg); } }' }} />
         <div className="mx-auto max-w-4xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">How it works</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
@@ -426,7 +398,7 @@ export default function Home() {
           {/* Desktop: zig-zag with central line */}
           <div className="mt-14 hidden lg:block">
             <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr]">
-              <div className="pointer-events-none absolute inset-y-10 left-1/2 z-0 w-[3px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-400 to-transparent" />
+              <div className="pointer-events-none absolute inset-y-5 left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
               {HOW_IT_WORKS_STEPS.map((step) => (
                 <DesktopCells key={step.n} step={step} />
               ))}
