@@ -50,11 +50,11 @@ export function AnimatedStepCard({
   }, [id])
 
   return (
-    <div ref={ref} className={`relative overflow-visible ${outerClassName}`}>
+    <div ref={ref} className={`relative overflow-hidden ${outerClassName}`}>
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          inset: '-100%',
           opacity: visible ? 1 : 0,
           transition: 'opacity 0.8s ease',
           background: 'conic-gradient(from 0deg, transparent 35%, #93c5fd 50%, #a78bfa 65%, transparent 80%)',
