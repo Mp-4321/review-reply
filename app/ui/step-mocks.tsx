@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-const REPLY = "We're truly sorry about it. Please reach out to us.\nWe will make it right!"
+const REPLY = "We're truly sorry about it. Please reach out.\nWe will make it right!"
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -122,8 +122,8 @@ export function StepMock4() {
         <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
           <span>
-            We&rsquo;re truly sorry about it. Please reach out{' '}
-            <span style={hl}>to us.</span>
+            We&rsquo;re truly sorry about it. Please reach{' '}
+            <span style={hl}>out.</span>
             <br />
             We will make it{' '}
             <span style={hl2}>right!&rdquo;</span>
