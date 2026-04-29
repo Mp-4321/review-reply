@@ -46,18 +46,13 @@ export function StepMock3() {
           <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</span>
           <span className="text-xs leading-none text-amber-400">★☆☆☆☆</span>
         </div>
-        <p className="leading-snug text-slate-600">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
+        <p className="leading-snug text-slate-500">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
-      <div className="mx-2 h-px shrink-0 bg-slate-200" />
+      <div className="mx-2 h-px shrink-0 bg-slate-100 opacity-50" />
       <div className="flex-1 overflow-hidden bg-white p-2">
-        <div className="mb-1 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-600">AI reply</p>
-          <span className="flex items-center gap-0.5 text-[10px] font-medium text-blue-500">
-            Tone: Friendly
-            <svg className="h-2 w-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </span>
+        <div className="mb-1 flex items-center gap-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">AI reply</p>
+          <span className="text-sm font-medium text-blue-500">Tone: Friendly</span>
         </div>
         <p className="grid items-start leading-snug text-blue-800" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
@@ -113,7 +108,7 @@ export function StepMock4() {
 
   return (
     <div ref={ref} className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
-      <div className="border-b border-slate-100 p-2">
+      <div className="p-2">
         <p className="mb-1 text-[10px] text-slate-400">Generated reply</p>
         <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
@@ -125,9 +120,9 @@ export function StepMock4() {
           </span>
         </p>
       </div>
-      <div className="flex gap-1.5 p-1.5">
-        <div className="flex-1 rounded-md border border-slate-200 py-1 text-center font-medium text-slate-500">Edit</div>
-        <div className="flex-1 rounded-md bg-emerald-500 py-1 text-center font-medium text-white">✓ Approve</div>
+      <div className="flex gap-2 px-2 pb-2">
+        <div className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-500">Edit</div>
+        <div className="rounded-md bg-emerald-500 px-3 py-1 text-xs font-medium text-white">✓ Approve</div>
       </div>
     </div>
   )
