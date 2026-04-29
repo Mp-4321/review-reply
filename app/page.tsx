@@ -241,39 +241,32 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
   )
 }
 
-// Desktop: renders 2 grid cells per step (card+node share one AnimatedStepCard)
+// Desktop: renders 3 grid cells per step
 function DesktopCells({ step }: { step: StepDef }) {
-  const nodeEl = (
-    <div className="flex w-16 shrink-0 items-center justify-center">
+  const card = (
+    <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px] p-5">
+      <StepCardContent step={step} />
+    </AnimatedStepCard>
+  )
+  const node = (
+    <div className="relative z-10 flex items-center justify-center pb-7">
       <StepNode step={step} />
     </div>
   )
 
   if (step.side === 'left') return (
     <>
-      <div className="col-start-1 col-span-2 pb-7">
-        <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px] flex items-stretch">
-          <div className="flex-1 p-5">
-            <StepCardContent step={step} />
-          </div>
-          {nodeEl}
-        </AnimatedStepCard>
-      </div>
-      <div className="col-start-3 pb-7" />
+      <div className="pb-7 pr-6">{card}</div>
+      {node}
+      <div className="pb-7" />
     </>
   )
 
   return (
     <>
-      <div className="col-start-1 pb-7" />
-      <div className="col-start-2 col-span-2 pb-7">
-        <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px] flex items-stretch">
-          {nodeEl}
-          <div className="flex-1 p-5">
-            <StepCardContent step={step} />
-          </div>
-        </AnimatedStepCard>
-      </div>
+      <div className="pb-7" />
+      {node}
+      <div className="pb-7 pl-6">{card}</div>
     </>
   )
 }
@@ -378,7 +371,7 @@ export default function Home() {
           {/* Desktop: zig-zag with central line */}
           <div className="mt-14 hidden lg:block">
             <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr]">
-              <div className="pointer-events-none absolute top-[10px] bottom-[30px] left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
+              <div className="pointer-events-none absolute top-[10px] bottom-[30px] left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-400 to-transparent" />
               {HOW_IT_WORKS_STEPS.map((step) => (
                 <DesktopCells key={step.n} step={step} />
               ))}
