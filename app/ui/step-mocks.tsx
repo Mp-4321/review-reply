@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-const REPLY = "We are really sorry about this!\nReach out — we'll make it right."
+const REPLY = "We are really sorry about this!\nPlease reach out — we'll make it right."
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -40,33 +40,33 @@ export function StepMock3() {
   const done = typed >= REPLY.length
 
   return (
-    <div ref={ref} className="mt-3 overflow-hidden rounded-xl ring-1 ring-slate-200 text-xs">
-      <div className="bg-white p-2">
+    <div ref={ref} className="mt-3 flex h-[7.5rem] flex-col overflow-hidden rounded-xl ring-1 ring-slate-200 text-xs">
+      <div className="shrink-0 bg-white p-2">
         <div className="mb-1 flex items-center gap-1.5">
           <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</span>
           <span className="text-xs leading-none text-amber-400">★☆☆☆☆</span>
         </div>
-        <p className="leading-snug text-slate-600">&ldquo;I had to wait 30 minutes. This is not good!&rdquo;</p>
+        <p className="leading-snug text-slate-600">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
-      <div className="h-px bg-slate-200" />
-      <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2">
+      <div className="mx-2 h-px shrink-0 bg-slate-200" />
+      <div className="flex-1 overflow-hidden bg-white p-2">
         <div className="mb-1 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-          <div className="flex items-center gap-1 rounded border border-blue-400/40 bg-blue-700/40 px-1.5 py-0.5 text-[10px] text-white/70">
-            <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">AI reply</p>
+          <div className="flex items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-500">
+            <span>Tone: <span className="font-semibold text-slate-700">Friendly</span></span>
             <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
-        <p className="grid items-start leading-snug text-white" style={{ gridTemplateColumns: 'auto 1fr' }}>
+        <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
           <span>
             {l1}
             {l2 !== undefined && <><br />{l2}</>}
             {done
               ? <>&rdquo;</>
-              : <span className="inline-block h-[0.75em] w-px bg-white/80 animate-pulse align-middle ml-px" />
+              : <span className="inline-block h-[0.75em] w-px bg-slate-400/80 animate-pulse align-middle ml-px" />
             }
           </span>
         </p>
@@ -119,7 +119,7 @@ export function StepMock4() {
           <span>&ldquo;</span>
           <span>
             We are really sorry about this!<br />
-            Reach out &mdash;{' '}
+            Please reach out &mdash;{' '}
             <span style={hl}>we&rsquo;ll make it{' '}</span>
             <span style={hl2}>right.&rdquo;</span>
           </span>
