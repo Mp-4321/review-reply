@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-const REPLY = "We are really sorry about this!\nPlease reach out to us — we'll make it right."
+const REPLY = "We are really sorry about this!\nReach out — we'll make it right."
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -46,7 +46,7 @@ export function StepMock3() {
           <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</span>
           <span className="text-xs leading-none text-amber-400">★☆☆☆☆</span>
         </div>
-        <p className="leading-snug text-slate-600">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
+        <p className="leading-snug text-slate-600">&ldquo;I had to wait 30 minutes. This is not good!&rdquo;</p>
       </div>
       <div className="h-px bg-slate-200" />
       <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-2">
@@ -119,9 +119,8 @@ export function StepMock4() {
           <span>&ldquo;</span>
           <span>
             We are really sorry about this!<br />
-            Please reach out{' '}
-            <span style={hl}>to us</span>
-            {' '}&mdash; we&rsquo;ll make it{' '}
+            Reach out &mdash;{' '}
+            <span style={hl}>we&rsquo;ll make it{' '}</span>
             <span style={hl2}>right.&rdquo;</span>
           </span>
         </p>
