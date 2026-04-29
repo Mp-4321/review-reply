@@ -129,20 +129,20 @@ const StepMock2 = (
 )
 
 const StepMock3 = (
-  <div className="mt-3 flex gap-2 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 text-xs">
-    <div className="flex-1 rounded-lg bg-white p-2.5 border border-slate-200">
+  <div className="mt-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 text-xs">
+    <div className="rounded-lg bg-white p-2.5 border border-slate-200">
       <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
       <p className="mb-1.5 text-sm leading-none text-amber-400">★☆☆☆☆</p>
       <p className="leading-snug text-slate-600">"Waited 45 minutes."</p>
     </div>
-    <div className="flex items-center justify-center px-0.5">
+    <div className="flex justify-center py-2">
       <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200">
         <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
     </div>
-    <div className="flex-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 shadow-md shadow-blue-400/30">
+    <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 shadow-md shadow-blue-400/30">
       <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
       <p className="mb-2 leading-snug text-white">"We're truly sorry. Please reach out."</p>
       <div className="flex items-center gap-1 rounded bg-blue-700/50 px-1.5 py-1 text-[10px] text-blue-200">
@@ -233,7 +233,7 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
         {!isLast && <div className="mt-2 w-0.5 flex-1 bg-slate-200" />}
       </div>
       <div className={`flex-1 ${isLast ? '' : 'pb-7'}`}>
-        <AnimatedStepCard outerClassName="rounded-xl" innerClassName="rounded-[10px]">
+        <AnimatedStepCard outerClassName="rounded-xl" innerClassName="rounded-[10px] p-5">
           <StepCardContent step={step} />
         </AnimatedStepCard>
       </div>
@@ -241,32 +241,39 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
   )
 }
 
-// Desktop: renders 3 grid cells per step
+// Desktop: renders 2 grid cells per step (card+node share one AnimatedStepCard)
 function DesktopCells({ step }: { step: StepDef }) {
-  const card = (
-    <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px]">
-      <StepCardContent step={step} />
-    </AnimatedStepCard>
-  )
-  const node = (
-    <div className="relative z-10 flex items-center justify-center pb-7">
+  const nodeEl = (
+    <div className="flex w-16 shrink-0 items-center justify-center">
       <StepNode step={step} />
     </div>
   )
 
   if (step.side === 'left') return (
     <>
-      <div className="pb-7 pr-6">{card}</div>
-      {node}
-      <div className="pb-7" />
+      <div className="col-start-1 col-span-2 pb-7">
+        <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px] flex items-stretch">
+          <div className="flex-1 p-5">
+            <StepCardContent step={step} />
+          </div>
+          {nodeEl}
+        </AnimatedStepCard>
+      </div>
+      <div className="col-start-3 pb-7" />
     </>
   )
 
   return (
     <>
-      <div className="pb-7" />
-      {node}
-      <div className="pb-7 pl-6">{card}</div>
+      <div className="col-start-1 pb-7" />
+      <div className="col-start-2 col-span-2 pb-7">
+        <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px] flex items-stretch">
+          {nodeEl}
+          <div className="flex-1 p-5">
+            <StepCardContent step={step} />
+          </div>
+        </AnimatedStepCard>
+      </div>
     </>
   )
 }
@@ -371,7 +378,7 @@ export default function Home() {
           {/* Desktop: zig-zag with central line */}
           <div className="mt-14 hidden lg:block">
             <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr]">
-              <div className="pointer-events-none absolute inset-y-5 left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
+              <div className="pointer-events-none absolute top-[10px] bottom-[30px] left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-500 to-transparent" />
               {HOW_IT_WORKS_STEPS.map((step) => (
                 <DesktopCells key={step.n} step={step} />
               ))}

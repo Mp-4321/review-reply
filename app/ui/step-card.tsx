@@ -50,18 +50,18 @@ export function AnimatedStepCard({
   }, [id])
 
   return (
-    <div ref={ref} className={`relative overflow-hidden ${outerClassName}`}>
+    <div ref={ref} className={`relative overflow-visible ${outerClassName}`}>
       <div
         style={{
           position: 'absolute',
-          inset: '-100%',
+          inset: 0,
           opacity: visible ? 1 : 0,
           transition: 'opacity 0.8s ease',
           background: 'conic-gradient(from 0deg, transparent 35%, #93c5fd 50%, #a78bfa 65%, transparent 80%)',
           animation: 'card-border-spin 2.5s linear infinite',
         }}
       />
-      <div className={`relative bg-slate-50 p-5 ${innerClassName}`} style={{ margin: 2 }}>
+      <div className={`relative bg-slate-50 ${innerClassName}`} style={{ margin: 2 }}>
         {children}
       </div>
     </div>
