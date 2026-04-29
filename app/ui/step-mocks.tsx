@@ -50,8 +50,8 @@ export function StepMock3() {
       </div>
       <div className="mt-2 rounded-xl bg-blue-50 p-2 ring-1 ring-blue-100">
         <div className="mb-1 flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-400">AI Reply</p>
-          <span className="text-[10px] font-medium text-slate-600">› Friendly</span>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">AI Reply</p>
+          <span className="mr-2 text-[10px] font-medium text-slate-600">▶ Friendly</span>
         </div>
         <p className="grid min-h-[2rem] items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
@@ -121,7 +121,7 @@ export function StepMock4() {
       </div>
       <div className="flex gap-3 px-2 pb-2">
         <div className="w-20 rounded-md border border-slate-200 py-1 text-center text-xs font-medium text-slate-500">Edit</div>
-        <div className="w-20 rounded-md bg-emerald-500 py-1 text-center text-xs font-medium text-white">✓ Approve</div>
+        <div className="ml-4 w-20 rounded-md bg-emerald-500 py-1 text-center text-xs font-medium text-white">✓ Approve</div>
       </div>
     </div>
   )
