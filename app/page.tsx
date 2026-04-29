@@ -141,7 +141,7 @@ const StepMock5 = (
         <p className="font-medium text-slate-800">Reply posted on Google</p>
       </div>
       <p className="mt-2 text-[10px] text-slate-400">
-        4.5 <span className="text-amber-400">★</span> · 112 reviews
+        Your rating: 4.5 <span className="text-amber-400">★</span> · 112 reviews
       </p>
     </div>
   </div>

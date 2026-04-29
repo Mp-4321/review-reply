@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-const REPLY = "We are truly sorry. Please reach out to us.\nWe will make it right!"
+const REPLY = "We're truly sorry about it. Please reach out to us.\nWe will make it right!"
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -42,9 +42,11 @@ export function StepMock3() {
   return (
     <div ref={ref} className="mt-3 rounded-xl bg-slate-50 p-2 ring-1 ring-slate-200 text-xs">
       <div className="rounded-lg bg-white p-2 border border-slate-200">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
-        <p className="mb-1 text-sm leading-none text-amber-400">★☆☆☆☆</p>
-        <p className="leading-snug text-slate-600">&ldquo;Waited 45 minutes.&rdquo;</p>
+        <div className="mb-1.5 flex items-center gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</span>
+          <span className="text-xs leading-none text-amber-400">★☆☆☆☆</span>
+        </div>
+        <p className="leading-snug text-slate-600">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
       <div className="flex justify-center py-1">
         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200">
@@ -120,7 +122,7 @@ export function StepMock4() {
         <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
           <span>
-            We are truly sorry. Please reach out{' '}
+            We&rsquo;re truly sorry about it. Please reach out{' '}
             <span style={hl}>to us.</span>
             <br />
             We will make it{' '}
