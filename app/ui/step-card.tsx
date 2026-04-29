@@ -35,7 +35,10 @@ export function AnimatedStepCard({
           window.dispatchEvent(new CustomEvent('step-card-active', { detail: { id } }))
           clearTimeout(timer)
           setVisible(true)
-          timer = setTimeout(() => setVisible(false), 4500)
+          timer = setTimeout(() => setVisible(false), 8000)
+        } else {
+          clearTimeout(timer)
+          setVisible(false)
         }
       },
       { threshold: 0.5 }

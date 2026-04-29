@@ -129,22 +129,22 @@ const StepMock2 = (
 )
 
 const StepMock3 = (
-  <div className="mt-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 text-xs">
-    <div className="rounded-lg bg-white p-2.5 border border-slate-200">
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
-      <p className="mb-1.5 text-sm leading-none text-amber-400">★☆☆☆☆</p>
+  <div className="mt-3 rounded-xl bg-slate-50 p-2 ring-1 ring-slate-200 text-xs">
+    <div className="rounded-lg bg-white p-2 border border-slate-200">
+      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
+      <p className="mb-1 text-sm leading-none text-amber-400">★☆☆☆☆</p>
       <p className="leading-snug text-slate-600">"Waited 45 minutes."</p>
     </div>
-    <div className="flex justify-center py-2">
+    <div className="flex justify-center py-1">
       <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200">
         <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
     </div>
-    <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 shadow-md shadow-blue-400/30">
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-      <p className="mb-2 leading-snug text-white">"We're truly sorry. Please reach out."</p>
+    <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2 shadow-md shadow-blue-400/30">
+      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
+      <p className="mb-1.5 leading-snug text-white">"We're truly sorry. Please reach out to us. We'll make it right!"</p>
       <div className="flex items-center gap-1 rounded bg-blue-700/50 px-1.5 py-1 text-[10px] text-blue-200">
         <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
         <svg className="ml-auto h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
