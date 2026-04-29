@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-const REPLY = "We're truly sorry about it. Please reach out.\nWe will make it right!"
+const REPLY = "We are truly sorry about it.\nPlease reach out — we'll make it right!"
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -22,7 +22,7 @@ export function StepMock3() {
             n++
             setTyped(n)
             if (n >= REPLY.length) clearInterval(iv)
-          }, 25)
+          }, 38)
         } else {
           clearInterval(iv)
           setTyped(0)
@@ -56,8 +56,16 @@ export function StepMock3() {
         </div>
       </div>
       <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2 shadow-md shadow-blue-400/30">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-        <p className="mb-1.5 grid min-h-[2.25rem] items-start leading-snug text-white" style={{ gridTemplateColumns: 'auto 1fr' }}>
+        <div className="mb-1.5 flex items-center justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
+          <div className="flex items-center gap-1 rounded border border-blue-400/40 bg-blue-700/40 px-1.5 py-0.5 text-[10px] text-white/70">
+            <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
+            <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+        <p className="grid min-h-[2.25rem] items-start leading-snug text-white" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
           <span>
             {l1}
@@ -68,12 +76,6 @@ export function StepMock3() {
             }
           </span>
         </p>
-        <div className="flex items-center gap-1 rounded border border-blue-400/40 bg-blue-700/40 px-1.5 py-1 text-[10px] text-white/70">
-          <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
-          <svg className="ml-auto h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
       </div>
     </div>
   )
@@ -122,10 +124,9 @@ export function StepMock4() {
         <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
           <span>
-            We&rsquo;re truly sorry about it. Please reach{' '}
-            <span style={hl}>out.</span>
-            <br />
-            We will make it{' '}
+            We are truly sorry about it.<br />
+            Please reach out &mdash;{' '}
+            <span style={hl}>we&rsquo;ll make it{' '}</span>
             <span style={hl2}>right!&rdquo;</span>
           </span>
         </p>

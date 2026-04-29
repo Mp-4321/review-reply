@@ -140,7 +140,7 @@ const StepMock5 = (
         </div>
         <p className="font-medium text-slate-800">Reply posted on Google</p>
       </div>
-      <p className="mt-2 flex items-baseline gap-1 text-sm text-slate-400">
+      <p className="mt-2 flex items-baseline gap-1 text-xs text-slate-400">
         Current rating:
         <span className="font-semibold text-slate-800">4.5</span>
         <span className="text-amber-400">★</span>
