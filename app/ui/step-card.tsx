@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 export function AnimatedStepCard({
   children,
@@ -11,6 +11,7 @@ export function AnimatedStepCard({
   outerClassName: string
   innerClassName: string
 }) {
+  const id = useId()
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
 
@@ -18,22 +19,35 @@ export function AnimatedStepCard({
     const el = ref.current
     if (!el) return
     let timer: ReturnType<typeof setTimeout>
+
+    const handleOtherActive = (e: Event) => {
+      const { detail } = e as CustomEvent<{ id: string }>
+      if (detail.id !== id) {
+        clearTimeout(timer)
+        setVisible(false)
+      }
+    }
+    window.addEventListener('step-card-active', handleOtherActive)
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          window.dispatchEvent(new CustomEvent('step-card-active', { detail: { id } }))
           clearTimeout(timer)
           setVisible(true)
-          timer = setTimeout(() => setVisible(false), 2500)
+          timer = setTimeout(() => setVisible(false), 4500)
         }
       },
-      { threshold: 0.35 }
+      { threshold: 0.5 }
     )
     observer.observe(el)
+
     return () => {
       observer.disconnect()
+      window.removeEventListener('step-card-active', handleOtherActive)
       clearTimeout(timer)
     }
-  }, [])
+  }, [id])
 
   return (
     <div ref={ref} className={`relative overflow-hidden ${outerClassName}`}>

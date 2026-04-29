@@ -109,9 +109,6 @@ const StepMock1 = (
       </div>
       <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-600">Connected</span>
     </div>
-    <div className="border-t border-slate-100 px-3 pb-3 pt-2.5">
-      <div className="rounded-md bg-blue-600 px-3 py-1.5 text-center font-medium text-white">Connect Google Business</div>
-    </div>
   </div>
 )
 
@@ -132,26 +129,25 @@ const StepMock2 = (
 )
 
 const StepMock3 = (
-  <div className="mt-4 flex gap-4 rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200 text-sm">
-    <div className="flex-1 rounded-lg bg-white p-4 border border-slate-200">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
-      <p className="mb-2 text-base leading-none text-amber-400">★☆☆☆☆</p>
-      <p className="leading-snug text-slate-600">"Waited 45 minutes. No one apologised."</p>
+  <div className="mt-3 flex gap-2 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 text-xs">
+    <div className="flex-1 rounded-lg bg-white p-2.5 border border-slate-200">
+      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
+      <p className="mb-1.5 text-sm leading-none text-amber-400">★☆☆☆☆</p>
+      <p className="leading-snug text-slate-600">"Waited 45 minutes."</p>
     </div>
     <div className="flex items-center justify-center px-0.5">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200 scale-125">
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200">
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </div>
     </div>
-    <div className="flex-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg shadow-blue-400/30">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-      <p className="mb-3 leading-snug text-white">"We're truly sorry about this. Please reach out — we'd love to make it right."</p>
-      <div className="flex items-center gap-1.5 rounded-md bg-blue-700/50 px-2.5 py-1.5 text-[11px] text-blue-200">
-        <span>Tone:</span>
-        <span className="font-semibold text-white">Friendly</span>
-        <svg className="ml-auto h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <div className="flex-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2.5 shadow-md shadow-blue-400/30">
+      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
+      <p className="mb-2 leading-snug text-white">"We're truly sorry. Please reach out."</p>
+      <div className="flex items-center gap-1 rounded bg-blue-700/50 px-1.5 py-1 text-[10px] text-blue-200">
+        <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
+        <svg className="ml-auto h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
@@ -194,29 +190,25 @@ const StepMock5 = (
 
 type StepDef = {
   n: number
-  side: 'left' | 'right' | 'center'
+  side: 'left' | 'right'
   title: string
   desc: ReactNode
   mock: ReactNode
-  featured?: boolean
 }
 
 const HOW_IT_WORKS_STEPS: StepDef[] = [
-  { n: 1, side: 'left',   title: '🔗 Connect your business',    desc: <>Link your Google Business once.<br />Your reviews sync automatically.</>, mock: StepMock1 },
-  { n: 2, side: 'right',  title: '🔔 Never miss a review',      desc: 'Get notified the moment a new review is posted.',                   mock: StepMock2 },
-  { n: 3, side: 'center', title: '⚡ Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3, featured: true },
-  { n: 4, side: 'right',  title: '✏️ Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
-  { n: 5, side: 'left',   title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
+  { n: 1, side: 'left',  title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
+  { n: 2, side: 'right', title: '📨 Never miss a review',      desc: 'Get notified via email the moment a new review is posted.',         mock: StepMock2 },
+  { n: 3, side: 'left',  title: '⚡ Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3 },
+  { n: 4, side: 'right', title: '✏️ Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
+  { n: 5, side: 'left',  title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
 
 // ——— Components ———
 
 function StepNode({ step }: { step: StepDef }) {
   return (
-    <div className={step.featured
-      ? 'flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-blue-600 text-base font-bold text-white shadow-lg shadow-blue-300/50 ring-4 ring-blue-100 scale-110'
-      : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-semibold text-blue-500 ring-2 ring-blue-200'
-    }>
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-semibold text-blue-500 ring-2 ring-blue-200">
       {step.n}
     </div>
   )
@@ -225,10 +217,8 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <p className={`font-semibold text-slate-900 ${step.featured ? 'text-base' : 'text-sm'}`}>
-        {step.title}
-      </p>
-      <p className={`mt-0.5 text-sm ${step.featured ? 'text-slate-600' : 'text-slate-500'}`}>{step.desc}</p>
+      <p className="font-semibold text-sm text-slate-900">{step.title}</p>
+      <p className="mt-0.5 text-sm text-slate-500">{step.desc}</p>
       {step.mock}
     </>
   )
@@ -243,33 +233,16 @@ function MobileStep({ step, isLast }: { step: StepDef; isLast: boolean }) {
         {!isLast && <div className="mt-2 w-0.5 flex-1 bg-slate-200" />}
       </div>
       <div className={`flex-1 ${isLast ? '' : 'pb-7'}`}>
-        {step.featured ? (
-          <div className="rounded-2xl bg-blue-50 p-8 ring-1 ring-blue-200 shadow-xl shadow-blue-100/60">
-            <StepCardContent step={step} />
-          </div>
-        ) : (
-          <AnimatedStepCard outerClassName="rounded-xl" innerClassName="rounded-[10px]">
-            <StepCardContent step={step} />
-          </AnimatedStepCard>
-        )}
+        <AnimatedStepCard outerClassName="rounded-xl" innerClassName="rounded-[10px]">
+          <StepCardContent step={step} />
+        </AnimatedStepCard>
       </div>
     </div>
   )
 }
 
-// Desktop: renders 3 grid cells (or col-span-3 for the featured step)
+// Desktop: renders 3 grid cells per step
 function DesktopCells({ step }: { step: StepDef }) {
-  if (step.featured) {
-    return (
-      <div className="relative z-10 col-span-3 flex flex-col items-center pb-6 pt-2">
-        <div className="relative z-10"><StepNode step={step} /></div>
-        <div className="mt-5 w-full rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-7 shadow-2xl shadow-blue-200/50">
-          <StepCardContent step={step} />
-        </div>
-      </div>
-    )
-  }
-
   const card = (
     <AnimatedStepCard outerClassName="rounded-2xl" innerClassName="rounded-[14px]">
       <StepCardContent step={step} />
