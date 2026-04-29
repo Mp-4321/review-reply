@@ -4,6 +4,7 @@ import ReplyForm from './ui/reply-form'
 import DemoCarousel from './ui/demo-carousel'
 import Navbar from './ui/navbar'
 import { AnimatedStepCard } from './ui/step-card'
+import { StepMock3, StepMock4 } from './ui/step-mocks'
 
 const FEATURES = [
   {
@@ -128,46 +129,6 @@ const StepMock2 = (
   </div>
 )
 
-const StepMock3 = (
-  <div className="mt-3 rounded-xl bg-slate-50 p-2 ring-1 ring-slate-200 text-xs">
-    <div className="rounded-lg bg-white p-2 border border-slate-200">
-      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</p>
-      <p className="mb-1 text-sm leading-none text-amber-400">★☆☆☆☆</p>
-      <p className="leading-snug text-slate-600">"Waited 45 minutes."</p>
-    </div>
-    <div className="flex justify-center py-1">
-      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md shadow-blue-200">
-        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
-    </div>
-    <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2 shadow-md shadow-blue-400/30">
-      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-      <p className="mb-1.5 leading-snug text-white">"We're truly sorry. Please reach out to us. We'll make it right!"</p>
-      <div className="flex items-center gap-1 rounded bg-blue-700/50 px-1.5 py-1 text-[10px] text-blue-200">
-        <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
-        <svg className="ml-auto h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
-    </div>
-  </div>
-)
-
-const StepMock4 = (
-  <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
-    <div className="border-b border-slate-50 p-3">
-      <p className="mb-1 text-[10px] text-slate-400">Generated reply</p>
-      <p className="leading-snug text-slate-700">"Thank you for your feedback. We're sorry about your experience and would like to make it right..."</p>
-    </div>
-    <div className="flex gap-2 p-2.5">
-      <div className="flex-1 rounded-md border border-slate-200 py-1.5 text-center font-medium text-slate-500">Edit</div>
-      <div className="flex-1 rounded-md bg-emerald-500 py-1.5 text-center font-medium text-white">✓ Approve</div>
-    </div>
-  </div>
-)
-
 const StepMock5 = (
   <div className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
     <div className="p-3">
@@ -199,8 +160,8 @@ type StepDef = {
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   { n: 1, side: 'left',  title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
   { n: 2, side: 'right', title: '📨 Never miss a review',      desc: 'Get notified via email the moment a new review is posted.',         mock: StepMock2 },
-  { n: 3, side: 'left',  title: '⚡ Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: StepMock3 },
-  { n: 4, side: 'right', title: '✏️ Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: StepMock4 },
+  { n: 3, side: 'left',  title: '⚡ Generate your reply',      desc: 'Pick a tone. Get a reply ready to post in seconds.',                mock: <StepMock3 /> },
+  { n: 4, side: 'right', title: '✏️ Review before sending',    desc: 'Edit the reply or approve it as-is in one click.',                  mock: <StepMock4 /> },
   { n: 5, side: 'left',  title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
 
