@@ -40,21 +40,18 @@ export function StepMock3() {
   const done = typed >= REPLY.length
 
   return (
-    <div ref={ref} className="mt-3 flex h-[7.5rem] flex-col overflow-hidden rounded-xl ring-1 ring-slate-200 text-xs">
-      <div className="shrink-0 bg-white p-2">
-        <div className="mb-1 flex items-center gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer review</span>
-          <span className="text-xs leading-none text-amber-400">★☆☆☆☆</span>
-        </div>
+    <div ref={ref} className="mt-3 text-xs">
+      <div className="rounded-xl bg-white p-2 ring-1 ring-slate-200">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</p>
+        <p className="mb-0.5 leading-none text-amber-400">★☆☆☆☆</p>
         <p className="leading-snug text-slate-500">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
-      <div className="mx-2 h-px shrink-0 bg-slate-100 opacity-50" />
-      <div className="flex-1 overflow-hidden bg-white p-2">
-        <div className="mb-1 flex items-center gap-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">AI reply</p>
-          <span className="text-sm font-medium text-blue-500">Tone: Friendly</span>
+      <div className="mt-2 rounded-xl bg-blue-50 p-2 ring-1 ring-blue-100">
+        <div className="mb-1 flex items-center justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">AI Reply</p>
+          <span className="text-sm font-medium text-blue-500">Friendly ▼</span>
         </div>
-        <p className="grid items-start leading-snug text-blue-800" style={{ gridTemplateColumns: 'auto 1fr' }}>
+        <p className="grid min-h-[2rem] items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
           <span>
             {l1}
@@ -120,9 +117,9 @@ export function StepMock4() {
           </span>
         </p>
       </div>
-      <div className="flex gap-2 px-2 pb-2">
-        <div className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium text-slate-500">Edit</div>
-        <div className="rounded-md bg-emerald-500 px-3 py-1 text-xs font-medium text-white">✓ Approve</div>
+      <div className="flex gap-4 px-2 pb-2">
+        <div className="w-20 rounded-md border border-slate-200 py-1 text-center text-xs font-medium text-slate-500">Edit</div>
+        <div className="w-20 rounded-md bg-emerald-500 py-1 text-center text-xs font-medium text-white">✓ Approve</div>
       </div>
     </div>
   )
