@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-const REPLY = "We're truly sorry. Please reach out to us.\nWe'll make it right!"
+const REPLY = "We are truly sorry. Please reach out to us.\nWe will make it right!"
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -55,13 +55,16 @@ export function StepMock3() {
       </div>
       <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-2 shadow-md shadow-blue-400/30">
         <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-blue-300">AI reply</p>
-        <p className="mb-1.5 min-h-[2.25rem] leading-snug text-white">
-          &ldquo;{l1}
-          {l2 !== undefined && <><br />{l2}</>}
-          {done
-            ? <>&rdquo;</>
-            : <span className="inline-block h-[0.75em] w-px bg-white/80 animate-pulse align-middle ml-px" />
-          }
+        <p className="mb-1.5 grid min-h-[2.25rem] items-start leading-snug text-white" style={{ gridTemplateColumns: 'auto 1fr' }}>
+          <span>&ldquo;</span>
+          <span>
+            {l1}
+            {l2 !== undefined && <><br />{l2}</>}
+            {done
+              ? <>&rdquo;</>
+              : <span className="inline-block h-[0.75em] w-px bg-white/80 animate-pulse align-middle ml-px" />
+            }
+          </span>
         </p>
         <div className="flex items-center gap-1 rounded border border-blue-400/40 bg-blue-700/40 px-1.5 py-1 text-[10px] text-white/70">
           <span>Tone: <span className="font-semibold text-white">Friendly</span></span>
@@ -114,11 +117,15 @@ export function StepMock4() {
     <div ref={ref} className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
       <div className="border-b border-slate-50 p-3">
         <p className="mb-1 text-[10px] text-slate-400">Generated reply</p>
-        <p className="leading-snug text-slate-700">
-          &ldquo;We&rsquo;re truly sorry. Please reach out{' '}
-          <span style={hl}>to us.</span>
-          {' '}We&rsquo;ll make it{' '}
-          <span style={hl2}>right!&rdquo;</span>
+        <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
+          <span>&ldquo;</span>
+          <span>
+            We are truly sorry. Please reach out{' '}
+            <span style={hl}>to us.</span>
+            <br />
+            We will make it{' '}
+            <span style={hl2}>right!&rdquo;</span>
+          </span>
         </p>
       </div>
       <div className="flex gap-2 p-2.5">

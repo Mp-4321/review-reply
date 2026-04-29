@@ -141,7 +141,7 @@ const StepMock5 = (
         <p className="font-medium text-slate-800">Reply posted on Google</p>
       </div>
       <p className="mt-2 text-[10px] text-slate-400">
-        <span className="text-amber-400">★★★★☆</span>{'  '}Google Maps · just now
+        4.5 <span className="text-amber-400">★</span> · 112 reviews
       </p>
     </div>
   </div>
@@ -332,7 +332,7 @@ export default function Home() {
           {/* Desktop: zig-zag with central line */}
           <div className="mt-14 hidden lg:block">
             <div className="relative mx-auto grid max-w-3xl grid-cols-[1fr_4rem_1fr]">
-              <div className="pointer-events-none absolute top-[10px] bottom-[30px] left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-400 to-transparent" />
+              <div className="pointer-events-none absolute top-[10px] bottom-[30px] left-1/2 z-0 w-[4px] -translate-x-1/2 bg-gradient-to-b from-transparent via-blue-300 to-transparent" />
               {HOW_IT_WORKS_STEPS.map((step) => (
                 <DesktopCells key={step.n} step={step} />
               ))}
