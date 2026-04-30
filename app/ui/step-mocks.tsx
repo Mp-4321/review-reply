@@ -43,15 +43,15 @@ export function StepMock3() {
     <div ref={ref} className="mt-3 text-xs">
       <div className="mx-auto w-[88%] sm:-translate-x-3 rounded-2xl bg-white px-5 py-2 ring-1 ring-slate-200 shadow-sm shadow-slate-200/50">
         <div className="mb-1.5 flex items-center gap-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</span>
+          <span className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</span>
           <span className="text-[10px] text-amber-400">★☆☆☆☆</span>
         </div>
         <p className="leading-snug text-slate-500">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
       <div className="mx-auto mt-4 w-[88%] sm:translate-x-1 rounded-2xl bg-blue-50 px-5 py-2 ring-1 ring-blue-200 shadow-md shadow-blue-100/70">
         <div className="flex items-center justify-between pb-2 border-b border-blue-100/70">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">✨ AI Reply</p>
-          <span className="text-[10px] font-medium text-slate-500">Friendly<span className="relative top-[-2px] ml-1">⌄</span></span>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">✦ AI Reply</p>
+          <span className="text-[10px] font-medium text-slate-600">Friendly<span className="relative top-[-2px] ml-1">⌄</span></span>
         </div>
         <p className="mt-2 min-h-[2rem] leading-snug text-slate-700">
           &ldquo;{l1}
@@ -114,8 +114,8 @@ export function StepMock4() {
         </p>
       </div>
       <div className="flex gap-4 pl-[19px] pr-2 pb-2">
-        <div className="w-20 rounded-md border border-slate-200 py-1 text-center text-xs font-medium text-slate-500">Edit</div>
-        <div className="w-20 rounded-md bg-emerald-500 py-1 text-center text-xs font-medium text-white">✓ Approve</div>
+        <div className="w-20 rounded-md border border-slate-200 py-1 text-center text-[11px] font-medium text-slate-500">Edit</div>
+        <div className="w-20 rounded-md bg-emerald-500 py-1 text-center text-[11px] font-medium text-white">✓ Approve</div>
       </div>
     </div>
   )
