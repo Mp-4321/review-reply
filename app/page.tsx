@@ -140,23 +140,11 @@ const StepMock5 = (
         </div>
         <p className="font-medium text-slate-800">Reply posted on Google</p>
       </div>
-      <div className="mt-2 flex items-center gap-0.5">
-        {[0,1,2,3].map(i => (
-          <svg key={i} className="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        ))}
-        <span className="relative inline-block h-3.5 w-3.5">
-          <svg className="h-3.5 w-3.5 text-slate-200" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          <span className="absolute inset-0 w-1/2 overflow-hidden">
-            <svg className="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-          </span>
+      <div className="mt-2 flex items-center gap-1 text-slate-400">
+        <span className="text-[10px]">
+          <span className="text-amber-400">★★★★</span><span className="text-slate-200">★</span>
         </span>
-        <span className="ml-1 text-xs text-slate-400">4.5 · 112 reviews</span>
+        <span className="text-xs">4.5 · 112 reviews</span>
       </div>
     </div>
   </div>
@@ -175,7 +163,7 @@ type StepDef = {
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   { n: 1, side: 'left',  title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
   { n: 2, side: 'right', title: '📨 Never miss a review',      desc: 'Get notified via email the moment a new review is posted.',         mock: StepMock2 },
-  { n: 3, side: 'left',  title: '⚡ Generate your reply',      desc: 'Pick a tone. Reply in seconds.',             mock: <StepMock3 /> },
+  { n: 3, side: 'left',  title: '✨ Generate your reply',      desc: 'Pick a tone. Reply in seconds.',             mock: <StepMock3 /> },
   { n: 4, side: 'right', title: '✏️ Review before sending',    desc: 'Edit or approve your reply in one click.',   mock: <StepMock4 /> },
   { n: 5, side: 'left',  title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
