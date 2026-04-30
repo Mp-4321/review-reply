@@ -137,7 +137,7 @@ export function StepMock4() {
       </div>
       <div className="flex gap-4 pl-[19px] pr-2 pb-2">
         <div className="w-20 rounded-md border border-slate-200 py-1 text-center text-[11px] font-medium text-slate-500">Edit</div>
-        <div className="w-20 rounded-md bg-emerald-500 py-1 text-center text-[11px] font-medium text-white">✓ Approve</div>
+        <div className="w-20 rounded-md bg-emerald-100 py-1 text-center text-[11px] font-medium text-emerald-700">✓ Approve</div>
       </div>
     </div>
   )
