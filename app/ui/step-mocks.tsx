@@ -121,10 +121,9 @@ export function StepMock4() {
   const origStyle: CSSProperties = {
     borderRadius: 2,
     padding: '0 2px',
-    backgroundColor: phase === 'idle' ? 'transparent' : 'rgba(251,191,36,0.35)',
-    textDecoration: phase === 'strike' ? 'line-through' : 'none',
+    backgroundColor: phase === 'idle' ? 'transparent' : '#fef3c7',
     opacity: phase === 'strike' ? 0 : 1,
-    transition: 'background-color 0.4s ease, opacity 0.8s ease',
+    transition: 'background-color 0.4s ease, opacity 0.6s ease',
   }
 
   return (
