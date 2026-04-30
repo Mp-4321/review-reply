@@ -142,7 +142,7 @@ const StepMock5 = (
       </div>
       <div className="mt-2 flex items-center gap-1 text-slate-400">
         <span className="text-[10px]">
-          <span className="text-amber-400">★★★★</span><span className="text-slate-200">★</span>
+          <span className="text-amber-400">★★★★</span><span className="relative inline-block leading-none"><span className="text-slate-200">★</span><span className="absolute inset-0 w-1/2 overflow-hidden text-amber-400">★</span></span>
         </span>
         <span className="text-xs">4.5 · 112 reviews</span>
       </div>
@@ -163,7 +163,7 @@ type StepDef = {
 const HOW_IT_WORKS_STEPS: StepDef[] = [
   { n: 1, side: 'left',  title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
   { n: 2, side: 'right', title: '📨 Never miss a review',      desc: 'Get notified via email the moment a new review is posted.',         mock: StepMock2 },
-  { n: 3, side: 'left',  title: '✨ Generate your reply',      desc: 'Pick a tone. Reply in seconds.',             mock: <StepMock3 /> },
+  { n: 3, side: 'left',  title: '⚡ Generate your reply',      desc: 'Pick a tone. Reply in seconds.',             mock: <StepMock3 /> },
   { n: 4, side: 'right', title: '✏️ Review before sending',    desc: 'Edit or approve your reply in one click.',   mock: <StepMock4 /> },
   { n: 5, side: 'left',  title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
