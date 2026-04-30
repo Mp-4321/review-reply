@@ -142,16 +142,16 @@ const StepMock5 = (
       </div>
       <div className="mt-2 flex items-center gap-0.5">
         {[0,1,2,3].map(i => (
-          <svg key={i} className="h-3.5 w-3.5 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+          <svg key={i} className="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
         ))}
         <span className="relative inline-block h-3.5 w-3.5">
-          <svg className="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="h-3.5 w-3.5 text-slate-200" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
           <span className="absolute inset-0 w-1/2 overflow-hidden">
-            <svg className="h-3.5 w-3.5 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
           </span>
