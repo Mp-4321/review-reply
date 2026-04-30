@@ -76,7 +76,7 @@ const SLIDE_ALTERNATIVES = [
       "The pasta was incredible and the atmosphere so warm and cozy. Our waiter was a little slow but made up for it with great recommendations. Will definitely be back!",
     keywords: ['Sophie', 'La Piazza', 'pasta'],
     reply:
-      "Hi Sophie! Hearing that you loved the pasta and the atmosphere means the world to the whole team at La Piazza. We are working hard to make service even faster — we cannot wait to welcome you back!",
+      "Hi Sophie! Hearing that you loved the pasta and the atmosphere means the world to the whole team at La Piazza. We are working hard to make service even faster — we can't wait to welcome you back!",
   },
   {
     tone: 'Concise' as ToneLabel,
