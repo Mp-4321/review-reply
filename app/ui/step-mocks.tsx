@@ -42,9 +42,9 @@ export function StepMock3() {
   return (
     <div ref={ref} className="mt-3 text-xs">
       <div className="mx-auto w-[88%] sm:-translate-x-3 rounded-2xl bg-white px-5 py-2 ring-1 ring-slate-200 shadow-sm shadow-slate-200/50">
-        <div className="mb-1.5 flex items-center gap-3">
-          <span className="-mt-[3px] text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</span>
-          <span className="text-[10px] text-amber-400">★☆☆☆☆</span>
+        <div className="mb-1.5 flex items-center justify-between">
+          <span className="leading-none text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</span>
+          <span className="self-center text-[10px] text-amber-400">★☆☆☆☆</span>
         </div>
         <p className="leading-snug text-slate-500">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
