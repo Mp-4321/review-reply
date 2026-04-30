@@ -63,40 +63,68 @@ export function StepMock3() {
   )
 }
 
+type Phase = 'idle' | 'highlight' | 'strike' | 'typing' | 'done'
+
+const REPLACEMENT = "we'll do our best."
+
 export function StepMock4() {
   const ref = useRef<HTMLDivElement>(null)
-  const [lit, setLit] = useState(false)
+  const [phase, setPhase] = useState<Phase>('idle')
+  const [typed, setTyped] = useState(0)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    let t: ReturnType<typeof setTimeout>
+    const timers: ReturnType<typeof setTimeout>[] = []
+    let iv: ReturnType<typeof setInterval>
+
+    const reset = () => {
+      timers.forEach(clearTimeout)
+      clearInterval(iv)
+      setPhase('idle')
+      setTyped(0)
+    }
 
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          t = setTimeout(() => setLit(true), 350)
+          reset()
+          // t=400ms: highlight on
+          timers.push(setTimeout(() => setPhase('highlight'), 400))
+          // t=1900ms: strikethrough + fade out (highlight lasted 1.5s)
+          timers.push(setTimeout(() => setPhase('strike'), 1900))
+          // t=3400ms: typewriter starts (1s fade + 0.5s gap)
+          timers.push(setTimeout(() => {
+            setPhase('typing')
+            let n = 0
+            iv = setInterval(() => {
+              n++
+              setTyped(n)
+              if (n >= REPLACEMENT.length) {
+                clearInterval(iv)
+                setPhase('done')
+              }
+            }, 45)
+          }, 3400))
         } else {
-          clearTimeout(t)
-          setLit(false)
+          reset()
         }
       },
       { threshold: 0.5 }
     )
 
     obs.observe(el)
-    return () => { obs.disconnect(); clearTimeout(t) }
+    return () => { obs.disconnect(); reset() }
   }, [])
 
-  const hl: CSSProperties = {
-    backgroundColor: lit ? 'rgba(251,191,36,0.35)' : 'transparent',
+  const showOriginal = phase === 'idle' || phase === 'highlight' || phase === 'strike'
+  const origStyle: CSSProperties = {
     borderRadius: 2,
-    padding: '0 1px',
-    transition: 'background-color 0.5s ease',
-  }
-  const hl2: CSSProperties = {
-    ...hl,
-    transition: 'background-color 0.5s ease 0.3s',
+    padding: '0 2px',
+    backgroundColor: phase === 'idle' ? 'transparent' : 'rgba(251,191,36,0.35)',
+    textDecoration: phase === 'strike' ? 'line-through' : 'none',
+    opacity: phase === 'strike' ? 0 : 1,
+    transition: 'background-color 0.4s ease, opacity 0.8s ease',
   }
 
   return (
@@ -108,8 +136,13 @@ export function StepMock4() {
           <span>
             We are really sorry about this!<br />
             Please reach out &mdash;{' '}
-            <span style={hl}>we&rsquo;ll make it{' '}</span>
-            <span style={hl2}>right.&rdquo;</span>
+            {showOriginal
+              ? <span style={origStyle}>we&rsquo;ll make it right.&rdquo;</span>
+              : <span>
+                  {REPLACEMENT.slice(0, typed)}&rdquo;
+                  {phase === 'typing' && <span className="inline-block h-[0.75em] w-px bg-slate-700 animate-pulse align-middle ml-px" />}
+                </span>
+            }
           </span>
         </p>
       </div>
