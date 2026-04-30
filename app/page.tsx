@@ -188,7 +188,7 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <div className="-ml-1 flex items-center gap-2">
+      <div className="flex items-center gap-2">
         {step.icon}
         <p className="font-semibold text-sm text-slate-900">{step.title}</p>
       </div>
