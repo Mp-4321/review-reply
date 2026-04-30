@@ -101,7 +101,7 @@ export function StepMock4() {
 
   return (
     <div ref={ref} className="mt-3 overflow-hidden rounded-xl bg-white ring-1 ring-slate-100 text-xs">
-      <div className="pl-0 pr-2 pt-2 pb-2">
+      <div className="pl-2 pr-2 pt-2 pb-2">
         <p className="mb-1 text-[10px] text-slate-400">Generated reply</p>
         <p className="grid items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
           <span>&ldquo;</span>
@@ -113,7 +113,7 @@ export function StepMock4() {
           </span>
         </p>
       </div>
-      <div className="flex gap-4 pl-0 pr-2 pb-2">
+      <div className="flex gap-4 pl-2 pr-2 pb-2">
         <div className="w-20 rounded-md border border-slate-200 py-1 text-center text-xs font-medium text-slate-500">Edit</div>
         <div className="w-20 rounded-md bg-emerald-500 py-1 text-center text-xs font-medium text-white">✓ Approve</div>
       </div>
