@@ -140,11 +140,24 @@ const StepMock5 = (
         </div>
         <p className="font-medium text-slate-800">Reply posted on Google</p>
       </div>
-      <p className="mt-2 flex items-baseline gap-1 text-xs text-slate-400">
-        <span className="font-semibold text-slate-800">4.5</span>
-        <span className="text-amber-400">★</span>
-        <span>· 112 reviews</span>
-      </p>
+      <div className="mt-2 flex items-center gap-0.5">
+        {[0,1,2,3].map(i => (
+          <svg key={i} className="h-4 w-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+        ))}
+        <span className="relative inline-block h-4 w-4">
+          <svg className="h-4 w-4 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          <span className="absolute inset-0 w-1/2 overflow-hidden">
+            <svg className="h-4 w-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </span>
+        </span>
+        <span className="ml-1 text-xs text-slate-400">4.5 · 112 reviews</span>
+      </div>
     </div>
   </div>
 )
