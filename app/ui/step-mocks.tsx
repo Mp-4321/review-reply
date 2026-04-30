@@ -70,42 +70,25 @@ const REPLACEMENT = "we'll do our best."
 export function StepMock4() {
   const ref = useRef<HTMLDivElement>(null)
   const [phase, setPhase] = useState<Phase>('idle')
-  const [typed, setTyped] = useState(0)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const timers: ReturnType<typeof setTimeout>[] = []
-    let iv: ReturnType<typeof setInterval>
 
     const reset = () => {
       timers.forEach(clearTimeout)
-      clearInterval(iv)
       setPhase('idle')
-      setTyped(0)
     }
 
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           reset()
-          // t=400ms: highlight on
-          timers.push(setTimeout(() => setPhase('highlight'), 400))
-          // t=1900ms: strikethrough + fade out (highlight lasted 1.5s)
-          timers.push(setTimeout(() => setPhase('strike'), 1900))
-          // t=3400ms: typewriter starts (1s fade + 0.5s gap)
-          timers.push(setTimeout(() => {
-            setPhase('typing')
-            let n = 0
-            iv = setInterval(() => {
-              n++
-              setTyped(n)
-              if (n >= REPLACEMENT.length) {
-                clearInterval(iv)
-                setPhase('done')
-              }
-            }, 45)
-          }, 3400))
+          timers.push(setTimeout(() => setPhase('highlight'), 400))   // 1.5s highlight
+          timers.push(setTimeout(() => setPhase('strike'),    1900))  // 400ms fade-out
+          timers.push(setTimeout(() => setPhase('typing'),    2800))  // 500ms gap → mount at opacity:0
+          timers.push(setTimeout(() => setPhase('done'),      2850))  // next frame → fade-in to opacity:1
         } else {
           reset()
         }
@@ -123,7 +106,7 @@ export function StepMock4() {
     padding: '0 2px',
     backgroundColor: phase === 'idle' ? 'transparent' : '#fef3c7',
     opacity: phase === 'strike' ? 0 : 1,
-    transition: 'background-color 0.4s ease, opacity 0.6s ease',
+    transition: 'background-color 0.4s ease, opacity 0.4s ease',
   }
 
   return (
@@ -137,9 +120,8 @@ export function StepMock4() {
             Please reach out &mdash;{' '}
             {showOriginal
               ? <span style={origStyle}>we&rsquo;ll make it right.&rdquo;</span>
-              : <span>
-                  {REPLACEMENT.slice(0, typed)}&rdquo;
-                  {phase === 'typing' && <span className="inline-block h-[0.75em] w-px bg-slate-700 animate-pulse align-middle ml-px" />}
+              : <span style={{ opacity: phase === 'done' ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+                  {REPLACEMENT}&rdquo;
                 </span>
             }
           </span>
