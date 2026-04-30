@@ -44,13 +44,13 @@ export function StepMock3() {
       <div className="mx-auto w-[88%] sm:-translate-x-3 rounded-2xl bg-white px-5 py-4 ring-1 ring-slate-200 shadow-sm shadow-slate-200/50">
         <div className="mb-1.5 flex items-center gap-3">
           <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</span>
-          <span className="text-[10px] leading-none text-amber-400">★☆☆☆☆</span>
+          <span className="text-[10px] text-amber-400">★☆☆☆☆</span>
         </div>
         <p className="leading-snug text-slate-500">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
       <div className="mx-auto mt-4 w-[88%] sm:translate-x-1 rounded-2xl bg-blue-50 px-5 py-4 ring-1 ring-blue-200 shadow-md shadow-blue-100/70">
         <div className="flex items-center justify-between pb-2 border-b border-blue-100/70">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">✦ AI Reply</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">✨ AI Reply</p>
           <span className="text-[10px] font-medium text-slate-500">Friendly<span className="relative top-[-2px] ml-1">⌄</span></span>
         </div>
         <p className="mt-2 min-h-[2rem] leading-snug text-slate-700">
