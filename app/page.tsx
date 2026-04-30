@@ -155,17 +155,24 @@ const StepMock5 = (
 type StepDef = {
   n: number
   side: 'left' | 'right'
+  icon: ReactNode
   title: string
   desc: ReactNode
   mock: ReactNode
 }
 
+const stepIcon = (path: string) => (
+  <svg className="w-5 h-5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d={path} />
+  </svg>
+)
+
 const HOW_IT_WORKS_STEPS: StepDef[] = [
-  { n: 1, side: 'left',  title: '🔗 Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
-  { n: 2, side: 'right', title: '📨 Never miss a review',      desc: 'Get notified via email the moment a new review is posted.',         mock: StepMock2 },
-  { n: 3, side: 'left',  title: '💬 Generate your reply',      desc: 'Pick a tone. Reply in seconds.',             mock: <StepMock3 /> },
-  { n: 4, side: 'right', title: '✏️ Review before sending',    desc: 'Edit or approve your reply in one click.',   mock: <StepMock4 /> },
-  { n: 5, side: 'left',  title: '🚀 Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
+  { n: 1, side: 'left',  icon: stepIcon('M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'),        title: 'Connect your business',    desc: 'Link your Google Business once — your reviews sync automatically.', mock: StepMock1 },
+  { n: 2, side: 'right', icon: stepIcon('M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0'), title: 'Never miss a review',      desc: 'Get notified via email the moment a new review is posted.',         mock: StepMock2 },
+  { n: 3, side: 'left',  icon: stepIcon('M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z'), title: 'Generate your reply',      desc: 'Pick a tone. Reply in seconds.',             mock: <StepMock3 /> },
+  { n: 4, side: 'right', icon: stepIcon('M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'), title: 'Review before sending',    desc: 'Edit or approve your reply in one click.',   mock: <StepMock4 /> },
+  { n: 5, side: 'left',  icon: stepIcon('M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5'),                                                title: 'Post to Google instantly', desc: 'Publish your reply without copy-pasting or switching tabs.',        mock: StepMock5 },
 ]
 
 // ——— Components ———
@@ -181,7 +188,10 @@ function StepNode({ step }: { step: StepDef }) {
 function StepCardContent({ step }: { step: StepDef }) {
   return (
     <>
-      <p className="font-semibold text-sm text-slate-900">{step.title}</p>
+      <div className="flex items-center gap-2">
+        {step.icon}
+        <p className="font-semibold text-sm text-slate-900">{step.title}</p>
+      </div>
       <p className="mt-0.5 text-sm text-slate-500">{step.desc}</p>
       {step.mock}
     </>
