@@ -190,7 +190,7 @@ function StepCardContent({ step }: { step: StepDef }) {
     <>
       <div className="flex items-center gap-2">
         {step.icon}
-        <p className="font-semibold text-sm text-slate-900">{step.title}</p>
+        <p className="ml-1 font-semibold text-sm text-slate-900">{step.title}</p>
       </div>
       <p className="mt-0.5 text-sm text-slate-500">{step.desc}</p>
       {step.mock}
