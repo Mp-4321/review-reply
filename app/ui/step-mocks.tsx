@@ -41,28 +41,22 @@ export function StepMock3() {
 
   return (
     <div ref={ref} className="mt-3 text-xs">
-      <div className="mx-auto w-[88%] -translate-x-4 rounded-xl bg-white p-2 ring-1 ring-slate-200">
-        <div className="mb-1 flex items-center gap-2">
+      <div className="mx-auto w-[88%] -translate-x-2 rounded-xl bg-white p-2 ring-1 ring-slate-200">
+        <div className="mb-1 flex items-center gap-3">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Customer Review</p>
           <span className="text-xs leading-none text-amber-400">★☆☆☆☆</span>
         </div>
         <p className="leading-snug text-slate-500">&ldquo;Waited 30 minutes. This is not good!&rdquo;</p>
       </div>
-      <div className="mx-auto mt-4 w-[88%] translate-x-4 rounded-xl bg-blue-50 p-2 ring-1 ring-blue-100">
+      <div className="mx-auto mt-4 w-[88%] translate-x-2 rounded-xl bg-blue-50 p-2 ring-1 ring-blue-100">
         <div className="mb-1 flex items-center justify-between">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">AI Reply</p>
           <span className="mr-2 text-[10px] font-medium text-slate-600">▶ Friendly</span>
         </div>
-        <p className="grid min-h-[2rem] items-start leading-snug text-slate-700" style={{ gridTemplateColumns: 'auto 1fr' }}>
-          <span>&ldquo;</span>
-          <span>
-            {l1}
-            {l2 !== undefined && <><br />{l2}</>}
-            {done
-              ? <>&rdquo;</>
-              : <span className="inline-block h-[0.75em] w-px bg-blue-600/80 animate-pulse align-middle ml-px" />
-            }
-          </span>
+        <p className="min-h-[2rem] leading-snug text-slate-700">
+          {l1}
+          {l2 !== undefined && <><br />{l2}</>}
+          {!done && <span className="inline-block h-[0.75em] w-px bg-blue-600/80 animate-pulse align-middle ml-px" />}
         </p>
       </div>
     </div>
