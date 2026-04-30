@@ -65,7 +65,7 @@ export function StepMock3() {
 
 type Phase = 'idle' | 'highlight' | 'strike' | 'typing' | 'done' | 'reverse-fade' | 'reverse-show' | 'reverse-unhighlight'
 
-const REPLACEMENT = "we'll do our best."
+const REPLACEMENT_TAIL = "do our best."
 
 export function StepMock4() {
   const ref = useRef<HTMLDivElement>(null)
@@ -114,7 +114,7 @@ export function StepMock4() {
     padding: '0 2px',
     backgroundColor: hlBg,
     opacity: phase === 'strike' ? 0 : 1,
-    transition: 'background-color 0.8s ease, opacity 0.4s ease',
+    transition: 'background-color 1.2s ease, opacity 0.4s ease',
   }
 
   return (
@@ -126,12 +126,13 @@ export function StepMock4() {
           <span>
             We are really sorry about this!<br />
             Please reach out &mdash;{' '}
+            we&rsquo;ll{' '}
             {showOriginal
-              ? <>we&rsquo;ll <span style={origStyle}>make it right.</span>&rdquo;</>
-              : <span style={{ opacity: phase === 'done' ? 1 : 0, transition: 'opacity 0.3s ease' }}>
-                  {REPLACEMENT}&rdquo;
+              ? <span style={origStyle}>make it right.</span>
+              : <span style={{ opacity: phase === 'done' ? 1 : 0, transition: 'opacity 0.8s ease' }}>
+                  {REPLACEMENT_TAIL}
                 </span>
-            }
+            }&rdquo;
           </span>
         </p>
       </div>
