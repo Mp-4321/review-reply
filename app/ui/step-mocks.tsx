@@ -50,7 +50,7 @@ export function StepMock3() {
       </div>
       <div className="mx-auto mt-4 w-[88%] sm:translate-x-1 rounded-2xl bg-blue-50 px-5 py-2 ring-1 ring-blue-200 shadow-md shadow-blue-100/70">
         <div className="flex items-center justify-between pb-2 border-b border-blue-100/70">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500"><span style={{ filter: 'hue-rotate(172deg) saturate(2) brightness(1)' }}>⚡</span> AI Reply</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">💬 AI Reply</p>
           <span className="text-[10px] font-medium text-slate-600">Friendly<span className="relative top-[-2px] ml-1">⌄</span></span>
         </div>
         <p className="mt-2 min-h-[2rem] leading-snug text-slate-700">
