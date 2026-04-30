@@ -144,7 +144,7 @@ const StepMock5 = (
         <span className="text-[10px]" style={{ filter: 'drop-shadow(0 0 0.5px rgba(180,130,0,0.4))' }}>
           <span className="text-amber-400">★★★★</span><span className="relative inline-block leading-none"><span className="text-slate-200">★</span><span className="absolute inset-0 w-1/2 overflow-hidden text-amber-400">★</span></span>
         </span>
-        <span className="text-xs">4.5 · 112 reviews</span>
+        <span className="ml-1 text-xs">4.5 · 112 reviews</span>
       </div>
     </div>
   </div>
