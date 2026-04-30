@@ -63,7 +63,7 @@ export function StepMock3() {
   )
 }
 
-type Phase = 'idle' | 'highlight' | 'strike' | 'typing' | 'done'
+type Phase = 'idle' | 'highlight' | 'strike' | 'typing' | 'done' | 'reverse-fade' | 'reverse-show' | 'reverse-unhighlight'
 
 const REPLACEMENT = "we'll do our best."
 
@@ -85,10 +85,13 @@ export function StepMock4() {
       ([entry]) => {
         if (entry.isIntersecting) {
           reset()
-          timers.push(setTimeout(() => setPhase('highlight'), 400))   // 1.5s highlight
-          timers.push(setTimeout(() => setPhase('strike'),    1900))  // 400ms fade-out
-          timers.push(setTimeout(() => setPhase('typing'),    2800))  // 500ms gap → mount at opacity:0
-          timers.push(setTimeout(() => setPhase('done'),      2850))  // next frame → fade-in to opacity:1
+          timers.push(setTimeout(() => setPhase('highlight'),          400))
+          timers.push(setTimeout(() => setPhase('strike'),            1900))  // highlight lasted 1.5s
+          timers.push(setTimeout(() => setPhase('typing'),            2800))  // mount replacement at opacity:0
+          timers.push(setTimeout(() => setPhase('done'),              2850))  // fade-in replacement (300ms)
+          timers.push(setTimeout(() => setPhase('reverse-fade'),      5150))  // 2s visible → fade out replacement
+          timers.push(setTimeout(() => setPhase('reverse-show'),      5500))  // mount original with highlight
+          timers.push(setTimeout(() => setPhase('reverse-unhighlight'), 5550)) // highlight fades away (800ms)
         } else {
           reset()
         }
@@ -101,12 +104,17 @@ export function StepMock4() {
   }, [])
 
   const showOriginal = phase === 'idle' || phase === 'highlight' || phase === 'strike'
+    || phase === 'reverse-show' || phase === 'reverse-unhighlight'
+
+  const hlBg = (phase === 'highlight' || phase === 'strike' || phase === 'reverse-show')
+    ? '#fef3c7' : 'transparent'
+
   const origStyle: CSSProperties = {
     borderRadius: 2,
     padding: '0 2px',
-    backgroundColor: phase === 'idle' ? 'transparent' : '#fef3c7',
+    backgroundColor: hlBg,
     opacity: phase === 'strike' ? 0 : 1,
-    transition: 'background-color 0.4s ease, opacity 0.4s ease',
+    transition: 'background-color 0.8s ease, opacity 0.4s ease',
   }
 
   return (
@@ -119,7 +127,7 @@ export function StepMock4() {
             We are really sorry about this!<br />
             Please reach out &mdash;{' '}
             {showOriginal
-              ? <span style={origStyle}>we&rsquo;ll make it right.&rdquo;</span>
+              ? <>we&rsquo;ll <span style={origStyle}>make it right.</span>&rdquo;</>
               : <span style={{ opacity: phase === 'done' ? 1 : 0, transition: 'opacity 0.3s ease' }}>
                   {REPLACEMENT}&rdquo;
                 </span>
