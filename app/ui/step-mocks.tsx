@@ -50,7 +50,7 @@ export function StepMock3() {
       </div>
       <div className="mx-auto mt-4 w-[88%] sm:translate-x-1 rounded-2xl bg-blue-50 px-5 py-2 ring-1 ring-blue-200 shadow-md shadow-blue-100/70">
         <div className="flex items-center justify-between pb-2 border-b border-blue-100/70">
-          <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-blue-500"><svg className="w-2 h-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 15a4 4 0 01-4 4H8l-5 3V5a4 4 0 014-4h10a4 4 0 014 4z" /></svg> AI Reply</p>
+          <p className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-blue-500"><svg className="w-3 h-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg> AI Reply</p>
           <span className="text-[10px] font-medium text-slate-600">Friendly<span className="relative top-[-2px] ml-1">⌄</span></span>
         </div>
         <p className="mt-2 min-h-[2rem] leading-snug text-slate-700">
