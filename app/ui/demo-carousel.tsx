@@ -17,7 +17,7 @@ const SLIDES = [
       "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken. Despite repeated calls to reception, nothing was fixed during our 3-night stay.",
     keywords: ['James', 'The Meridian Hotel', 'experience'],
     reply:
-      "Dear James,\nwe apologize for your experience at The Meridian Hotel.\nYour feedback has been escalated to our team.\nPlease contact us at hello@meridianhotel.com.",
+      "Dear James,\nwe apologize for your experience at The Meridian.\nYour feedback has been escalated to our team.\nPlease contact us at hello@meridianhotel.com.",
   },
   {
     tone: 'Friendly' as ToneLabel,
