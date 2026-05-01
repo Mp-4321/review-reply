@@ -62,7 +62,7 @@ const SLIDE_ALTERNATIVES = [
       "The equipment is decent but the locker rooms are rarely cleaned. I reported the issue to staff twice with no result. For the monthly fee, I expected much better upkeep.",
     keywords: ['Daniel', 'Iron Flow Fitness'],
     reply:
-      "Dear Daniel,\nwe apologize for your experience at Iron Gym.\nPlease send us an email at hello@irongym.com.\nWe will investigate it further.",
+      "Dear Daniel,\nwe apologize for your experience at Iron Gym.\nPlease contact us at hello@irongym.com.\nWe will look into this further.",
   },
   {
     tone: 'Friendly' as ToneLabel,
