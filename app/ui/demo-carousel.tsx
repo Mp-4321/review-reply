@@ -98,25 +98,28 @@ const SLIDE_PAIRS = SLIDES.map((slide, i) => [slide, SLIDE_ALTERNATIVES[i]])
 
 const TONES: ToneLabel[] = ['Professional', 'Friendly', 'Concise']
 
-function ReplyText({ text, fullText, typing }: { text: string; fullText: string; typing: boolean }) {
-  const paragraphs = text.split('\n')
+function ReplyText({ fullText, revealed, revealDuration, typing }: {
+  fullText: string
+  revealed: boolean
+  revealDuration: number
+  typing: boolean
+}) {
+  const paragraphs = fullText.split('\n')
   return (
-    <div className="relative w-full">
-      {/* Ghost: whitespace-pre-wrap preserves \n natively, fixes layout before typewriter starts */}
-      <div className="invisible select-none whitespace-pre-wrap w-full" aria-hidden>
-        {fullText}
-      </div>
-      {/* Visible typed text overlaid — explicit w-full, not just inset-0 */}
-      <div className="absolute inset-0 w-full overflow-hidden">
-        {paragraphs.map((p, i) => (
-          <span key={i} className="block">
-            {p}
-            {i === paragraphs.length - 1 && typing && (
-              <span className="inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-blue-500 align-middle" />
-            )}
-          </span>
-        ))}
-      </div>
+    <div
+      style={{
+        clipPath: revealed ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
+        transition: revealed ? `clip-path ${revealDuration}ms linear` : 'none',
+      }}
+    >
+      {paragraphs.map((p, i) => (
+        <span key={i} className="block">
+          {p}
+          {i === paragraphs.length - 1 && typing && (
+            <span className="inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-blue-500 align-middle" />
+          )}
+        </span>
+      ))}
     </div>
   )
 }
@@ -140,33 +143,40 @@ export default function DemoCarousel() {
   )
   const slides = slidesRef.current
   const [slideIndex, setSlideIndex]         = useState(0)
-  const [displayedReply, setDisplayedReply] = useState('')
+  const [revealed, setRevealed]             = useState(false)
+  const [revealDuration, setRevealDuration] = useState(0)
   const [contentVisible, setContentVisible] = useState(true)
   const [typing, setTyping]                 = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const timeoutRef  = useRef<ReturnType<typeof setTimeout>  | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const seqIdRef   = useRef(0)
 
   function clearAll() {
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
-    if (timeoutRef.current)  { clearTimeout(timeoutRef.current);   timeoutRef.current  = null }
+    seqIdRef.current++
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
   }
 
   function startSequence(idx: number) {
+    const seqId = ++seqIdRef.current
     timeoutRef.current = setTimeout(() => {
+      if (seqId !== seqIdRef.current) return
+      const duration = slides[idx].reply.length * 25
+      setRevealDuration(duration)
       setTyping(true)
-      const text = slides[idx].reply
-      let i = 0
-      intervalRef.current = setInterval(() => {
-        i++
-        setDisplayedReply(text.slice(0, i))
-        if (i >= text.length) {
-          clearInterval(intervalRef.current!)
-          intervalRef.current = null
+      setRevealed(false)
+      // Double RAF ensures clip-path: hidden is painted before transition starts
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (seqId !== seqIdRef.current) return
+        setRevealed(true)
+        timeoutRef.current = setTimeout(() => {
+          if (seqId !== seqIdRef.current) return
           setTyping(false)
           const wait = idx === slides.length - 1 ? 3000 : 4000
-          timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % slides.length), wait)
-        }
-      }, 25)
+          timeoutRef.current = setTimeout(() => {
+            if (seqId !== seqIdRef.current) return
+            goToSlide((idx + 1) % slides.length)
+          }, wait)
+        }, duration)
+      }))
     }, 1500)
   }
 
@@ -175,7 +185,7 @@ export default function DemoCarousel() {
     setContentVisible(false)
     timeoutRef.current = setTimeout(() => {
       setSlideIndex(idx)
-      setDisplayedReply('')
+      setRevealed(false)
       setTyping(false)
       setContentVisible(true)
       startSequence(idx)
@@ -256,7 +266,7 @@ export default function DemoCarousel() {
               <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
             </div>
             <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
-              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
+              <ReplyText fullText={slides[slideIndex].reply} revealed={revealed} revealDuration={revealDuration} typing={typing} />
             </div>
           </div>
         </div>
