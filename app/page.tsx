@@ -308,7 +308,7 @@ export default function Home() {
           </h2>
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
             {[
-              { stat: '89%', label: 'of consumers', desc: 'prefer businesses that respond to all their reviews', source: 'BrightLocal 2026' },
+              { stat: '89%', label: 'of consumers', desc: 'expect that business owners respond to reviews', source: 'BrightLocal 2026' },
               { stat: '45%', label: 'of customers', desc: 'are more likely to visit a business that replies to negative reviews', source: 'ReviewTrackers 2024' },
               { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal 2026' },
             ].map((item) => (
