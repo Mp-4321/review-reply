@@ -87,11 +87,11 @@ export function StepMock4() {
           reset()
           timers.push(setTimeout(() => setPhase('highlight'),          400))
           timers.push(setTimeout(() => setPhase('strike'),            1900))  // highlight lasted 1.5s
-          timers.push(setTimeout(() => setPhase('typing'),            2800))  // mount replacement at opacity:0
-          timers.push(setTimeout(() => setPhase('done'),              2850))  // fade-in replacement (300ms)
-          timers.push(setTimeout(() => setPhase('reverse-fade'),      5150))  // 2s visible → fade out replacement
-          timers.push(setTimeout(() => setPhase('reverse-show'),      5500))  // mount original with highlight
-          timers.push(setTimeout(() => setPhase('reverse-unhighlight'), 5550)) // highlight fades away (800ms)
+          timers.push(setTimeout(() => setPhase('typing'),            2600))  // mount replacement at opacity:0
+          timers.push(setTimeout(() => setPhase('done'),              2650))  // fade-in replacement (300ms)
+          timers.push(setTimeout(() => setPhase('reverse-fade'),      4950))  // 2s visible → fade out replacement
+          timers.push(setTimeout(() => setPhase('reverse-show'),      5300))  // mount original with highlight
+          timers.push(setTimeout(() => setPhase('reverse-unhighlight'), 5350)) // highlight fades away (800ms)
         } else {
           reset()
         }
@@ -103,18 +103,21 @@ export function StepMock4() {
     return () => { obs.disconnect(); reset() }
   }, [])
 
-  const showOriginal = phase === 'idle' || phase === 'highlight' || phase === 'strike'
-    || phase === 'reverse-show' || phase === 'reverse-unhighlight'
-
-  const hlBg = (phase === 'highlight' || phase === 'strike' || phase === 'reverse-show')
-    ? '#fef3c7' : 'transparent'
+  const isHighlighted = phase === 'highlight' || phase === 'reverse-show'
+  const isStrike = phase === 'strike'
+  const showReplacement = phase === 'typing' || phase === 'done' || phase === 'reverse-fade'
 
   const origStyle: CSSProperties = {
     borderRadius: 2,
     padding: '0 2px',
-    backgroundColor: hlBg,
-    opacity: phase === 'strike' ? 0 : 1,
-    transition: 'background-color 1.2s ease, opacity 0.4s ease',
+    backgroundImage: 'linear-gradient(to right, #fef3c7, #fef3c7)',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'left',
+    backgroundSize: isHighlighted ? '100% 100%' : '0% 100%',
+    opacity: isStrike ? 0 : 1,
+    transition: phase === 'reverse-show'
+      ? 'background-size 0s, opacity 0.4s ease'
+      : 'background-size 1.2s ease, opacity 0.4s ease',
   }
 
   return (
@@ -126,12 +129,14 @@ export function StepMock4() {
           <span>
             We are really sorry about this!<br />
             Please reach out &mdash;{' '}
-            {showOriginal
-              ? <span style={origStyle}>we&rsquo;ll make it right.</span>
-              : <span style={{ opacity: phase === 'done' ? 1 : 0, transition: 'opacity 0.8s ease' }}>
-                  {REPLACEMENT_TAIL}
-                </span>
-            }&rdquo;
+            <span style={{ display: 'inline-grid', verticalAlign: 'bottom' }}>
+              <span style={{ ...origStyle, gridArea: '1/1', opacity: showReplacement ? 0 : origStyle.opacity as number, transition: showReplacement ? 'opacity 0.4s ease' : origStyle.transition as string }}>
+                we&rsquo;ll make it right.&rdquo;
+              </span>
+              <span style={{ gridArea: '1/1', opacity: showReplacement && phase === 'done' ? 1 : 0, transition: 'opacity 0.8s ease' }}>
+                {REPLACEMENT_TAIL}&rdquo;
+              </span>
+            </span>
           </span>
         </p>
       </div>
