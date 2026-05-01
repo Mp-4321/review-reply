@@ -314,7 +314,7 @@ export default function Home() {
             ].map((item) => (
               <div key={item.stat + item.label} className="flex h-full flex-col rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center">
                 <p className="text-4xl font-extrabold tracking-tight text-blue-600">{item.stat}</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.label} {item.desc}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500 text-left">{item.label} {item.desc}</p>
                 <div className="mt-auto pt-4">
                   <div className="mb-2 mx-auto w-8 border-t border-slate-300" />
                   <p className="text-xs text-slate-400">Source: {item.source}</p>
