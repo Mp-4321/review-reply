@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 const REPLY = "We are really sorry about this!\nPlease reach out — we'll make it right."
+const TYPEWRITER_MS = REPLY.length * 38  // exact typewriter duration
 
 // Module-level state for Step 3↔4 coordination
 let step3Visible = false
-let step3AnimDone = false
+let step3StartTime = 0  // Date.now() when the typewriter last started
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -21,20 +22,17 @@ export function StepMock3() {
       ([entry]) => {
         if (entry.isIntersecting) {
           step3Visible = true
-          step3AnimDone = false
+          step3StartTime = Date.now()
           setTyped(0)
           let n = 0
           iv = setInterval(() => {
             n++
             setTyped(n)
-            if (n >= REPLY.length) {
-              clearInterval(iv)
-              step3AnimDone = true
-              window.dispatchEvent(new CustomEvent('step3-done'))
-            }
+            if (n >= REPLY.length) clearInterval(iv)
           }, 38)
         } else {
           step3Visible = false
+          step3StartTime = 0
           clearInterval(iv)
           setTyped(0)
         }
@@ -87,46 +85,35 @@ export function StepMock4() {
     if (!el) return
     const timers: ReturnType<typeof setTimeout>[] = []
     let pendingStart: ReturnType<typeof setTimeout> | null = null
-    let waitingForStep3 = false
-
-    const onStep3Done = () => {
-      waitingForStep3 = false
-      window.removeEventListener('step3-done', onStep3Done)
-      triggerAnimation()
-    }
 
     const reset = () => {
       timers.forEach(clearTimeout)
       if (pendingStart) { clearTimeout(pendingStart); pendingStart = null }
-      if (waitingForStep3) {
-        window.removeEventListener('step3-done', onStep3Done)
-        waitingForStep3 = false
-      }
       setPhase('idle')
     }
 
-    // Schedules the phase sequence after 600ms
-    const triggerAnimation = () => {
+    // delay: ms to wait before starting the highlight phase
+    const scheduleAnimation = (delay: number) => {
       pendingStart = setTimeout(() => {
         pendingStart = null
         timers.push(setTimeout(() => setPhase('highlight'),    0))
         timers.push(setTimeout(() => setPhase('strike'),    1500))
         timers.push(setTimeout(() => setPhase('typing'),    2200))
         timers.push(setTimeout(() => setPhase('done'),      2250))
-      }, 600)
+      }, delay)
     }
 
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           reset()
-          if (step3Visible && !step3AnimDone) {
-            // Step 3 is mid-animation — wait for it to finish
-            waitingForStep3 = true
-            window.addEventListener('step3-done', onStep3Done)
+          if (step3Visible && step3StartTime > 0) {
+            // Compute how much of the typewriter is still remaining
+            const elapsed = Date.now() - step3StartTime
+            const remaining = Math.max(0, TYPEWRITER_MS - elapsed)
+            scheduleAnimation(remaining + 600)
           } else {
-            // Step 3 not visible or already done — start independently
-            triggerAnimation()
+            scheduleAnimation(600)
           }
         } else {
           reset()
