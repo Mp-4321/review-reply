@@ -155,18 +155,38 @@ export default function DemoCarousel() {
     timeoutRef.current = setTimeout(() => {
       setTyping(true)
       const text = slides[idx].reply
+
+      // Build word tokens — \n is a separate token, words within a line are separate tokens
+      const wordTokens: string[] = []
+      text.split('\n').forEach((line, li) => {
+        if (li > 0) wordTokens.push('\n')
+        line.split(' ').filter(w => w.length > 0).forEach(w => wordTokens.push(w))
+      })
+
+      // Reconstruct displayed text from first n word tokens
+      const reconstruct = (n: number) => {
+        let out = ''
+        let needSpace = false
+        for (let j = 0; j < n; j++) {
+          const t = wordTokens[j]
+          if (t === '\n') { out += '\n'; needSpace = false }
+          else { if (needSpace) out += ' '; out += t; needSpace = true }
+        }
+        return out
+      }
+
       let i = 0
       intervalRef.current = setInterval(() => {
         i++
-        setDisplayedReply(text.slice(0, i))
-        if (i >= text.length) {
+        setDisplayedReply(reconstruct(i))
+        if (i >= wordTokens.length) {
           clearInterval(intervalRef.current!)
           intervalRef.current = null
           setTyping(false)
           const wait = idx === slides.length - 1 ? 3000 : 4000
           timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % slides.length), wait)
         }
-      }, 25)
+      }, 100)
     }, 1500)
   }
 
