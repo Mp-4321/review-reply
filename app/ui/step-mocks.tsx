@@ -82,9 +82,19 @@ export function StepMock4() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const timers: ReturnType<typeof setTimeout>[] = []
+
     let pendingStart: ReturnType<typeof setTimeout> | null = null
+    let phaseTimers: ReturnType<typeof setTimeout>[] = []
     let listeningForStep3 = false
+
+    const startPhases = () => {
+      phaseTimers.forEach(clearTimeout)
+      phaseTimers = []
+      phaseTimers.push(setTimeout(() => setPhase('highlight'),    0))
+      phaseTimers.push(setTimeout(() => setPhase('strike'),    1500))
+      phaseTimers.push(setTimeout(() => setPhase('typing'),    2200))
+      phaseTimers.push(setTimeout(() => setPhase('done'),      2250))
+    }
 
     const onStep3Complete = () => {
       listeningForStep3 = false
@@ -93,8 +103,9 @@ export function StepMock4() {
     }
 
     const reset = () => {
-      timers.forEach(clearTimeout)
-      if (pendingStart) { clearTimeout(pendingStart); pendingStart = null }
+      phaseTimers.forEach(clearTimeout)
+      phaseTimers = []
+      if (pendingStart !== null) { clearTimeout(pendingStart); pendingStart = null }
       if (listeningForStep3) {
         window.removeEventListener('step3TypewriterComplete', onStep3Complete)
         listeningForStep3 = false
@@ -102,33 +113,22 @@ export function StepMock4() {
       setPhase('idle')
     }
 
-    const startPhases = () => {
-      timers.push(setTimeout(() => setPhase('highlight'),    0))
-      timers.push(setTimeout(() => setPhase('strike'),    1500))
-      timers.push(setTimeout(() => setPhase('typing'),    2200))
-      timers.push(setTimeout(() => setPhase('done'),      2250))
-    }
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          reset()
-          if (step3Visible) {
-            // Step 3 is mid-typewriter — wait for it to finish
-            listeningForStep3 = true
-            window.addEventListener('step3TypewriterComplete', onStep3Complete)
-          } else {
-            // Step 3 not visible — start independently after 600ms
-            pendingStart = setTimeout(startPhases, 600)
-          }
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        reset()
+        if (step3Visible) {
+          listeningForStep3 = true
+          window.addEventListener('step3TypewriterComplete', onStep3Complete)
         } else {
-          reset()
+          pendingStart = setTimeout(startPhases, 600)
         }
-      },
-      { threshold: 0.5 }
-    )
+      } else {
+        reset()
+      }
+    }, { threshold: 0.5 })
 
     obs.observe(el)
+    // Only disconnect on unmount — observer must stay alive for re-triggers
     return () => { obs.disconnect(); reset() }
   }, [])
 
