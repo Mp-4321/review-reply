@@ -17,7 +17,7 @@ const SLIDES = [
       "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken. Despite repeated calls to reception, nothing was fixed during our 3-night stay.",
     keywords: ['James', 'The Meridian Hotel', 'experience'],
     reply:
-      "Dear James, we sincerely apologize for your experience at The Meridian Hotel.\nYour concerns have been escalated to our team.\nPlease reach out at hello@meridianhotel.com.",
+      "Dear James, we sincerely apologize for what you\nexperienced at The Meridian Hotel.\nYour concerns have been escalated to our team.\nPlease reach out at hello@meridianhotel.com.",
   },
   {
     tone: 'Friendly' as ToneLabel,
@@ -62,7 +62,7 @@ const SLIDE_ALTERNATIVES = [
       "The equipment is decent but the locker rooms are rarely cleaned. I reported the issue to staff twice with no result. For the monthly fee, I expected much better upkeep.",
     keywords: ['Daniel', 'Iron Flow Fitness'],
     reply:
-      "Dear Daniel,\nwe apologize for your experience at Iron Gym.\nPlease send us an email at hello@irongym.com.\nWe will make it right!",
+      "Dear Daniel,\nwe apologize for your experience at Iron Gym.\nPlease send us an email at hello@irongym.com.\nWe will investigate it further.",
   },
   {
     tone: 'Friendly' as ToneLabel,
