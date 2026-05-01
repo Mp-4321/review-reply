@@ -99,18 +99,15 @@ const SLIDE_PAIRS = SLIDES.map((slide, i) => [slide, SLIDE_ALTERNATIVES[i]])
 const TONES: ToneLabel[] = ['Professional', 'Friendly', 'Concise']
 
 function ReplyText({ text, fullText, typing }: { text: string; fullText: string; typing: boolean }) {
-  const paragraphs     = text.split('\n')
-  const fullParagraphs = fullText.split('\n')
+  const paragraphs = text.split('\n')
   return (
-    <div className="relative">
-      {/* Ghost: invisible full text fixes layout from the start — no reflow during typing */}
-      <div className="invisible select-none" aria-hidden>
-        {fullParagraphs.map((p, i) => (
-          <span key={i} className="block">{p}</span>
-        ))}
+    <div className="relative w-full">
+      {/* Ghost: whitespace-pre-wrap preserves \n natively, fixes layout before typewriter starts */}
+      <div className="invisible select-none whitespace-pre-wrap w-full" aria-hidden>
+        {fullText}
       </div>
-      {/* Visible typed text overlaid */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Visible typed text overlaid — explicit w-full, not just inset-0 */}
+      <div className="absolute inset-0 w-full overflow-hidden">
         {paragraphs.map((p, i) => (
           <span key={i} className="block">
             {p}
@@ -258,7 +255,7 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
             </div>
-            <div className="text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
             </div>
           </div>
