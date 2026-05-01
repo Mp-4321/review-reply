@@ -21,10 +21,7 @@ export function StepMock3() {
           iv = setInterval(() => {
             n++
             setTyped(n)
-            if (n >= REPLY.length) {
-              clearInterval(iv)
-              window.dispatchEvent(new CustomEvent('step3-done'))
-            }
+            if (n >= REPLY.length) clearInterval(iv)
           }, 38)
         } else {
           clearInterval(iv)
@@ -78,42 +75,29 @@ export function StepMock4() {
     const el = ref.current
     if (!el) return
     const timers: ReturnType<typeof setTimeout>[] = []
-    let startTimer: ReturnType<typeof setTimeout> | null = null
-    let isIntersecting = false
 
     const reset = () => {
       timers.forEach(clearTimeout)
-      if (startTimer) clearTimeout(startTimer)
-      startTimer = null
       setPhase('idle')
     }
 
-    const startAnimation = () => {
-      if (!isIntersecting) return
-      reset()
-      timers.push(setTimeout(() => setPhase('highlight'),  400))
-      timers.push(setTimeout(() => setPhase('strike'),    1900))
-      timers.push(setTimeout(() => setPhase('typing'),    2600))
-      timers.push(setTimeout(() => setPhase('done'),      2650))
-    }
-
-    const onStep3Done = () => {
-      if (!isIntersecting) return
-      startTimer = setTimeout(startAnimation, 900)
-    }
-
-    window.addEventListener('step3-done', onStep3Done)
-
     const obs = new IntersectionObserver(
       ([entry]) => {
-        isIntersecting = entry.isIntersecting
-        if (!entry.isIntersecting) reset()
+        if (entry.isIntersecting) {
+          reset()
+          timers.push(setTimeout(() => setPhase('highlight'),   600))
+          timers.push(setTimeout(() => setPhase('strike'),    2100))
+          timers.push(setTimeout(() => setPhase('typing'),    2800))
+          timers.push(setTimeout(() => setPhase('done'),      2850))
+        } else {
+          reset()
+        }
       },
       { threshold: 0.5 }
     )
 
     obs.observe(el)
-    return () => { obs.disconnect(); reset(); window.removeEventListener('step3-done', onStep3Done) }
+    return () => { obs.disconnect(); reset() }
   }, [])
 
   const isHighlighted = phase === 'highlight'
