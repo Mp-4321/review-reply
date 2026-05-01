@@ -4,6 +4,10 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 const REPLY = "We are really sorry about this!\nPlease reach out — we'll make it right."
 
+// Module-level state for Step 3↔4 coordination
+let step3Visible = false
+let step3AnimDone = false
+
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
   const [typed, setTyped] = useState(0)
@@ -16,14 +20,21 @@ export function StepMock3() {
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          step3Visible = true
+          step3AnimDone = false
           setTyped(0)
           let n = 0
           iv = setInterval(() => {
             n++
             setTyped(n)
-            if (n >= REPLY.length) clearInterval(iv)
+            if (n >= REPLY.length) {
+              clearInterval(iv)
+              step3AnimDone = true
+              window.dispatchEvent(new CustomEvent('step3-done'))
+            }
           }, 38)
         } else {
+          step3Visible = false
           clearInterval(iv)
           setTyped(0)
         }
@@ -75,20 +86,48 @@ export function StepMock4() {
     const el = ref.current
     if (!el) return
     const timers: ReturnType<typeof setTimeout>[] = []
+    let pendingStart: ReturnType<typeof setTimeout> | null = null
+    let waitingForStep3 = false
+
+    const onStep3Done = () => {
+      waitingForStep3 = false
+      window.removeEventListener('step3-done', onStep3Done)
+      triggerAnimation()
+    }
 
     const reset = () => {
       timers.forEach(clearTimeout)
+      if (pendingStart) { clearTimeout(pendingStart); pendingStart = null }
+      if (waitingForStep3) {
+        window.removeEventListener('step3-done', onStep3Done)
+        waitingForStep3 = false
+      }
       setPhase('idle')
+    }
+
+    // Schedules the phase sequence after 600ms
+    const triggerAnimation = () => {
+      pendingStart = setTimeout(() => {
+        pendingStart = null
+        timers.push(setTimeout(() => setPhase('highlight'),    0))
+        timers.push(setTimeout(() => setPhase('strike'),    1500))
+        timers.push(setTimeout(() => setPhase('typing'),    2200))
+        timers.push(setTimeout(() => setPhase('done'),      2250))
+      }, 600)
     }
 
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           reset()
-          timers.push(setTimeout(() => setPhase('highlight'),   600))
-          timers.push(setTimeout(() => setPhase('strike'),    2100))
-          timers.push(setTimeout(() => setPhase('typing'),    2800))
-          timers.push(setTimeout(() => setPhase('done'),      2850))
+          if (step3Visible && !step3AnimDone) {
+            // Step 3 is mid-animation — wait for it to finish
+            waitingForStep3 = true
+            window.addEventListener('step3-done', onStep3Done)
+          } else {
+            // Step 3 not visible or already done — start independently
+            triggerAnimation()
+          }
         } else {
           reset()
         }
