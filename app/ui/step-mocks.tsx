@@ -63,7 +63,7 @@ export function StepMock3() {
   )
 }
 
-type Phase = 'idle' | 'highlight' | 'strike' | 'typing' | 'done' | 'reverse-fade' | 'reverse-show' | 'reverse-unhighlight'
+type Phase = 'idle' | 'highlight' | 'strike' | 'typing' | 'done'
 
 const REPLACEMENT_TAIL = "we'll do our best!"
 
@@ -85,13 +85,10 @@ export function StepMock4() {
       ([entry]) => {
         if (entry.isIntersecting) {
           reset()
-          timers.push(setTimeout(() => setPhase('highlight'),          400))
-          timers.push(setTimeout(() => setPhase('strike'),            1900))  // highlight lasted 1.5s
-          timers.push(setTimeout(() => setPhase('typing'),            2600))  // mount replacement at opacity:0
-          timers.push(setTimeout(() => setPhase('done'),              2650))  // fade-in replacement (300ms)
-          timers.push(setTimeout(() => setPhase('reverse-fade'),      4950))  // 2s visible → fade out replacement
-          timers.push(setTimeout(() => setPhase('reverse-show'),      5300))  // mount original with highlight
-          timers.push(setTimeout(() => setPhase('reverse-unhighlight'), 5350)) // highlight fades away (800ms)
+          timers.push(setTimeout(() => setPhase('highlight'),  400))
+          timers.push(setTimeout(() => setPhase('strike'),    1900))
+          timers.push(setTimeout(() => setPhase('typing'),    2600))
+          timers.push(setTimeout(() => setPhase('done'),      2650))
         } else {
           reset()
         }
@@ -103,9 +100,9 @@ export function StepMock4() {
     return () => { obs.disconnect(); reset() }
   }, [])
 
-  const isHighlighted = phase === 'highlight' || phase === 'reverse-show'
+  const isHighlighted = phase === 'highlight'
   const isStrike = phase === 'strike'
-  const showReplacement = phase === 'typing' || phase === 'done' || phase === 'reverse-fade'
+  const showReplacement = phase === 'typing' || phase === 'done'
 
   const origStyle: CSSProperties = {
     borderRadius: 2,
@@ -115,9 +112,7 @@ export function StepMock4() {
     backgroundPosition: 'left',
     backgroundSize: isHighlighted ? '100% 100%' : '0% 100%',
     opacity: isStrike ? 0 : 1,
-    transition: phase === 'reverse-show'
-      ? 'background-size 0s, opacity 0.4s ease'
-      : 'background-size 1.2s ease, opacity 0.4s ease',
+    transition: 'background-size 1.2s ease, opacity 0.4s ease',
   }
 
   return (
