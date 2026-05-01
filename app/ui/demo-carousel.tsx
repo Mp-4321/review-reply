@@ -98,19 +98,29 @@ const SLIDE_PAIRS = SLIDES.map((slide, i) => [slide, SLIDE_ALTERNATIVES[i]])
 
 const TONES: ToneLabel[] = ['Professional', 'Friendly', 'Concise']
 
-function ReplyText({ text, typing }: { text: string; typing: boolean }) {
-  const paragraphs = text.split('\n')
+function ReplyText({ text, fullText, typing }: { text: string; fullText: string; typing: boolean }) {
+  const paragraphs     = text.split('\n')
+  const fullParagraphs = fullText.split('\n')
   return (
-    <>
-      {paragraphs.map((p, i) => (
-        <span key={i} className="block">
-          {p}
-          {i === paragraphs.length - 1 && typing && (
-            <span className="inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-blue-500 align-middle" />
-          )}
-        </span>
-      ))}
-    </>
+    <div className="relative">
+      {/* Ghost: invisible full text fixes layout from the start — no reflow during typing */}
+      <div className="invisible select-none" aria-hidden>
+        {fullParagraphs.map((p, i) => (
+          <span key={i} className="block">{p}</span>
+        ))}
+      </div>
+      {/* Visible typed text overlaid */}
+      <div className="absolute inset-0 overflow-hidden">
+        {paragraphs.map((p, i) => (
+          <span key={i} className="block">
+            {p}
+            {i === paragraphs.length - 1 && typing && (
+              <span className="inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-blue-500 align-middle" />
+            )}
+          </span>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -249,7 +259,7 @@ export default function DemoCarousel() {
               <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
             </div>
             <div className="text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word] min-w-0">
-              <ReplyText text={displayedReply} typing={typing} />
+              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
             </div>
           </div>
         </div>
