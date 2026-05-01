@@ -17,7 +17,7 @@ const SLIDES = [
       "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken. Despite repeated calls to reception, nothing was fixed during our 3-night stay.",
     keywords: ['James', 'The Meridian Hotel', 'experience'],
     reply:
-      "Dear James, we sincerely apologize for your experience at The Meridian Hotel. Your concerns have been escalated to our management team and we want to make this right.\nPlease reach out at hello@meridianhotel.com.",
+      "Dear James, we sincerely apologize for your experience at The Meridian Hotel.\nYour concerns have been escalated to our management team, as we want to make this right. Please reach out at hello@meridianhotel.com.",
   },
   {
     tone: 'Friendly' as ToneLabel,
@@ -248,7 +248,7 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
             </div>
-            <div className="text-sm leading-relaxed text-slate-800">
+            <div className="text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word] min-w-0">
               <ReplyText text={displayedReply} typing={typing} />
             </div>
           </div>
