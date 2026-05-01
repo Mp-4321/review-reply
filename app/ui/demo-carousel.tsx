@@ -251,14 +251,14 @@ export default function DemoCarousel() {
           <div className="my-5 w-px self-stretch bg-slate-100" />
 
           {/* Right — AI reply */}
-          <div className="flex-1 px-5 pb-3 pt-1 text-left">
+          <div className="flex-1 min-w-0 overflow-hidden px-5 pb-3 pt-1 text-left">
             <div className="mb-3 flex min-h-[2.75rem] items-center gap-1.5">
               <svg className="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
             </div>
-            <div className="text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word] min-w-0">
+            <div className="text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
             </div>
           </div>
