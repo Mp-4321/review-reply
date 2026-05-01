@@ -99,7 +99,7 @@ export function StepMock4() {
 
     const onStep3Done = () => {
       if (!isIntersecting) return
-      startTimer = setTimeout(startAnimation, 1500)
+      startTimer = setTimeout(startAnimation, 900)
     }
 
     window.addEventListener('step3-done', onStep3Done)
