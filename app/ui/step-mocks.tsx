@@ -114,7 +114,11 @@ export function StepMock4() {
     }
 
     const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
+      if (!entry.isIntersecting) {
+        // Fully exited — reset so animation replays cleanly on re-entry
+        reset()
+      } else if (entry.intersectionRatio >= 0.3) {
+        // Enough visible to trigger — ignore partial peeks below 0.3
         reset()
         if (step3Visible) {
           listeningForStep3 = true
@@ -122,10 +126,8 @@ export function StepMock4() {
         } else {
           pendingStart = setTimeout(startPhases, 600)
         }
-      } else {
-        reset()
       }
-    }, { threshold: 0.5 })
+    }, { threshold: [0, 0.3] })
 
     obs.observe(el)
     // Only disconnect on unmount — observer must stay alive for re-triggers
