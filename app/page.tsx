@@ -312,12 +312,11 @@ export default function Home() {
               { stat: '45%', label: 'of consumers', desc: 'are more likely to visit a business that replies to negative reviews', source: 'ReviewTrackers 2024' },
               { stat: '81%', label: 'of consumers', desc: 'now expect a reply within 7 days of leaving a review', source: 'BrightLocal 2026' },
             ].map((item) => (
-              <div key={item.stat + item.label} className="flex h-full flex-col rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
+              <div key={item.stat + item.label} className="flex h-full flex-col rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center">
                 <p className="text-4xl font-extrabold tracking-tight text-blue-600">{item.stat}</p>
-                <p className="mt-0.5 text-sm font-semibold text-slate-700">{item.label}</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.desc}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">{item.label} {item.desc}</p>
                 <div className="mt-auto pt-4">
-                  <div className="mb-2 w-8 border-t border-slate-300" />
+                  <div className="mb-2 mx-auto w-8 border-t border-slate-300" />
                   <p className="text-xs text-slate-400">Source: {item.source}</p>
                 </div>
               </div>
