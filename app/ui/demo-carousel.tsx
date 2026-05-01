@@ -62,7 +62,7 @@ const SLIDE_ALTERNATIVES = [
       "The equipment is decent but the locker rooms are rarely cleaned. I reported the issue to staff twice with no result. For the monthly fee, I expected much better upkeep.",
     keywords: ['Daniel', 'Iron Flow Fitness'],
     reply:
-      "Dear Daniel,\nwe apologize for your experience at Iron Flow Fitness.\nPlease email us at hello@ironflowfitness.com.\nWe will make it right!",
+      "Dear Daniel,\nwe apologize for your experience at Iron Gym.\nPlease send us an email at hello@irongym.com.\nWe will make it right!",
   },
   {
     tone: 'Friendly' as ToneLabel,
@@ -166,7 +166,7 @@ export default function DemoCarousel() {
           const wait = idx === slides.length - 1 ? 3000 : 4000
           timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % slides.length), wait)
         }
-      }, 25)
+      }, 32)
     }, 1500)
   }
 
