@@ -4,8 +4,9 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 const REPLY = "We are really sorry about this!\nPlease reach out — we'll make it right."
 
-// Module-level visibility flag updated by StepMock3's IntersectionObserver
+// Module-level flags updated by StepMock3's IntersectionObserver
 let step3Visible = false
+let step3TypewriterDone = false
 
 export function StepMock3() {
   const ref = useRef<HTMLDivElement>(null)
@@ -20,6 +21,7 @@ export function StepMock3() {
       ([entry]) => {
         if (entry.isIntersecting) {
           step3Visible = true
+          step3TypewriterDone = false
           setTyped(0)
           let n = 0
           iv = setInterval(() => {
@@ -27,11 +29,13 @@ export function StepMock3() {
             setTyped(n)
             if (n >= REPLY.length) {
               clearInterval(iv)
+              step3TypewriterDone = true
               window.dispatchEvent(new CustomEvent('step3TypewriterComplete'))
             }
           }, 38)
         } else {
           step3Visible = false
+          step3TypewriterDone = false
           clearInterval(iv)
           setTyped(0)
         }
@@ -120,11 +124,13 @@ export function StepMock4() {
       } else if (entry.intersectionRatio >= 0.3) {
         // Enough visible to trigger — ignore partial peeks below 0.3
         reset()
-        if (step3Visible) {
+        if (!step3Visible || step3TypewriterDone) {
+          // Step 3 not visible, or typewriter already finished — start independently
+          pendingStart = setTimeout(startPhases, 600)
+        } else {
+          // Step 3 visible and still typing — wait for it to finish
           listeningForStep3 = true
           window.addEventListener('step3TypewriterComplete', onStep3Complete)
-        } else {
-          pendingStart = setTimeout(startPhases, 600)
         }
       }
     }, { threshold: [0, 0.3] })
