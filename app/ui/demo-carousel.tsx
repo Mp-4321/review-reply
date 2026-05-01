@@ -195,69 +195,61 @@ export default function DemoCarousel() {
         See it in action
       </p>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {/* Tone selector */}
+      <div className="mb-4 flex items-center gap-2">
+        <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
+        {TONES.map((t, i) => (
+          <span
+            key={t}
+            onClick={() => { if (slide.tone !== t) goToSlide(i) }}
+            className={`cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-300 ${
+              slide.tone === t ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+            }`}
+          >
+            {t}
+          </span>
+        ))}
+        <span className="ml-auto text-xs text-slate-500">{slide.businessType}</span>
+      </div>
 
-        {/* Tone selector */}
-        <div className="flex items-center gap-2 px-5 py-3">
-          <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
-          {TONES.map((t, i) => (
+      {/* Two-card body */}
+      <div
+        className="flex items-start gap-x-6"
+        style={{
+          opacity: contentVisible ? 1 : 0,
+          filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
+          transition: 'opacity 250ms ease, filter 250ms ease',
+        }}
+      >
+        {/* Left — review */}
+        <div className="flex-1 rounded-2xl border border-slate-200/60 bg-slate-50 p-6 text-left">
+          <div className="mb-4 flex items-center gap-2.5">
             <span
-              key={t}
-              onClick={() => { if (slide.tone !== t) goToSlide(i) }}
-              className={`cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-300 ${
-                slide.tone === t ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
-              }`}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+              style={{ backgroundColor: slide.color }}
             >
-              {t}
+              {slide.initials}
             </span>
-          ))}
-          <span className="ml-auto text-xs text-slate-500">{slide.businessType}</span>
+            <div>
+              <p className="text-sm font-semibold leading-tight text-slate-800">{slide.reviewer}</p>
+              <StarRow count={slide.stars} />
+            </div>
+          </div>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            {slide.review}
+          </p>
         </div>
 
-        <div className="mx-5 h-px bg-slate-100" />
-
-        {/* Split body — fixed min-height so card never resizes between slides */}
-        <div
-          className="flex min-h-[12rem] items-start"
-          style={{
-            opacity: contentVisible ? 1 : 0,
-            filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
-            transition: 'opacity 250ms ease, filter 250ms ease',
-          }}
-        >
-          {/* Left — review */}
-          <div className="flex-1 px-5 pb-3 pt-1 text-left">
-            <div className="mb-3 flex min-h-[2.75rem] items-center gap-2.5">
-              <span
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                style={{ backgroundColor: slide.color }}
-              >
-                {slide.initials}
-              </span>
-              <div>
-                <p className="text-sm font-semibold leading-tight text-slate-800">{slide.reviewer}</p>
-                <StarRow count={slide.stars} />
-              </div>
-            </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
-              {slide.review}
-            </p>
+        {/* Right — AI reply */}
+        <div className="mt-2 flex-1 min-w-0 overflow-hidden rounded-2xl bg-blue-50 p-7 text-left shadow-sm ring-1 ring-blue-100">
+          <div className="mb-4 flex items-center gap-2">
+            <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
           </div>
-
-          {/* Vertical divider */}
-          <div className="my-5 w-px self-stretch bg-slate-100" />
-
-          {/* Right — AI reply */}
-          <div className="flex-1 min-w-0 overflow-hidden px-5 pb-3 pt-1 text-left">
-            <div className="mb-3 flex min-h-[2.75rem] items-center gap-1.5">
-              <svg className="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
-            </div>
-            <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
-              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
-            </div>
+          <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
           </div>
         </div>
       </div>
