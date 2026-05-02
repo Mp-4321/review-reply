@@ -228,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="mx-2 flex flex-1 flex-col justify-start max-h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] pt-5 pb-[2px] text-left">
+          <div className="mx-2 flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] pt-5 pb-[2px] text-left">
             <div className="mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -241,20 +241,20 @@ export default function DemoCarousel() {
                 <StarRow count={slide.stars} />
               </div>
             </div>
-            <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            <p className="whitespace-pre-line text-xs leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
               {slide.review}
             </p>
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
-          <div className="mx-2 flex flex-1 flex-col justify-start max-h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 px-[9px] pt-5 pb-[2px] text-left shadow-sm">
+          <div className="mx-2 flex flex-1 flex-col justify-start h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 px-[9px] pt-5 pb-[2px] text-left shadow-sm">
             <div className="mb-3 flex items-center gap-2 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full text-[15px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="w-full text-xs leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
