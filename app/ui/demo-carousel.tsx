@@ -216,9 +216,9 @@ export default function DemoCarousel() {
 
         <div className="mx-5 h-px bg-slate-100" />
 
-        {/* Split body — fixed min-height so card never resizes between slides */}
+        {/* Two-panel grid */}
         <div
-          className="flex min-h-[12rem] items-start"
+          className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-6"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -226,7 +226,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review */}
-          <div className="flex-1 px-5 pb-3 pt-1 text-left">
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
             <div className="mb-3 flex min-h-[2.75rem] items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -244,13 +244,10 @@ export default function DemoCarousel() {
             </p>
           </div>
 
-          {/* Vertical divider */}
-          <div className="my-5 w-px self-stretch bg-slate-100" />
-
           {/* Right — AI reply */}
-          <div className="flex-1 min-w-0 overflow-hidden px-5 pb-3 pt-1 text-left">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left shadow-sm">
             <div className="mb-3 flex min-h-[2.75rem] items-center gap-1.5">
-              <svg className="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
