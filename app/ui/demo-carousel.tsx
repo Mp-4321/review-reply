@@ -98,15 +98,17 @@ const SLIDE_PAIRS = SLIDES.map((slide, i) => [slide, SLIDE_ALTERNATIVES[i]])
 
 const TONES: ToneLabel[] = ['Professional', 'Friendly', 'Concise']
 
-function ReplyText({ text, fullText, typing }: { text: string; fullText: string; typing: boolean }) {
+function ReplyText({ text, fullText, typing, clampLines }: { text: string; fullText: string; typing: boolean; clampLines?: number }) {
   const paragraphs = text.split('\n')
+  const ghostStyle = clampLines
+    ? { display: '-webkit-box' as const, WebkitLineClamp: clampLines, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }
+    : undefined
   return (
     <div className="relative w-full">
-      {/* Ghost: whitespace-pre-wrap preserves \n natively, fixes layout before typewriter starts */}
-      <div className="invisible select-none whitespace-pre-wrap w-full" aria-hidden>
+      {/* Ghost establishes layout height; clamped to limit panel growth */}
+      <div className="invisible select-none whitespace-pre-wrap w-full" aria-hidden style={ghostStyle}>
         {fullText}
       </div>
-      {/* Visible typed text overlaid — explicit w-full, not just inset-0 */}
       <div className="absolute inset-0 w-full overflow-hidden">
         {paragraphs.map((p, i) => (
           <span key={i} className="block">
@@ -218,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-6"
+          className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-5"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -226,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="max-h-[360px] overflow-hidden rounded-2xl border border-slate-100/60 bg-slate-50/50 p-6 text-left">
+          <div className="h-[340px] max-h-[340px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50/40 p-6 text-left">
             <div className="mb-4 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -245,7 +247,7 @@ export default function DemoCarousel() {
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
-          <div className="max-h-[360px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left shadow-sm ring-1 ring-blue-100">
+          <div className="mt-1 h-[340px] max-h-[340px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left shadow-sm">
             <div className="mb-5 flex items-center gap-2 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -253,7 +255,7 @@ export default function DemoCarousel() {
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
             <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
-              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
+              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={5} />
             </div>
           </div>
         </div>
