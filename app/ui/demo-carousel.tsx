@@ -216,11 +216,11 @@ export default function DemoCarousel() {
           <span className="ml-auto mr-[44px] text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
-        <div className="mt-[5px] ml-5 mr-14 h-px bg-slate-100" />
+        <div className="mt-[5px] ml-[51px] mr-14 h-px bg-slate-100" />
 
         {/* Two-panel grid */}
         <div
-          className="relative flex flex-col items-start gap-[4px] p-2 sm:flex-row min-h-[234px]"
+          className="relative flex flex-col items-start gap-[4px] p-2 sm:flex-row min-h-[210px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -230,7 +230,7 @@ export default function DemoCarousel() {
           {/* Vertical center divider */}
           <div className="absolute left-1/2 top-2 bottom-2 w-[1px] -translate-x-1/2 bg-slate-200" />
           {/* Left — review (low emphasis) */}
-          <div className="ml-[49px] mr-[4px] flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
+          <div className="ml-[43px] mr-[4px] flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
             <div className="mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
