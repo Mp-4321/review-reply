@@ -200,7 +200,7 @@ export default function DemoCarousel() {
       <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         {/* Tone selector */}
-        <div className="mt-3 flex items-center gap-2 px-4 py-1.5">
+        <div className="mt-3 flex items-center gap-2 pr-4 pl-8 py-1.5">
           <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
           {TONES.map((t, i) => (
             <span
@@ -213,14 +213,14 @@ export default function DemoCarousel() {
               {t}
             </span>
           ))}
-          <span className="ml-auto text-xs text-slate-500">{slide.businessType}</span>
+          <span className="ml-auto mr-10 text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
         <div className="mt-[5px] ml-5 mr-14 h-px bg-slate-100" />
 
         {/* Two-panel grid */}
         <div
-          className="flex flex-col items-start gap-[3px] p-2 sm:flex-row min-h-[234px]"
+          className="flex flex-col items-start gap-[4px] p-2 sm:flex-row min-h-[234px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -228,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="mx-2 flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
+          <div className="mx-1 ml-4 mr-12 flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
             <div className="mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -247,7 +247,7 @@ export default function DemoCarousel() {
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
-          <div className="mx-2 flex flex-1 flex-col justify-start h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 pl-[11px] pr-[9px] pt-[20px] pb-2 text-left shadow-sm">
+          <div className="mx-1 ml-4 mr-12 flex flex-1 flex-col justify-start h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 pl-[11px] pr-[9px] pt-[20px] pb-2 text-left shadow-sm">
             <div className="mb-3 flex items-center gap-2 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
