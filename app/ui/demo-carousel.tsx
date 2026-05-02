@@ -220,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-5"
+          className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-4"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -241,7 +241,7 @@ export default function DemoCarousel() {
                 <StarRow count={slide.stars} />
               </div>
             </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
               {slide.review}
             </p>
           </div>
@@ -254,8 +254,8 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
-              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={7} />
+            <div className="w-full text-[15px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
         </div>
