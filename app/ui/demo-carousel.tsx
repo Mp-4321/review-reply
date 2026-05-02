@@ -254,7 +254,7 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full pl-3 text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="w-full pl-2 text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
