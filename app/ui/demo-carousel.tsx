@@ -220,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="mt-2 flex flex-col gap-3 p-2 sm:flex-row sm:items-start min-h-[234px]"
+          className="mt-2 flex flex-col items-start gap-3 p-2 sm:flex-row min-h-[234px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -241,7 +241,7 @@ export default function DemoCarousel() {
                 <StarRow count={slide.stars} />
               </div>
             </div>
-            <p className="whitespace-pre-line text-xs leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            <p className="whitespace-pre-line text-[10px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
               {slide.review}
             </p>
           </div>
@@ -254,7 +254,7 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full text-xs leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="w-full text-[10px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
