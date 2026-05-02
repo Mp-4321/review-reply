@@ -200,7 +200,7 @@ export default function DemoCarousel() {
       <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         {/* Tone selector */}
-        <div className="flex items-center gap-2 px-4 py-1.5">
+        <div className="mt-1 flex items-center gap-2 px-4 py-1.5">
           <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
           {TONES.map((t, i) => (
             <span
@@ -220,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="mt-2 flex flex-col items-start gap-2 p-2 sm:flex-row min-h-[234px]"
+          className="mt-2 flex flex-col items-start gap-[6px] p-2 sm:flex-row min-h-[234px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
