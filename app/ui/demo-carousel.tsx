@@ -220,13 +220,15 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="flex flex-col items-start gap-[4px] p-2 sm:flex-row min-h-[234px]"
+          className="relative flex flex-col items-start gap-[4px] p-2 sm:flex-row min-h-[234px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
             transition: 'opacity 250ms ease, filter 250ms ease',
           }}
         >
+          {/* Vertical center divider */}
+          <div className="absolute left-1/2 top-2 bottom-2 w-[1px] -translate-x-1/2 bg-slate-200" />
           {/* Left — review (low emphasis) */}
           <div className="mx-1 ml-4 mr-12 flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
             <div className="mb-3 flex items-center gap-2.5">
@@ -241,7 +243,7 @@ export default function DemoCarousel() {
                 <StarRow count={slide.stars} />
               </div>
             </div>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            <p className="whitespace-pre-line text-[13px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
               {slide.review}
             </p>
           </div>
@@ -254,7 +256,7 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full pl-1 text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="w-full pl-1 text-[13px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
