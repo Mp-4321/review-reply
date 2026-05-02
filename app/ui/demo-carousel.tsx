@@ -220,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="flex flex-col gap-3 p-2 sm:flex-row sm:items-stretch"
+          className="flex flex-col gap-3 p-2 sm:flex-row sm:items-stretch min-h-[12rem]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
@@ -228,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="flex flex-1 flex-col justify-start min-h-[192px] max-h-[272px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50/40 p-4 text-left">
+          <div className="flex flex-1 flex-col justify-start overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50/40 p-4 text-left">
             <div className="mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -247,7 +247,7 @@ export default function DemoCarousel() {
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
-          <div className="flex flex-1 flex-col justify-start min-h-[192px] max-h-[272px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-4 text-left shadow-sm">
+          <div className="flex flex-1 flex-col justify-start min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-4 text-left shadow-sm">
             <div className="mb-3 flex items-center gap-2 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
