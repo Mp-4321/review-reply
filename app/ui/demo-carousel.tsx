@@ -228,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="h-[340px] max-h-[340px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50/40 p-6 text-left">
+          <div className="flex flex-col justify-start min-h-[260px] max-h-[340px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50/40 p-6 text-left">
             <div className="mb-4 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -247,7 +247,7 @@ export default function DemoCarousel() {
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
-          <div className="mt-1 h-[340px] max-h-[340px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left shadow-sm">
+          <div className="mt-1 flex flex-col justify-start min-h-[260px] max-h-[340px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left shadow-sm">
             <div className="mb-5 flex items-center gap-2 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -255,7 +255,7 @@ export default function DemoCarousel() {
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
             <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
-              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={5} />
+              <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={7} />
             </div>
           </div>
         </div>
