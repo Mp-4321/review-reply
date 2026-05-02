@@ -276,7 +276,7 @@ export default function Home() {
       </section>
 
       {/* Demo + tool card */}
-      <section className="mx-auto max-w-4xl px-6 pb-20">
+      <section className="mx-auto max-w-4xl px-8 pb-20">
         <DemoCarousel />
 
         <Show
