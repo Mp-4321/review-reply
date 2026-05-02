@@ -228,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="mx-2 flex flex-1 flex-col justify-start max-h-[204px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50/40 px-[9px] pt-5 pb-[2px] text-left">
+          <div className="mx-2 flex flex-1 flex-col justify-start max-h-[204px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] pt-5 pb-[2px] text-left">
             <div className="mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
