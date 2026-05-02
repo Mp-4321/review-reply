@@ -216,18 +216,18 @@ export default function DemoCarousel() {
 
         <div className="mx-5 h-px bg-slate-100" />
 
-        {/* Split body — fixed min-height so card never resizes between slides */}
+        {/* Two-panel grid */}
         <div
-          className="flex min-h-[12rem] items-start"
+          className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-6"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
             transition: 'opacity 250ms ease, filter 250ms ease',
           }}
         >
-          {/* Left — review */}
-          <div className="flex-1 px-5 pb-3 pt-1 text-left">
-            <div className="mb-3 flex min-h-[2.75rem] items-center gap-2.5">
+          {/* Left — review (low emphasis) */}
+          <div className="max-h-[360px] overflow-hidden rounded-2xl border border-slate-100/60 bg-slate-50/50 p-6 text-left">
+            <div className="mb-4 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
                 style={{ backgroundColor: slide.color }}
@@ -235,7 +235,7 @@ export default function DemoCarousel() {
                 {slide.initials}
               </span>
               <div>
-                <p className="text-sm font-semibold leading-tight text-slate-800">{slide.reviewer}</p>
+                <p className="text-sm font-semibold leading-tight text-slate-900">{slide.reviewer}</p>
                 <StarRow count={slide.stars} />
               </div>
             </div>
@@ -244,16 +244,13 @@ export default function DemoCarousel() {
             </p>
           </div>
 
-          {/* Vertical divider */}
-          <div className="my-5 w-px self-stretch bg-slate-100" />
-
-          {/* Right — AI reply */}
-          <div className="flex-1 min-w-0 overflow-hidden px-5 pb-3 pt-1 text-left">
-            <div className="mb-3 flex min-h-[2.75rem] items-center gap-1.5">
-              <svg className="h-3.5 w-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          {/* Right — AI reply (primary emphasis) */}
+          <div className="max-h-[360px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 p-6 text-left shadow-sm ring-1 ring-blue-100">
+            <div className="mb-5 flex items-center gap-2 text-blue-600">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <span className="text-xs font-semibold text-blue-600">AI-generated reply</span>
+              <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
             <div className="w-full text-sm leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} />
