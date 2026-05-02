@@ -220,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="flex flex-col gap-3 p-2 sm:flex-row sm:items-stretch min-h-[196px]"
+          className="flex flex-col gap-3 p-2 sm:flex-row sm:items-stretch min-h-[204px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
