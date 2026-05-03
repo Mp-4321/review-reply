@@ -251,53 +251,60 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-sky-100 via-blue-50 to-white">
       <Navbar />
 
-      {/* Hero text */}
-      <section className="mx-auto max-w-3xl px-6 pb-0 pt-28">
-        <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl">
-          Turn Google Reviews into<br />
-          <span className="text-blue-600">More </span><RotatingWord />
-        </h1>
+      {/* Hero */}
+      <section className="mx-auto max-w-7xl px-6 pb-20 pt-28">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-        <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-500">
-          AI replies that sound human,<br />
-          ready to send in seconds.
-        </p>
+          {/* Left: text */}
+          <div className="flex flex-col bg-red-100">
+            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl">
+              Turn Google Reviews into<br />
+              <span className="text-blue-600">More </span><RotatingWord />
+            </h1>
 
-        {/* Feature pills */}
-        <div className="mt-8 flex items-center gap-3">
-          {['⚡ Reply in seconds', '🎯 On-brand tone', '📈 Boost your rating'].map((feat) => (
-            <span
-              key={feat}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm whitespace-nowrap"
-            >
-              {feat}
-            </span>
-          ))}
-        </div>
-      </section>
+            <p className="mt-5 text-lg leading-relaxed text-slate-500">
+              AI replies that sound human,<br />
+              ready to send in seconds.
+            </p>
 
-      {/* Demo + tool card */}
-      <section className="mx-auto max-w-3xl px-9 pb-20">
-        <DemoCarousel />
-
-        <Show
-          when="signed-out"
-          fallback={
-            <div id="tool" className="mt-10 rounded-3xl bg-white p-8 shadow-2xl shadow-blue-100/60 ring-1 ring-slate-100 sm:p-10">
-              <ReplyForm />
+            {/* Feature pills */}
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {['⚡ Reply in seconds', '🎯 On-brand tone', '📈 Boost your rating'].map((feat) => (
+                <span
+                  key={feat}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm whitespace-nowrap"
+                >
+                  {feat}
+                </span>
+              ))}
             </div>
-          }
-        >
-          <div className="mt-10 flex flex-col items-center gap-2">
-            <a
-              href="/sign-up"
-              className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-            >
-              Generate your first reply →
-            </a>
-            <p className="text-xs text-slate-400">Try for free · Cancel anytime</p>
           </div>
-        </Show>
+
+          {/* Right: demo */}
+          <div className="w-full max-w-xl ml-auto bg-blue-100">
+            <DemoCarousel />
+
+            <Show
+              when="signed-out"
+              fallback={
+                <div id="tool" className="mt-10 rounded-3xl bg-white p-8 shadow-2xl shadow-blue-100/60 ring-1 ring-slate-100 sm:p-10">
+                  <ReplyForm />
+                </div>
+              }
+            >
+              <div className="mt-6 flex flex-col items-center gap-2">
+                <a
+                  href="/sign-up"
+                  className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                >
+                  Generate your first reply →
+                </a>
+                <p className="text-xs text-slate-400">Try for free · Cancel anytime</p>
+              </div>
+            </Show>
+          </div>
+
+        </div>
       </section>
 
       {/* Stats */}
