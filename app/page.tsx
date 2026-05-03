@@ -264,7 +264,7 @@ export default function Home() {
 
         {/* Feature pills */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          {['⚡ Reply in seconds', '🎯 On-brand tone', '📈 Improve your rating'].map((feat) => (
+          {['⚡ Reply in seconds', '🎯 On-brand tone', '📈 Boost your rating'].map((feat) => (
             <span
               key={feat}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm"
@@ -292,7 +292,7 @@ export default function Home() {
               href="/sign-up"
               className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
             >
-              Generate your reply instantly
+              Generate your first reply →
             </a>
             <p className="text-xs text-slate-400">Try for free · Cancel anytime</p>
           </div>
