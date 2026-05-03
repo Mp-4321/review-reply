@@ -216,11 +216,11 @@ export default function DemoCarousel() {
           <span className="ml-auto mr-[44px] text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
-        <div className="mt-[5px] ml-[45px] mr-[52px] h-px bg-slate-100" />
+        <div className="mt-[5px] ml-[41px] mr-[48px] h-px bg-slate-100" />
 
         {/* Two-panel grid */}
         <div
-          className="relative flex flex-col items-start gap-[4px] pt-2 px-1 pb-2 sm:flex-row min-h-[206px]"
+          className="relative flex flex-col items-start gap-[4px] pt-2 px-0 pb-2 sm:flex-row min-h-[206px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
