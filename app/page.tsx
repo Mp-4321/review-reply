@@ -4,6 +4,7 @@ import ReplyForm from './ui/reply-form'
 import DemoCarousel from './ui/demo-carousel'
 import Navbar from './ui/navbar'
 import { AnimatedStepCard } from './ui/step-card'
+import RotatingWord from './ui/rotating-word'
 import { StepMock3, StepMock4 } from './ui/step-mocks'
 
 const FEATURES = [
@@ -254,7 +255,7 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-6 pb-0 pt-28 text-center">
         <h1 className="text-balance text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl">
           Turn Google Reviews into<br />
-          <span className="text-blue-600">More Customers.</span>
+          More <RotatingWord />
         </h1>
 
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-500">
