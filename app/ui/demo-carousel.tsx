@@ -220,7 +220,7 @@ export default function DemoCarousel() {
 
         {/* Two-panel grid */}
         <div
-          className="relative flex flex-col items-start gap-[4px] pt-2 px-1 pb-1 sm:flex-row min-h-[206px]"
+          className="relative flex flex-col items-start gap-[4px] pt-2 px-1 pb-2 sm:flex-row min-h-[206px]"
           style={{
             opacity: contentVisible ? 1 : 0,
             filter: contentVisible ? 'blur(0px)' : 'blur(5px)',
