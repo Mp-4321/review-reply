@@ -258,8 +258,8 @@ export default function Home() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-500">
-          Reply to every review with smart responses that boost your rating<br />
-          and help you win more customers.
+          AI-generated replies that sound human.<br />
+          Help you win more customers.
         </p>
 
         {/* Feature pills */}
