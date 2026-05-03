@@ -192,10 +192,12 @@ export default function DemoCarousel() {
   const slide = slides[slideIndex]
 
   return (
-    <div className="mt-10">
-      <p className="mb-5 text-center text-sm font-semibold uppercase tracking-widest text-slate-400">
-        See it in action
-      </p>
+    <div>
+      <div className="flex items-center gap-4 mt-16 mb-10">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-300 opacity-80" />
+        <span className="text-xs tracking-widest uppercase text-slate-400">See it in action</span>
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-300 opacity-80" />
+      </div>
 
       <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
