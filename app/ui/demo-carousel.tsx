@@ -197,7 +197,7 @@ export default function DemoCarousel() {
         See it in action
       </p>
 
-      <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="mx-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         {/* Tone selector */}
         <div className="mt-3 flex items-center gap-2 pr-4 pl-[48px] py-1.5">
