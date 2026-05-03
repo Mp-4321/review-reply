@@ -31,7 +31,7 @@ const SLIDES = [
       "The flowers were beautiful, but my order arrived 2 hours late with no warning and I had to rearrange the whole event. Lovely products — just need to sort out the delivery.",
     keywords: ['Emma', 'Bloom Florist', 'flowers', 'delivery'],
     reply:
-      "Hi Emma! Your kind words about our flowers mean the world to the whole team at Bloom.\nWe're truly sorry the delivery let you down.\nWe are already fixing it. Please come back soon!",
+      "Hi Emma! Your kind words mean so much to our team at Bloom.\nWe're truly sorry the delivery let you down.\nWe are already fixing it. Please come back soon!",
   },
   {
     tone: 'Concise' as ToneLabel,
