@@ -252,23 +252,23 @@ export default function Home() {
       <Navbar />
 
       {/* Hero text */}
-      <section className="mx-auto max-w-3xl px-6 pb-0 pt-28 text-center">
-        <h1 className="text-balance text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl">
+      <section className="mx-auto max-w-3xl px-6 pb-0 pt-28">
+        <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-6xl">
           Turn Google Reviews into<br />
-          More <RotatingWord />
+          <span className="text-blue-600">More </span><RotatingWord />
         </h1>
 
-        <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-500">
-          AI replies that sound human<br />
-          and win you more customers.
+        <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-500">
+          AI replies that sound human,<br />
+          ready to send in seconds.
         </p>
 
         {/* Feature pills */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex items-center gap-3">
           {['⚡ Reply in seconds', '🎯 On-brand tone', '📈 Boost your rating'].map((feat) => (
             <span
               key={feat}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm whitespace-nowrap"
             >
               {feat}
             </span>
