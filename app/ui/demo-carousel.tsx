@@ -213,7 +213,7 @@ export default function DemoCarousel() {
               {t}
             </span>
           ))}
-          <span className="ml-auto mr-[14px] -translate-y-[0.7px] text-xs text-slate-500">{slide.businessType}</span>
+          <span className="ml-auto mr-[14px] -translate-y-[0.5px] text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
         <div className="mt-[3.3px] ml-[12px] mr-[12px] h-px bg-slate-100" />
