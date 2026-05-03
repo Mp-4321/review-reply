@@ -200,7 +200,7 @@ export default function DemoCarousel() {
       <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         {/* Tone selector */}
-        <div className="mt-3 flex items-center gap-2 pr-0 pl-[12px] py-1.5">
+        <div className="mt-3 flex items-center gap-2 pr-0 pl-[14px] py-1.5">
           <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
           {TONES.map((t, i) => (
             <span
@@ -213,10 +213,10 @@ export default function DemoCarousel() {
               {t}
             </span>
           ))}
-          <span className="ml-auto mr-[12px] text-xs text-slate-500">{slide.businessType}</span>
+          <span className="ml-auto mr-[14px] text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
-        <div className="mt-[5px] ml-[12px] mr-[12px] h-px bg-slate-100" />
+        <div className="mt-[4.5px] ml-[12px] mr-[12px] h-px bg-slate-100" />
 
         {/* Two-panel grid */}
         <div
@@ -241,7 +241,7 @@ export default function DemoCarousel() {
                 <StarRow count={slide.stars} />
               </div>
             </div>
-            <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            <p className="pt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
               {slide.review}
             </p>
           </div>
@@ -254,7 +254,7 @@ export default function DemoCarousel() {
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full pl-1 text-[13.5px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="pt-2 w-full pl-1 text-[13.5px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
