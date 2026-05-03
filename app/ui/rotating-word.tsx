@@ -21,7 +21,7 @@ export default function RotatingWord() {
 
   return (
     <span
-      className="inline-block min-w-[10rem] text-blue-600"
+      className="inline-block w-[7em] text-blue-600"
       style={{
         opacity: visible ? 1 : 0,
         filter: visible ? 'blur(0px)' : 'blur(3px)',
