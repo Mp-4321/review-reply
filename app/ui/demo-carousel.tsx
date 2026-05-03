@@ -241,20 +241,20 @@ export default function DemoCarousel() {
                 <StarRow count={slide.stars} />
               </div>
             </div>
-            <p className="whitespace-pre-line text-[13px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
+            <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-slate-600 [overflow-wrap:break-word] [hyphens:none]">
               {slide.review}
             </p>
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
           <div className="ml-[4px] mr-12 flex flex-1 flex-col justify-start h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 pl-[3px] pr-[9px] pt-[20px] pb-2 text-left shadow-sm">
-            <div className="mb-3 flex items-center gap-2 text-blue-600">
+            <div className="mb-3 flex items-center gap-1 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span className="text-xs font-semibold">AI-generated reply</span>
             </div>
-            <div className="w-full pl-1 text-[13px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
+            <div className="w-full pl-1 text-[13.5px] leading-relaxed text-slate-800 [overflow-wrap:break-word] [word-break:break-word]">
               <ReplyText text={displayedReply} fullText={slides[slideIndex].reply} typing={typing} clampLines={6} />
             </div>
           </div>
