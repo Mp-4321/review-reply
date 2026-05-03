@@ -200,7 +200,7 @@ export default function DemoCarousel() {
       <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         {/* Tone selector */}
-        <div className="mt-3 flex items-center gap-2 pr-0 pl-[14px] py-1.5">
+        <div className="mt-[11.6px] flex items-center gap-2 pr-0 pl-[14px] py-1.5">
           <span className="mr-1 text-xs font-medium text-slate-400">Tone:</span>
           {TONES.map((t, i) => (
             <span
@@ -213,10 +213,10 @@ export default function DemoCarousel() {
               {t}
             </span>
           ))}
-          <span className="ml-auto mr-[14px] text-xs text-slate-500">{slide.businessType}</span>
+          <span className="ml-auto mr-[14px] -translate-y-[0.4px] text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
-        <div className="mt-[4px] ml-[12px] mr-[12px] h-px bg-slate-100" />
+        <div className="mt-[3.7px] ml-[12px] mr-[12px] h-px bg-slate-100" />
 
         {/* Two-panel grid */}
         <div
