@@ -14,7 +14,7 @@ const SLIDES = [
     initials: 'JR',
     color: '#6366f1',
     review:
-      "Check-in took 45 minutes with no apology from staff.\nThe room smelled damp and the shower was broken.\nDespite repeated calls to reception, nothing was fixed during our 3-night stay.",
+      "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken.\nDespite repeated calls to reception, nothing was fixed during our 3-night stay.",
     keywords: ['James', 'The Meridian Hotel', 'experience'],
     reply:
       "Dear James,\nWe apologize for your experience at The Meridian.\nYour feedback has been escalated to our team.\nPlease contact us at hello@meridianhotel.com.\nWe'll look into this right away.",
@@ -45,7 +45,7 @@ const SLIDES = [
       "Always anxious about dentist visits, but the team here made me feel completely at ease. Professional, gentle, and thorough. I'll be back.",
     keywords: ['Karen', 'Smile Dental Clinic', 'comfortable'],
     reply:
-      "Thank you, Karen!\nThe whole team at Smile Dental Clinic looks forward to your next visit.",
+      "Thank you, Karen!\nThe whole team at Smile Dental Clinic really looks forward to your next visit.",
   },
 ]
 
@@ -87,7 +87,7 @@ const SLIDE_ALTERNATIVES = [
     initials: 'TB',
     color: '#8b5cf6',
     review:
-      "Great selection and super helpful staff. Found exactly what I needed in minutes.\nI do highly recommend.",
+      "Great selection and super helpful staff.\nI found exactly what I needed in minutes.\nI do highly recommend.",
     keywords: ['Tom', 'The Style Co.'],
     reply:
       "Thank you, Tom!\nThe whole team at The Style Co. looks forward to your next visit.",
