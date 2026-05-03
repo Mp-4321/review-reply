@@ -21,14 +21,14 @@ export default function RotatingWord() {
 
   return (
     <span
-      className="inline-block min-w-[6em] text-blue-600"
+      className="inline-block min-w-[5em] text-left text-blue-600"
       style={{
         opacity: visible ? 1 : 0,
         filter: visible ? 'blur(0px)' : 'blur(3px)',
         transition: 'opacity 300ms ease, filter 300ms ease',
       }}
     >
-      {WORDS[index]}.
+      {WORDS[index]}
     </span>
   )
 }

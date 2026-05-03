@@ -254,7 +254,7 @@ export default function Home() {
       {/* Hero text */}
       <section className="mx-auto max-w-3xl px-6 pb-0 pt-28">
         <h1 className="mx-[17px] text-[54px] font-extrabold leading-[1.1] tracking-tight text-center text-slate-900">
-          Turn Google Reviews into<br />
+          <span className="block mb-1">Turn Google Reviews into</span>
           <span className="text-blue-600">More </span><RotatingWord />
         </h1>
 
