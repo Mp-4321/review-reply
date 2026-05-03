@@ -14,7 +14,7 @@ const SLIDES = [
     initials: 'JR',
     color: '#6366f1',
     review:
-      "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken.\nDespite repeated calls to reception, nothing was fixed during our 3-night stay.",
+      "Check-in took 45 minutes with no apology from staff. The room smelled damp and the shower was broken. Despite repeated calls to reception, nothing was fixed during our 3-night stay.",
     keywords: ['James', 'The Meridian Hotel', 'experience'],
     reply:
       "Dear James,\nWe apologize for your experience at The Meridian.\nYour feedback has been escalated to our team.\nPlease contact us at hello@meridianhotel.com.\nWe'll look into this right away.",
@@ -31,7 +31,7 @@ const SLIDES = [
       "The flowers were beautiful, but my order arrived 2 hours late with no warning and I had to rearrange the whole event. Lovely products — just need to sort out the delivery.",
     keywords: ['Emma', 'Bloom Florist', 'flowers', 'delivery'],
     reply:
-      "Hi Emma! Your kind words about our flowers mean the world to the whole team at Bloom Florist.\nWe're truly sorry the delivery let you down.\nWe are already fixing it. Please come back soon!",
+      "Hi Emma! Your kind words about our flowers mean the world to the whole team at Bloom.\nWe're truly sorry the delivery let you down.\nWe are already fixing it. Please come back soon!",
   },
   {
     tone: 'Concise' as ToneLabel,
