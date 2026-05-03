@@ -229,7 +229,7 @@ export default function DemoCarousel() {
         >
           {/* Left — review (low emphasis) */}
           <div className="ml-[12px] mr-[4px] flex flex-1 flex-col justify-start h-[188px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
-            <div className="mt-[2px] mb-3 flex items-center gap-2.5">
+            <div className="translate-y-2 mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
                 style={{ backgroundColor: slide.color }}
