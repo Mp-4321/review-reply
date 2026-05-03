@@ -216,7 +216,7 @@ export default function DemoCarousel() {
           <span className="ml-auto mr-[44px] text-xs text-slate-500">{slide.businessType}</span>
         </div>
 
-        <div className="mt-[5px] ml-[33px] mr-[40px] h-px bg-slate-100" />
+        <div className="mt-[5px] ml-[12px] mr-[12px] h-px bg-slate-100" />
 
         {/* Two-panel grid */}
         <div
@@ -228,7 +228,7 @@ export default function DemoCarousel() {
           }}
         >
           {/* Left — review (low emphasis) */}
-          <div className="ml-[33px] mr-[4px] flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
+          <div className="ml-[12px] mr-[4px] flex flex-1 flex-col justify-start h-[194px] overflow-hidden rounded-2xl border border-slate-100/40 bg-slate-50 px-[9px] py-2 text-left">
             <div className="mb-3 flex items-center gap-2.5">
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -247,7 +247,7 @@ export default function DemoCarousel() {
           </div>
 
           {/* Right — AI reply (primary emphasis) */}
-          <div className="ml-[4px] mr-10 flex flex-1 flex-col justify-start h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 pl-[3px] pr-[9px] pt-[20px] pb-2 text-left shadow-sm">
+          <div className="ml-[4px] mr-[12px] flex flex-1 flex-col justify-start h-[194px] min-w-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 pl-[3px] pr-[9px] pt-[20px] pb-2 text-left shadow-sm">
             <div className="mb-3 flex items-center gap-0.5 text-blue-600">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
