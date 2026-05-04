@@ -199,7 +199,7 @@ export default function DemoCarousel() {
         <div className="h-px flex-1 max-w-[320px] bg-gradient-to-l from-transparent via-slate-300/40 to-slate-300/20" />
       </div>
 
-      <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="mt-5 mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
         {/* Tone selector */}
         <div className="mt-[11.1px] flex items-center gap-2 pr-0 pl-[14px] py-1.5">
