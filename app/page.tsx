@@ -248,10 +248,10 @@ function DesktopCells({ step }: { step: StepDef }) {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#eaf6ff] via-[#f6fbff] to-white">
-      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_25%_12%,rgba(37,99,235,0.22),transparent_42%)]" />
-      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_82%_22%,rgba(56,189,248,0.18),transparent_45%)]" />
-      <div className="absolute inset-x-0 top-0 z-0 h-[620px] pointer-events-none bg-[linear-gradient(180deg,rgba(219,234,254,0.65),rgba(255,255,255,0))]" />
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top_left,#c7e0ff,#e8f3ff_35%,#f5faff_65%,white)]">
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_18%_0%,rgba(96,165,250,0.2),transparent_50%)]" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_95%_35%,rgba(186,230,253,0.28),transparent_52%)]" />
+      <div className="absolute inset-x-0 top-0 z-0 h-[600px] pointer-events-none bg-[linear-gradient(180deg,rgba(203,224,255,0.3),transparent_50%)]" />
       <div className="relative z-10">
       <Navbar />
 
