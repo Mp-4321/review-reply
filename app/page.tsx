@@ -252,6 +252,34 @@ export default function Home() {
       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_18%_0%,rgba(96,165,250,0.2),transparent_50%)]" />
       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_95%_35%,rgba(186,230,253,0.28),transparent_52%)]" />
       <div className="absolute inset-x-0 top-0 z-0 h-[600px] pointer-events-none bg-[linear-gradient(180deg,rgba(203,224,255,0.3),transparent_50%)]" />
+
+      <div className="pointer-events-none absolute right-0 top-20 z-0 hidden h-[560px] w-[520px] overflow-hidden lg:block">
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 520 560"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M560 40C410 88 320 172 278 292C236 412 146 496 -24 540" stroke="#60A5FA" strokeOpacity="0.22" strokeWidth="1.2" />
+          <path d="M548 126C420 162 346 235 306 338C266 441 178 506 28 548" stroke="#93C5FD" strokeOpacity="0.22" strokeWidth="1" />
+          <path d="M528 218C430 244 368 300 332 380C296 460 224 516 92 552" stroke="#BFDBFE" strokeOpacity="0.35" strokeWidth="1" />
+          <defs>
+            <pattern id="hero-dot-grid" width="18" height="18" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="1" fill="#60A5FA" fillOpacity="0.22" />
+            </pattern>
+            <linearGradient id="dot-fade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="white" stopOpacity="0" />
+              <stop offset="45%" stopColor="white" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="white" stopOpacity="1" />
+            </linearGradient>
+            <mask id="dot-mask">
+              <rect x="0" y="0" width="520" height="560" fill="url(#dot-fade)" />
+            </mask>
+          </defs>
+          <rect x="250" y="120" width="260" height="320" fill="url(#hero-dot-grid)" mask="url(#dot-mask)" opacity="0.55" />
+        </svg>
+      </div>
+
       <div className="relative z-10">
       <Navbar />
 
