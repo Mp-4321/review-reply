@@ -248,9 +248,11 @@ function DesktopCells({ step }: { step: StepDef }) {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#eef6ff] via-[#f6faff] to-white">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_25%_20%,rgba(59,130,246,0.18),transparent_45%)]" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_30%,rgba(59,130,246,0.12),transparent_45%)]" />
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#eaf6ff] via-[#f6fbff] to-white">
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_25%_12%,rgba(37,99,235,0.22),transparent_42%)]" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_82%_22%,rgba(56,189,248,0.18),transparent_45%)]" />
+      <div className="absolute inset-x-0 top-0 z-0 h-[620px] pointer-events-none bg-[linear-gradient(180deg,rgba(219,234,254,0.65),rgba(255,255,255,0))]" />
+      <div className="relative z-10">
       <Navbar />
 
       {/* Hero text */}
@@ -421,6 +423,7 @@ export default function Home() {
       <footer className="pb-10 text-center text-xs text-slate-400">
         ReplyAI · Your replies, always at their best
       </footer>
+      </div>
     </div>
   )
 }
