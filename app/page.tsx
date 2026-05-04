@@ -252,29 +252,6 @@ export default function Home() {
       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_25%_12%,rgba(37,99,235,0.22),transparent_42%)]" />
       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_82%_22%,rgba(56,189,248,0.18),transparent_45%)]" />
       <div className="absolute inset-x-0 top-0 z-0 h-[620px] pointer-events-none bg-[linear-gradient(180deg,rgba(219,234,254,0.65),rgba(255,255,255,0))]" />
-
-      {/* Decorative right-side: curved arcs + dotted grid */}
-      <div className="absolute right-0 top-[80px] z-0 h-[520px] w-[420px] pointer-events-none" aria-hidden="true">
-        <svg width="420" height="520" viewBox="0 0 420 520" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="heroGrid" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="0.9" fill="#93c5fd" />
-            </pattern>
-            <linearGradient id="gridFade" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="black" stopOpacity="0" />
-              <stop offset="55%" stopColor="black" stopOpacity="1" />
-            </linearGradient>
-            <mask id="gridMask">
-              <rect width="420" height="520" fill="url(#gridFade)" />
-            </mask>
-          </defs>
-          <rect width="420" height="520" fill="url(#heroGrid)" mask="url(#gridMask)" opacity="0.22" />
-          <path d="M 420 -20 A 620 620 0 0 0 -20 530" stroke="#93c5fd" strokeWidth="1" opacity="0.24" />
-          <path d="M 420 60 A 520 520 0 0 0 -10 490" stroke="#93c5fd" strokeWidth="1" opacity="0.20" />
-          <path d="M 420 140 A 420 420 0 0 0 10 450" stroke="#93c5fd" strokeWidth="1" opacity="0.17" />
-        </svg>
-      </div>
-
       <div className="relative z-10">
       <Navbar />
 
