@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SignInButton, SignUpButton, UserButton, Show } from '@clerk/nextjs'
 
 export default function Navbar() {
   return (
@@ -16,6 +17,19 @@ export default function Navbar() {
           <Link href="/pricing"   className="text-sm text-slate-500 transition hover:text-slate-900">Pricing</Link>
           <Link href="/#faq"      className="text-sm text-slate-500 transition hover:text-slate-900">FAQ</Link>
           <Link href="/#tool"     className="text-sm text-slate-500 transition hover:text-slate-900">Free Tool</Link>
+        </div>
+        <div className="ml-auto flex items-center gap-3">
+          <Show when="signed-out">
+            <SignInButton>
+              <button className="text-sm text-slate-600 transition hover:text-slate-900">Sign in</button>
+            </SignInButton>
+            <SignUpButton>
+              <button className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</button>
+            </SignUpButton>
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
         </div>
       </div>
     </nav>
