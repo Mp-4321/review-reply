@@ -248,11 +248,11 @@ function DesktopCells({ step }: { step: StepDef }) {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top_left,#ddeeff,#f0f8ff_30%,#f9fcff_60%,white)]">
-      <div className="absolute -left-[200px] -top-[240px] z-0 h-[400px] w-[400px] pointer-events-none bg-[radial-gradient(circle,rgba(96,165,250,0.08),transparent_70%)]" />
-      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_95%_35%,rgba(186,230,253,0.15),transparent_52%)]" />
-      <div className="absolute inset-x-0 top-0 z-0 h-[600px] pointer-events-none bg-[linear-gradient(180deg,rgba(203,224,255,0.07),transparent_50%)]" />
-      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.75),transparent_60%)]" />
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_top_left,#eaf4ff,#f4f9ff_25%,#fafcff_55%,white)]">
+      <div className="absolute -left-[200px] -top-[240px] z-0 h-[560px] w-[560px] pointer-events-none blur-2xl bg-[radial-gradient(circle,rgba(96,165,250,0.06),transparent_80%)]" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_95%_35%,rgba(219,234,254,0.12),transparent_65%)]" />
+      <div className="absolute inset-x-0 top-0 z-0 h-[600px] pointer-events-none bg-[linear-gradient(180deg,rgba(219,234,254,0.25)_0%,rgba(255,255,255,0)_60%)]" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.82),transparent_65%)]" />
 
       <div className="pointer-events-none absolute right-[-80px] top-[120px] z-0 hidden h-[500px] w-[460px] overflow-hidden opacity-50 lg:block">
         <svg
