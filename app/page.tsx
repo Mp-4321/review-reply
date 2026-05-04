@@ -30,7 +30,7 @@ const FEATURES = [
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     ),
     title: 'Any language',
-    description: 'ReplyAI detects the language of the review and replies in kind — no configuration needed.',
+    description: 'Replyfier detects the language of the review and replies in kind — no configuration needed.',
   },
   {
     color: '#f59e0b',
@@ -60,8 +60,8 @@ const FEATURES = [
 
 const FAQS = [
   {
-    q: 'How does ReplyAI work?',
-    a: 'Paste a customer review, choose a tone (or leave it on Professional), and click Generate. ReplyAI sends the review to Claude AI, which writes a professional reply in seconds. You can then refine it with a different tone or add your business name.',
+    q: 'How does Replyfier work?',
+    a: 'Paste a customer review, choose a tone (or leave it on Professional), and click Generate. Replyfier sends the review to Claude AI, which writes a professional reply in seconds. You can then refine it with a different tone or add your business name.',
   },
   {
     q: 'Is it free to try?',
@@ -69,7 +69,7 @@ const FAQS = [
   },
   {
     q: 'Which languages does it support?',
-    a: 'Any language. ReplyAI detects the language of the review automatically and replies in the same language — no settings to configure.',
+    a: 'Any language. Replyfier detects the language of the review automatically and replies in the same language — no settings to configure.',
   },
   {
     q: 'How do I include my business name in the reply?',
@@ -80,7 +80,7 @@ const FAQS = [
     a: 'A paywall appears with two subscription options. You can choose the Starter plan ($29/mo) for a single location or the Pro plan ($59/mo) for up to five locations.',
   },
   {
-    q: 'Can I use ReplyAI for multiple locations?',
+    q: 'Can I use Replyfier for multiple locations?',
     a: 'Yes. The Pro plan supports up to 5 locations, each with its own custom brand tone. Additional locations can be added for $10/mo each.',
   },
   {
@@ -450,7 +450,7 @@ export default function Home() {
       </section>
 
       <footer className="pb-10 text-center text-xs text-slate-400">
-        ReplyAI · Your replies, always at their best
+        Replyfier · Your replies, always at their best
       </footer>
       </div>
     </div>

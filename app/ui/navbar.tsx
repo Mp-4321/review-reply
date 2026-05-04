@@ -4,8 +4,11 @@ export default function Navbar() {
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-sm">
       <div className="relative mx-auto flex h-14 max-w-5xl items-center px-6">
-        <Link href="/" className="text-base font-bold tracking-tight text-slate-900">
-          Reply<span className="text-blue-600">AI</span>
+        <Link href="/" className="flex items-center gap-1.5 text-base font-bold tracking-tight text-slate-900">
+          <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Replyfier
         </Link>
         <div className="absolute inset-0 flex items-center justify-center gap-8">
           <Link href="/"          className="text-sm text-slate-500 transition hover:text-slate-900">Home</Link>

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ReplyAI — Automated Google Review Replies",
+  title: "Replyfier — Automated Google Review Replies",
   description: "Generate professional replies to your Google reviews in seconds.",
 };
 
