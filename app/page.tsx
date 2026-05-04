@@ -248,9 +248,9 @@ function DesktopCells({ step }: { step: StepDef }) {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent_40%)]" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_30%,rgba(59,130,246,0.10),transparent_40%)]" />
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#eef6ff] via-[#f6faff] to-white">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_25%_20%,rgba(59,130,246,0.18),transparent_45%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_30%,rgba(59,130,246,0.12),transparent_45%)]" />
       <Navbar />
 
       {/* Hero text */}
