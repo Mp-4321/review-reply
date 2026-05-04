@@ -193,10 +193,10 @@ export default function DemoCarousel() {
 
   return (
     <div>
-      <div className="flex items-center gap-4 mt-16 mb-7">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-300 opacity-80" />
+      <div className="flex items-center gap-4 mt-16 mb-5">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-400/60 to-transparent" />
         <span className="text-xs tracking-widest uppercase text-slate-400">See it in action</span>
-        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-300 opacity-80" />
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent via-slate-400/60 to-transparent" />
       </div>
 
       <div className="mx-[5px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
