@@ -21,7 +21,7 @@ export default function RotatingWord() {
 
   return (
     <span
-      className="inline-block min-w-[5em] text-left bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(59,130,246,0.25)]"
+      className="inline-block min-w-[5em] text-left bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_6px_16px_rgba(59,130,246,0.22)]"
       style={{
         opacity: visible ? 1 : 0,
         filter: visible ? 'blur(0px)' : 'blur(3px)',
