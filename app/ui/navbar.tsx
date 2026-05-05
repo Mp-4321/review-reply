@@ -3,7 +3,7 @@ import { SignInButton, SignUpButton, UserButton, Show } from '@clerk/nextjs'
 
 export default function Navbar() {
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 bg-white/95 backdrop-blur-sm">
+    <nav className="relative z-[100] fixed inset-x-0 top-0 bg-white/95 backdrop-blur-sm">
       <div className="relative mx-auto flex h-14 max-w-5xl items-center px-6">
         <Link href="/" className="flex items-center gap-1.5 text-base font-bold tracking-tight text-slate-900">
           <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -21,10 +21,10 @@ export default function Navbar() {
         <div className="ml-auto flex items-center gap-3">
           <Show when="signed-out">
             <SignInButton mode="redirect">
-              <button className="text-sm text-slate-600 transition hover:text-slate-900">Sign in</button>
+              <button className="cursor-pointer text-sm text-slate-600 transition hover:text-slate-900">Sign in</button>
             </SignInButton>
             <SignUpButton mode="redirect">
-              <button className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</button>
+              <button className="cursor-pointer rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</button>
             </SignUpButton>
           </Show>
           <Show when="signed-in">
