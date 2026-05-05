@@ -38,6 +38,7 @@ export default function SignUpPage() {
             appearance={{
               elements: {
                 headerSubtitle: { display: 'none' },
+                header: { marginBottom: '4px' },
               },
             }}
           />
