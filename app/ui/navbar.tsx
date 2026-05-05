@@ -20,10 +20,10 @@ export default function Navbar() {
         </div>
         <div className="ml-auto flex items-center gap-3">
           <Show when="signed-out">
-            <SignInButton>
+            <SignInButton mode="redirect">
               <button className="text-sm text-slate-600 transition hover:text-slate-900">Sign in</button>
             </SignInButton>
-            <SignUpButton>
+            <SignUpButton mode="redirect">
               <button className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</button>
             </SignUpButton>
           </Show>
