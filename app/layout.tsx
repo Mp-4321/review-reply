@@ -37,6 +37,11 @@ export default function RootLayout({
                 subtitle: 'Please sign in to continue',
               },
             },
+            signUp: {
+              start: {
+                subtitle: '',
+              },
+            },
           }}
         >
           {children}
