@@ -17,7 +17,7 @@ export default function SignUpPage() {
         {/* Left — value proposition */}
         <div className="flex-1 text-center lg:text-left lg:pt-3">
           <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-4xl">
-            Respond to every customer review<br />in seconds with AI
+            Respond to every customer<br />review in seconds with AI
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-slate-500">
             Create an account and start your 7-day free trial.
