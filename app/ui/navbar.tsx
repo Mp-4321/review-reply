@@ -10,14 +10,14 @@ export default function Navbar() {
           </svg>
           Replyfier
         </Link>
-        <div className="absolute inset-0 flex items-center justify-center gap-8">
-          <Link href="/"          className="text-sm text-slate-500 transition hover:text-slate-900">Home</Link>
-          <Link href="/#features" className="text-sm text-slate-500 transition hover:text-slate-900">Features</Link>
-          <Link href="/pricing"   className="text-sm text-slate-500 transition hover:text-slate-900">Pricing</Link>
-          <Link href="/#faq"      className="text-sm text-slate-500 transition hover:text-slate-900">FAQ</Link>
-          <Link href="/#tool"     className="text-sm text-slate-500 transition hover:text-slate-900">Free Tool</Link>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-8">
+          <Link href="/"          className="pointer-events-auto text-sm text-slate-500 transition hover:text-slate-900">Home</Link>
+          <Link href="/#features" className="pointer-events-auto text-sm text-slate-500 transition hover:text-slate-900">Features</Link>
+          <Link href="/pricing"   className="pointer-events-auto text-sm text-slate-500 transition hover:text-slate-900">Pricing</Link>
+          <Link href="/#faq"      className="pointer-events-auto text-sm text-slate-500 transition hover:text-slate-900">FAQ</Link>
+          <Link href="/#tool"     className="pointer-events-auto text-sm text-slate-500 transition hover:text-slate-900">Free Tool</Link>
         </div>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="relative z-10 ml-auto flex items-center gap-3">
           <a href="/sign-in" className="text-sm text-slate-600 transition hover:text-slate-900">Sign in</a>
           <a href="/sign-up" className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</a>
         </div>
