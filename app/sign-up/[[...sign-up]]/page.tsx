@@ -12,7 +12,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-100 via-blue-50 to-white">
       <Navbar />
-      <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-12 px-6 pt-14 lg:flex-row lg:items-start lg:gap-16 lg:pt-32">
+      <div className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-12 px-6 pt-14 lg:flex-row lg:items-start lg:gap-16 lg:pt-20">
 
         {/* Left — value proposition */}
         <div className="flex-1 text-center lg:text-left lg:pt-3">
