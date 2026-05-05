@@ -29,7 +29,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-sky-100`}
     >
       <body className="min-h-full flex flex-col overscroll-none bg-white">
-        <ClerkProvider>
+        <ClerkProvider
+          localization={{
+            signIn: {
+              start: {
+                title: 'Welcome to Replyfier',
+                subtitle: 'Please sign in to continue',
+              },
+            },
+          }}
+        >
           {children}
         </ClerkProvider>
       </body>
