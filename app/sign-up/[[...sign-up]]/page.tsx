@@ -34,7 +34,13 @@ export default function SignUpPage() {
 
         {/* Right — Clerk SignUp */}
         <div className="flex justify-center lg:justify-end lg:pl-8">
-          <SignUp />
+          <SignUp
+            appearance={{
+              elements: {
+                headerSubtitle: { display: 'none' },
+              },
+            }}
+          />
         </div>
 
       </div>
