@@ -292,7 +292,7 @@ export default function Home() {
         </h1>
 
         <p className="mt-5 mx-auto text-center text-lg leading-relaxed text-slate-500">
-          AI-powered replies that sound human and help you grow your business.
+          AI replies that sound human, building trust with every review.
         </p>
 
         {/* Feature pills */}
