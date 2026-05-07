@@ -8,15 +8,15 @@ const NAV_GROUPS = [
     group: 'Reviews',
     items: [
       { label: 'Reviews & Replies', href: '/dashboard/reviews',   soon: false },
-      { label: 'Pending replies',   href: '/dashboard/pending',   soon: false },
-      { label: 'Generated replies', href: '/dashboard/generated', soon: false },
+      { label: 'Awaiting reply',    href: '/dashboard/pending',   soon: false },
+      { label: 'Draft replies',     href: '/dashboard/generated', soon: false },
     ],
   },
   {
     group: 'Automation',
     items: [
-      { label: 'AI Reply Settings', href: '/dashboard/ai-settings',  soon: true },
-      { label: 'Notifications',     href: '/dashboard/notifications', soon: true },
+      { label: 'AI Settings',   href: '/dashboard/ai-settings',  soon: false },
+      { label: 'Notifications', href: '/dashboard/notifications', soon: false },
     ],
   },
   {
