@@ -6,8 +6,8 @@ const NAV_GROUPS = [
   {
     group: 'Reviews',
     items: [
-      { label: 'Reviews & Replies', href: '/dashboard/reviews', soon: false },
-      { label: 'Pending replies',   href: '/dashboard/pending', soon: false },
+      { label: 'Reviews & Replies', href: '/dashboard/reviews',   soon: false },
+      { label: 'Pending replies',   href: '/dashboard/pending',   soon: false },
       { label: 'Generated replies', href: '/dashboard/generated', soon: false },
     ],
   },
@@ -34,23 +34,47 @@ const NAV_GROUPS = [
   },
 ]
 
-const STATS = [
-  { label: 'Replies generated', value: '0', icon: (
-    <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
-  )},
-  { label: 'Reviews pending', value: '0', icon: (
-    <svg className="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  )},
-  { label: 'Trial days remaining', value: '7', icon: (
-    <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-    </svg>
-  )},
+const MOCK_ROWS = [
+  {
+    initials: 'SL', color: '#6366f1',
+    name: 'Sarah L.', source: 'via Google',
+    stars: 5, status: 'Replied',
+    reply: "Thanks so much for your kind words! We're…",
+    date: 'Today, 9:41 AM',
+  },
+  {
+    initials: 'MR', color: '#f59e0b',
+    name: 'Mike R.', source: 'via Google',
+    stars: 3, status: 'Pending',
+    reply: '—',
+    date: 'Yesterday',
+  },
+  {
+    initials: 'ET', color: '#10b981',
+    name: 'Emma T.', source: 'via Google',
+    stars: 5, status: 'AI Draft',
+    reply: "Thank you for your amazing review! We're…",
+    date: '2d ago',
+  },
 ]
+
+const STATUS_STYLES: Record<string, string> = {
+  Replied:  'bg-green-50 text-green-700 border border-green-200',
+  Pending:  'bg-amber-50 text-amber-700 border border-amber-200',
+  'AI Draft': 'bg-violet-50 text-violet-700 border border-violet-200',
+}
+
+function Stars({ count }: { count: number }) {
+  return (
+    <span className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg key={i} className="h-3.5 w-3.5" viewBox="0 0 24 24" fill={i < count ? '#D97706' : '#E2E8F0'}>
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      ))}
+    </span>
+  )
+}
 
 function greeting() {
   const h = new Date().getHours()
@@ -138,7 +162,7 @@ export default async function DashboardPage() {
       <main className="flex-1 overflow-y-auto p-8">
 
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
+        <div className="mb-6 flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">{greeting()}, {firstName}</h1>
             <p className="mt-1 text-sm text-slate-400">{formatDate()}</p>
@@ -154,57 +178,109 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {STATS.map(({ label, value, icon }) => (
-            <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-500">{label}</p>
-                {icon}
-              </div>
-              <p className="mt-3 text-3xl font-bold text-slate-900">{value}</p>
+        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {/* Replies generated */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-500">Replies generated</p>
+              <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
-          ))}
-        </div>
+            <p className="mt-3 text-3xl font-bold text-slate-900">0</p>
+            <p className="mt-1 text-xs text-slate-400">All time</p>
+          </div>
 
-        {/* Connect Google Business */}
-        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Connect Google Business</h2>
-                <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-700">Coming soon</span>
-              </div>
-              <p className="mt-1.5 text-sm text-slate-500">
-                Sync your Google Business reviews automatically and reply directly from Replyfier — no copy-paste needed.
-              </p>
+          {/* Reviews pending */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-500">Reviews pending</p>
+              <svg className="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <svg className="h-8 w-8 shrink-0 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-            </svg>
+            <p className="mt-3 text-3xl font-bold text-slate-900">0</p>
+            <p className="mt-1 text-xs text-slate-400">Awaiting your reply</p>
+          </div>
+
+          {/* Current rating */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-500">Current rating</p>
+              <svg className="h-5 w-5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            </div>
+            <p className="mt-3 text-3xl font-bold text-slate-900">4.8</p>
+            <p className="mt-1 text-xs text-slate-400">Google Business</p>
+          </div>
+
+          {/* Total reviews */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-500">Total reviews</p>
+              <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </div>
+            <p className="mt-3 text-3xl font-bold text-slate-900">128</p>
+            <p className="mt-1 text-xs text-slate-400">All time</p>
           </div>
         </div>
 
         {/* Recent replies */}
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-100 px-6 py-4">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
             <h2 className="text-base font-semibold text-slate-900">Recent replies</h2>
+            <Link href="/dashboard/reviews" className="text-xs font-medium text-blue-600 hover:text-blue-700">
+              View all
+            </Link>
           </div>
+
+          {/* Google Business slim banner */}
+          <div className="mx-4 mt-3 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5">
+            <p className="text-xs text-slate-500">Connect Google Business to sync reviews automatically</p>
+            <span className="ml-3 shrink-0 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-600">Coming soon</span>
+          </div>
+
           {/* Table header */}
-          <div className="grid grid-cols-4 border-b border-slate-100 px-6 py-2.5 text-xs font-medium uppercase tracking-wide text-slate-400">
+          <div className="mt-3 grid grid-cols-[1.5fr_1fr_1fr_2fr_1fr] border-b border-slate-100 px-6 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             <span>Customer</span>
             <span>Rating</span>
             <span>Status</span>
+            <span>Reply</span>
             <span>Date</span>
           </div>
-          {/* Empty state */}
-          <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
-            <p className="text-sm font-medium text-slate-400">No replies yet — generate your first reply</p>
-            <Link
-              href="/#tool"
-              className="mt-4 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+
+          {/* Mock rows */}
+          {MOCK_ROWS.map((row) => (
+            <div
+              key={row.name}
+              className="grid grid-cols-[1.5fr_1fr_1fr_2fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
             >
-              Generate a reply
-            </Link>
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                  style={{ backgroundColor: row.color }}
+                >
+                  {row.initials}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-900">{row.name}</p>
+                  <p className="text-[11px] text-slate-400">{row.source}</p>
+                </div>
+              </div>
+              <Stars count={row.stars} />
+              <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[row.status]}`}>
+                {row.status}
+              </span>
+              <p className="truncate pr-4 text-[13px] text-slate-500">{row.reply}</p>
+              <p className="text-[12px] text-slate-400">{row.date}</p>
+            </div>
+          ))}
+
+          <div className="px-6 py-3 text-center text-xs text-slate-400">
+            Showing 3 of 3
           </div>
         </div>
 
