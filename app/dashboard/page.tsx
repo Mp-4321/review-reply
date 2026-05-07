@@ -76,7 +76,7 @@ export default async function DashboardPage() {
     <div className="flex min-h-screen bg-slate-50">
 
       {/* Sidebar */}
-      <aside className="flex w-56 flex-col border-r border-slate-200 bg-white">
+      <aside className="flex w-52 flex-col border-r border-slate-200 bg-white">
 
         {/* Logo */}
         <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-4">
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Location selector */}
-        <div className="mx-3 my-3 flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 transition hover:bg-slate-100">
+        <div className="mx-3 mt-3 mb-8 flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 transition hover:bg-slate-100">
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-slate-800">The Style Co.</p>
             <p className="truncate text-[11px] text-slate-400">Main Street · Boston</p>
@@ -100,17 +100,17 @@ export default async function DashboardPage() {
         {/* Nav groups */}
         <nav className="flex-1 overflow-y-auto px-3 pb-4">
           {NAV_GROUPS.map(({ group, items }) => (
-            <div key={group} className="mb-4">
-              <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">{group}</p>
+            <div key={group} className="mb-7">
+              <p className="mb-1.5 px-2 text-[9px] font-semibold uppercase tracking-widest text-slate-400">{group}</p>
               {items.map(({ label, href, soon }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                  className="flex items-center justify-between rounded-md px-2 py-1 text-[13px] text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 >
                   <span>{label}</span>
                   {soon && (
-                    <span className="ml-2 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-400">
+                    <span className="ml-1.5 rounded-full border border-slate-200 bg-white px-1 py-px text-[9px] font-medium text-slate-400">
                       Soon
                     </span>
                   )}
