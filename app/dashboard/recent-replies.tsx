@@ -37,7 +37,7 @@ function Stars({ count }: { count: number }) {
 
 export default function RecentReplies() {
   const [expanded, setExpanded] = useState(false)
-  const rows = expanded ? ALL_ROWS : ALL_ROWS.slice(0, 3)
+  const rows = expanded ? ALL_ROWS : ALL_ROWS.slice(0, 5)
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -45,7 +45,7 @@ export default function RecentReplies() {
         <h2 className="text-base font-semibold text-slate-900">Recent replies</h2>
         <button
           onClick={() => setExpanded(e => !e)}
-          className="text-xs font-medium text-blue-600 hover:text-blue-700"
+          className="cursor-pointer text-xs font-medium text-blue-600 hover:text-blue-700"
         >
           {expanded ? 'Show less' : 'View all'}
         </button>
