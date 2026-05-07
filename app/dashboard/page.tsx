@@ -101,7 +101,7 @@ export default async function DashboardPage() {
         <nav className="flex-1 overflow-y-auto px-3 pb-4">
           {NAV_GROUPS.map(({ group, items }) => (
             <div key={group} className="mb-7">
-              <p className="mb-1.5 px-2 text-[9px] font-semibold uppercase tracking-widest text-slate-400">{group}</p>
+              <p className="mb-1.5 px-2 text-[10.5px] font-semibold uppercase tracking-widest text-slate-400">{group}</p>
               {items.map(({ label, href, soon }) => (
                 <Link
                   key={href}
