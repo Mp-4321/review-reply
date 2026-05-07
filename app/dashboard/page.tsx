@@ -7,7 +7,7 @@ const NAV_GROUPS = [
   {
     group: 'Reviews',
     items: [
-      { label: 'Reviews & Replies', href: '/dashboard/reviews',   soon: false },
+      { label: 'All reviews',        href: '/dashboard/reviews',   soon: false },
       { label: 'Awaiting reply',    href: '/dashboard/pending',   soon: false },
       { label: 'Draft replies',     href: '/dashboard/generated', soon: false },
     ],
