@@ -14,47 +14,47 @@ const FEATURES = [
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
     ),
     title: 'Instant AI replies',
-    description: 'Generate a professional, on-brand response in seconds using Claude AI — no editing required.',
+    description: 'Generate professional, on-brand review replies in seconds using AI.',
   },
   {
     color: '#8b5cf6',
     icon: (
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     ),
-    title: 'Three reply tones',
-    description: 'Choose professional, warm & friendly, or direct & concise — whatever fits your brand.',
+    title: 'Approval workflow',
+    description: "Review, approve, or edit replies before they're published.",
   },
   {
     color: '#10b981',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     ),
-    title: 'Any language',
-    description: 'Replyfier detects the language of the review and replies in kind — no configuration needed.',
+    title: 'Automatic language detection',
+    description: 'Replyfier detects the review language automatically and responds naturally.',
   },
   {
     color: '#f59e0b',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
     ),
-    title: 'Business-aware replies',
-    description: 'Include your business name naturally in every reply — never awkward, always on-brand.',
+    title: 'Brand-aware replies',
+    description: 'Keep every response aligned with your business voice and customer experience.',
   },
   {
     color: '#6366f1',
     icon: (
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
     ),
-    title: 'Refine in one click',
-    description: 'Change tone, add your business name, and regenerate instantly — as many times as you need.',
+    title: 'Review before publishing',
+    description: 'Edit AI-generated replies before sending them live to Google.',
   },
   {
     color: '#ec4899',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
     ),
-    title: 'Improve your rating',
-    description: 'Thoughtful, timely replies signal quality to Google and turn undecided visitors into customers.',
+    title: 'Build customer trust',
+    description: 'Consistent, thoughtful replies help strengthen your online reputation.',
   },
 ]
 
