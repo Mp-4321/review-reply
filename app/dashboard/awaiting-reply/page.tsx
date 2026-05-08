@@ -1,15 +1,15 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import ReviewsTable from './reviews-table'
+import AwaitingReplyQueue from './queue'
 
 const NAV_GROUPS = [
   {
     group: 'Reviews',
     items: [
-      { label: 'All reviews',    href: '/dashboard/reviews',   soon: false },
+      { label: 'All reviews',    href: '/dashboard/reviews',        soon: false },
       { label: 'Awaiting reply', href: '/dashboard/awaiting-reply', soon: false },
-      { label: 'Draft replies',  href: '/dashboard/generated', soon: false },
+      { label: 'Draft replies',  href: '/dashboard/generated',      soon: false },
     ],
   },
   {
@@ -35,12 +35,12 @@ const NAV_GROUPS = [
   },
 ]
 
-export default async function ReviewsPage() {
+export default async function AwaitingReplyPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const user = await currentUser()
-  const email    = user?.emailAddresses[0]?.emailAddress ?? ''
+  const user    = await currentUser()
+  const email   = user?.emailAddresses[0]?.emailAddress ?? ''
   const initials = [user?.firstName, user?.lastName].filter(Boolean).map(s => s![0]).join('').toUpperCase() || '?'
 
   return (
@@ -75,7 +75,9 @@ export default async function ReviewsPage() {
                   key={href}
                   href={href}
                   className={`flex items-center justify-between rounded-md px-2 py-1 text-[13px] transition hover:bg-slate-100 hover:text-slate-900 ${
-                    href === '/dashboard/reviews' ? 'bg-blue-50 font-semibold text-blue-700' : 'text-slate-600'
+                    href === '/dashboard/awaiting-reply'
+                      ? 'bg-blue-50 font-semibold text-blue-700'
+                      : 'text-slate-600'
                   }`}
                 >
                   <span>{label}</span>
@@ -105,14 +107,12 @@ export default async function ReviewsPage() {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto p-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">All Reviews</h1>
-            <p className="mt-1 text-sm text-slate-400">5 reviews total</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Awaiting reply</h1>
+          <p className="mt-1 text-sm text-slate-400">3 reviews need your attention</p>
         </div>
 
-        <ReviewsTable />
+        <AwaitingReplyQueue />
       </main>
     </div>
   )
