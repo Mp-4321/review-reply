@@ -13,8 +13,8 @@ const FEATURES = [
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
     ),
-    title: 'Instant AI replies',
-    description: 'Generate professional, on-brand review replies in seconds using AI.',
+    title: 'Smart review replies',
+    description: 'Generate professional AI-powered replies that sound human.',
   },
   {
     color: '#8b5cf6',
@@ -391,7 +391,7 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-6">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-widest text-blue-600">Features</p>
           <h2 className="text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            Everything you need to reply like a pro
+            Everything you need to manage Google reviews
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-center text-lg text-slate-500">
             Built specifically for businesses that care about their online reputation.
