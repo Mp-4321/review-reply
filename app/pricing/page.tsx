@@ -16,7 +16,7 @@ const PLANS = [
       'All tones (professional, warm, direct)',
       '+$15/mo per extra location',
     ],
-    priceId: 'price_1TPet7RsAeMyWnyUt4yhcicH',
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER!,
     highlight: false,
   },
   {
@@ -32,7 +32,7 @@ const PLANS = [
       'Priority support',
       '+$10/mo per extra location',
     ],
-    priceId: 'price_1TPeu0RsAeMyWnyU3KOK1Tbm',
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO!,
     highlight: true,
   },
 ]

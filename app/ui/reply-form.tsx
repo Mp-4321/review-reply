@@ -63,7 +63,7 @@ const PLANS = [
     price: '$29',
     period: '/mo',
     bullets: ['1 location', '100 replies', 'All tones'],
-    priceId: 'price_1TPet7RsAeMyWnyUt4yhcicH',
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER!,
     highlight: false,
   },
   {
@@ -72,7 +72,7 @@ const PLANS = [
     price: '$59',
     period: '/mo',
     bullets: ['Up to 5 locations', 'Unlimited replies', 'Brand tone per location', 'Priority support'],
-    priceId: 'price_1TPeu0RsAeMyWnyU3KOK1Tbm',
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO!,
     highlight: true,
   },
 ]
