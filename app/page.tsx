@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import Link from 'next/link'
 import { Show } from '@clerk/nextjs'
 import ReplyForm from './ui/reply-form'
 import DemoCarousel from './ui/demo-carousel'
@@ -451,6 +452,10 @@ export default function Home() {
 
       <footer className="pb-10 text-center text-xs text-slate-400">
         Replyfier · Your replies, always at their best
+        {' · '}
+        <Link href="/privacy" className="hover:text-slate-600">Privacy</Link>
+        {' · '}
+        <Link href="/terms" className="hover:text-slate-600">Terms</Link>
       </footer>
       </div>
     </div>
