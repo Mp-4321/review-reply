@@ -288,7 +288,7 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-6 pb-0 pt-[72px]">
         <h1 className="mx-[17px] text-[54px] font-extrabold leading-[1.1] tracking-tight text-center text-slate-900">
           <span className="block mb-1">Turn Google Reviews into</span>
-          <span className="text-blue-600">More </span><RotatingWord />
+          {' '}<span className="text-blue-600">More </span><RotatingWord />
         </h1>
 
         <p className="mt-5 mx-auto text-center text-lg leading-relaxed text-slate-500">

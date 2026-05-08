@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Replyfier — Automated Google Review Replies",
-  description: "Generate professional replies to your Google reviews in seconds.",
+  description: "AI-powered Google review replies for restaurants, hotels, clinics, and local businesses. Reply faster, stay on-brand, and build customer trust.",
 };
 
 export default function RootLayout({
