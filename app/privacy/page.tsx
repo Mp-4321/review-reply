@@ -27,7 +27,8 @@ export default function PrivacyPage() {
             <h2 className="mb-3 text-lg font-semibold text-slate-900">1. Who we are</h2>
             <p>
               Replyfier is a software service that generates AI-powered replies to Google Business reviews.
-              For any privacy-related enquiries, contact us at{' '}
+              Replyfier acts as the data controller for personal data processed in connection with your
+              account and use of the service. For any privacy-related enquiries, contact us at{' '}
               <a href="mailto:support@replyfier.com" className="text-blue-600 hover:underline">support@replyfier.com</a>.
             </p>
           </section>
@@ -37,13 +38,21 @@ export default function PrivacyPage() {
             <ul className="list-disc space-y-1.5 pl-5">
               <li><strong>Account data:</strong> your name and email address, collected when you sign up.</li>
               <li><strong>Payment data:</strong> billing details processed by Stripe. We do not store card numbers.</li>
-              <li><strong>Review text:</strong> the text of reviews you paste or import into Replyfier in order to generate replies. This data is sent to Anthropic to produce AI responses.</li>
+              <li><strong>Review text:</strong> the text of reviews you paste or import into Replyfier in order to generate replies. This may include personal data contained in customer reviews. This data is sent to Anthropic to produce AI responses.</li>
               <li><strong>Usage data:</strong> server logs including IP addresses, request timestamps, and error events, retained for security and debugging purposes.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">3. Third-party services</h2>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">3. Cookies</h2>
+            <p>
+              We use cookies and similar technologies necessary for authentication, payment processing,
+              and security. See Section 4 for details on which cookies each third-party service sets.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">4. Third-party services</h2>
             <p className="mb-3">We use the following sub-processors to deliver the service:</p>
 
             <div className="space-y-4">
@@ -91,7 +100,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">4. Legal basis (GDPR)</h2>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">5. Legal basis (GDPR)</h2>
             <ul className="list-disc space-y-1.5 pl-5">
               <li><strong>Contract (Art. 6(1)(b)):</strong> processing your account data and payment data is necessary to provide the service you signed up for.</li>
               <li><strong>Legitimate interest (Art. 6(1)(f)):</strong> server logs and security monitoring are necessary to protect the integrity of the service and prevent abuse.</li>
@@ -99,15 +108,18 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">5. Your rights</h2>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">6. Your rights</h2>
             <p className="mb-2">Under the GDPR you have the right to:</p>
             <ul className="list-disc space-y-1.5 pl-5">
               <li><strong>Access</strong> the personal data we hold about you.</li>
               <li><strong>Rectify</strong> inaccurate data.</li>
-              <li><strong>Erasure</strong> ("right to be forgotten") — see Section 6.</li>
+              <li><strong>Erasure</strong> ("right to be forgotten") — see Section 7.</li>
               <li><strong>Data portability</strong> — receive your data in a structured, machine-readable format.</li>
               <li><strong>Object</strong> to processing based on legitimate interest.</li>
             </ul>
+            <p className="mt-3">
+              You also have the right to lodge a complaint with your local data protection authority.
+            </p>
             <p className="mt-3">
               To exercise any of these rights, email{' '}
               <a href="mailto:support@replyfier.com" className="text-blue-600 hover:underline">support@replyfier.com</a>.
@@ -116,7 +128,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">6. Data retention</h2>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">7. Data retention</h2>
             <p>
               We retain your data for as long as your account is active. When you delete your account,
               all personal data is permanently deleted within <strong>30 days</strong>. Payment records
@@ -125,7 +137,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">7. International transfers</h2>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">8. International transfers</h2>
             <p>
               Clerk and Anthropic operate servers in the United States. Transfers of personal data
               to these providers are governed by Standard Contractual Clauses (SCCs) approved by
@@ -134,7 +146,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">8. Contact</h2>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">9. Contact</h2>
             <p>
               For any questions about this policy or your personal data, contact us at{' '}
               <a href="mailto:support@replyfier.com" className="text-blue-600 hover:underline">support@replyfier.com</a>.
