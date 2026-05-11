@@ -100,6 +100,10 @@ const FAQS = [
     q: 'Can I cancel at any time?',
     a: 'Yes. You can cancel your subscription at any time and keep access until the end of your billing period.',
   },
+  {
+    q: 'How can I contact support?',
+    a: 'You can reach us anytime at support@replyfier.com.',
+  },
 ]
 
 // ——— Step mocks (static UI previews) ———
