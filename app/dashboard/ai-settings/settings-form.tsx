@@ -163,7 +163,7 @@ export default function AISettingsForm() {
           value={customInstructions}
           onChange={e => setCustomInstructions(e.target.value)}
           rows={4}
-          placeholder={'Always thank customers for mentioning staff.\nAvoid sounding overly corporate.\nKeep responses concise and genuine.'}
+          placeholder={'As an example:\nMention our team when customers praise the service.\nKeep replies friendly and professional.\nAvoid generic-sounding responses.'}
           className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13.5px] leading-relaxed text-slate-700 placeholder-slate-300 transition focus:border-blue-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
         />
       </div>
