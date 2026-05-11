@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 
-type Tone         = 'professional' | 'friendly' | 'warm' | 'casual' | 'formal'
+type Tone         = 'professional' | 'friendly' | 'warm' | 'casual' | 'concise'
 type ReplyLength  = 'short' | 'balanced' | 'detailed'
 
 const TONES: { value: Tone; label: string; description: string }[] = [
@@ -12,7 +12,7 @@ const TONES: { value: Tone; label: string; description: string }[] = [
   { value: 'friendly',     label: 'Friendly',     description: 'Warm and approachable'              },
   { value: 'warm',         label: 'Warm',         description: 'Personal and caring'                },
   { value: 'casual',       label: 'Casual',       description: 'Relaxed and conversational'         },
-  { value: 'formal',       label: 'Formal',       description: 'Structured and traditional'         },
+  { value: 'concise',      label: 'Concise',      description: 'Direct and to the point'            },
 ]
 
 const LENGTHS: { value: ReplyLength; label: string; description: string }[] = [
@@ -38,7 +38,7 @@ export default function AISettingsForm() {
   useEffect(() => {
     if (!settings) return
     if (settings.businessDescription) setBusinessDescription(settings.businessDescription)
-    if (settings.tone)                setTone(settings.tone)
+    if (settings.tone)                setTone(settings.tone as Tone)
     if (settings.replyLength)         setReplyLength(settings.replyLength)
     if (settings.signature != null)   setSignature(settings.signature)
     if (settings.customInstructions)  setCustomInstructions(settings.customInstructions)

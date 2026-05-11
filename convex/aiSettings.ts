@@ -26,7 +26,7 @@ export const save = mutation({
       v.literal('friendly'),
       v.literal('warm'),
       v.literal('casual'),
-      v.literal('formal'),
+      v.literal('concise'),
     )),
     replyLength:         v.optional(v.union(
       v.literal('short'),

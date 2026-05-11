@@ -54,8 +54,9 @@ export default function AwaitingReplyQueue() {
   const [editText,      setEditText]      = useState('')
   const [error,         setError]         = useState<string | null>(null)
 
-  const reviews   = useQuery(api.reviews.list, { status: 'pending', limit: 50 }) ?? []
-  const allDrafts = useQuery(api.replies.listDrafts) ?? []
+  const reviews    = useQuery(api.reviews.list, { status: 'pending', limit: 50 }) ?? []
+  const allDrafts  = useQuery(api.replies.listDrafts) ?? []
+  const aiSettings = useQuery(api.aiSettings.get)
   const saveDraft    = useMutation(api.replies.save)
   const updateDraft  = useMutation(api.replies.updateDraft)
   const approveDraft = useMutation(api.replies.approve)
@@ -82,7 +83,14 @@ export default function AwaitingReplyQueue() {
       const res = await fetch('/api/generate-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ review: review.comment ?? '' }),
+        body: JSON.stringify({
+          review:             review.comment ?? '',
+          tone:               aiSettings?.tone,
+          replyLength:        aiSettings?.replyLength,
+          businessDescription: aiSettings?.businessDescription,
+          signature:          aiSettings?.signature,
+          customInstructions: aiSettings?.customInstructions,
+        }),
       })
       const data = (await res.json()) as { reply?: string; error?: string }
       if (!res.ok || !data.reply) throw new Error(data.error ?? 'Failed to generate reply')

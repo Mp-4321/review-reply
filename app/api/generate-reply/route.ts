@@ -1,12 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const TONE_LABELS: Record<string, string> = {
-  professional: 'professional and formal',
-  warm: 'warm, friendly and personal',
-  direct: 'direct, concise and to the point',
+const TONE_INSTRUCTIONS: Record<string, string> = {
+  professional: 'Use a professional and polished tone — clear, composed, and business-appropriate.',
+  friendly:     'Use a friendly and approachable tone — upbeat, genuine, and personable.',
+  warm:         'Use a warm and caring tone — empathetic, personal, and heartfelt.',
+  casual:       'Use a casual and conversational tone — relaxed, natural, and human.',
+  concise:      'Use a concise and direct tone — 2–3 lines max, no filler phrases, no pleasantries.',
 }
 
-const SYSTEM_PROMPT = `You are a customer care expert helping business owners craft replies to Google reviews.
+const LENGTH_INSTRUCTIONS: Record<string, string> = {
+  short:    'Keep the reply to 1–2 sentences.',
+  balanced: 'Keep the reply to 3–4 sentences.',
+  detailed: 'Write a full paragraph reply (5–7 sentences).',
+}
+
+const BASE_SYSTEM_PROMPT = `You are a customer care expert helping business owners craft replies to Google reviews.
 
 Before writing, infer the review's sentiment from its content and adjust your reply style accordingly:
 - Positive (4–5 star feel): be enthusiastic and grateful, echo what the customer loved
@@ -16,50 +24,73 @@ Before writing, infer the review's sentiment from its content and adjust your re
 Rules:
 - Always reply in the same language as the review — detect it automatically and match it exactly
 - Personalize the reply based on the specific content of the review — never be generic
-- If a tone is specified, apply it precisely; otherwise let the detected sentiment guide the tone naturally
-- If a business name is provided: include it once naturally in plain text (no markdown, no bold, no formatting); also infer the type of business from the name and adapt your vocabulary and context accordingly (e.g. "Hotel Bella Vista" → hospitality language, "Studio Dentistico Rossi" → professional medical language, "Palestra FitZone" → fitness and wellness language, "Ristorante Da Mario" → restaurant language)
 - Never use markdown formatting of any kind — no bold, no italics, no symbols
-- Keep the reply to 4–5 lines maximum regardless of tone — this applies to all tones including Professional
-- If the tone is "direct, concise and to the point": aim for 2–3 lines, no filler phrases, no emoji
 - Respond with the reply text ONLY — no introduction, title, or commentary`
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { review, tone, business } = body as {
-      review: string
-      tone?: string
-      business?: string
+    const {
+      review,
+      tone,
+      replyLength,
+      businessDescription,
+      signature,
+      customInstructions,
+    } = body as {
+      review:              string
+      tone?:               string
+      replyLength?:        string
+      businessDescription?: string
+      signature?:          string
+      customInstructions?: string
     }
 
     if (!review?.trim()) {
       return Response.json({ error: 'Missing review' }, { status: 400 })
     }
 
-    const toneLabel = tone ? (TONE_LABELS[tone] ?? tone) : null
+    // Build dynamic system prompt sections
+    const systemSections: string[] = [BASE_SYSTEM_PROMPT]
+
+    if (tone && TONE_INSTRUCTIONS[tone]) {
+      systemSections.push(`Tone: ${TONE_INSTRUCTIONS[tone]}`)
+    }
+
+    if (replyLength && LENGTH_INSTRUCTIONS[replyLength]) {
+      systemSections.push(`Length: ${LENGTH_INSTRUCTIONS[replyLength]}`)
+    }
+
+    if (businessDescription?.trim()) {
+      systemSections.push(`Business context: ${businessDescription.trim()}`)
+    }
+
+    if (customInstructions?.trim()) {
+      systemSections.push(`Additional instructions:\n${customInstructions.trim()}`)
+    }
+
+    if (signature?.trim()) {
+      systemSections.push(`After the reply, append this signature on a new line: ${signature.trim()}`)
+    }
 
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-    const userContent = [
-      `Review received:\n"${review.trim()}"`,
-      toneLabel ? `Requested tone: ${toneLabel}` : null,
-      business?.trim() ? `Business name: ${business.trim()}` : null,
-      'Write the reply to this review.',
-    ]
-      .filter(Boolean)
-      .join('\n\n')
-
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model:      'claude-sonnet-4-6',
       max_tokens: 512,
       system: [
         {
-          type: 'text',
-          text: SYSTEM_PROMPT,
+          type:          'text',
+          text:          systemSections.join('\n\n'),
           cache_control: { type: 'ephemeral' },
         },
       ],
-      messages: [{ role: 'user', content: userContent }],
+      messages: [
+        {
+          role:    'user',
+          content: `Review received:\n"${review.trim()}"\n\nWrite the reply to this review.`,
+        },
+      ],
     })
 
     const reply = message.content
