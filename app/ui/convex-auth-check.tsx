@@ -16,7 +16,7 @@ export function ConvexAuthCheck() {
 
   return (
     <p className="text-xs text-green-600">
-      Convex auth OK — {me.email ?? me.clerkId}
+      Convex auth OK — {me.email ?? me.tokenIdentifier}
     </p>
   )
 }
