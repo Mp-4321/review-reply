@@ -89,6 +89,14 @@ export default function PrivacyPage() {
               </div>
 
               <div>
+                <p className="font-medium text-slate-800">Convex (backend infrastructure)</p>
+                <p>
+                  We use Convex to store and process application data necessary to provide the service.
+                  Convex servers are located in the European Union (eu-west-1).
+                </p>
+              </div>
+
+              <div>
                 <p className="font-medium text-slate-800">Google OAuth (Google Business Profile access)</p>
                 <p>
                   When you connect your Google Business account, the OAuth authorisation flow passes through
