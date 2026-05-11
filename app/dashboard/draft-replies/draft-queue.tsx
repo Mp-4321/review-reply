@@ -443,7 +443,7 @@ export default function DraftQueue() {
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
           <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-xl">
             <span className="self-center text-sm font-semibold text-slate-700">
-              {selected.size} {selected.size === 1 ? 'reply' : 'replies'} selected
+              {selected.size} selected
             </span>
             <div className="h-4 w-px self-center bg-slate-200" />
             <div className="flex flex-col gap-2">
