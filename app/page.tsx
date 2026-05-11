@@ -62,35 +62,43 @@ const FEATURES = [
 const FAQS = [
   {
     q: 'How does Replyfier work?',
-    a: 'Paste a customer review, choose a tone (or leave it on Professional), and click Generate. Replyfier sends the review to Claude AI, which writes a professional reply in seconds. You can then refine it with a different tone or add your business name.',
+    a: 'Replyfier helps businesses respond to Google reviews faster using AI-generated reply drafts. Reviews can be reviewed, edited, approved, and published gradually to maintain a natural and professional response workflow.',
   },
   {
-    q: 'Is it free to try?',
-    a: 'Yes. You get 5 free replies before being asked to upgrade. No credit card required.',
+    q: 'Can replies match my brand tone?',
+    a: 'Yes. You can customize reply tone, response length, business context, and additional instructions so replies feel consistent with your brand.',
+  },
+  {
+    q: 'Will AI-generated replies sound generic?',
+    a: 'Replyfier is designed to generate natural, professional replies that match your preferred tone and business context. Every reply can also be edited before publishing.',
+  },
+  {
+    q: 'Does Replyfier automatically post replies?',
+    a: 'No. Replies remain fully reviewable before publishing. You control which replies are approved, queued, and published.',
+  },
+  {
+    q: 'Does Replyfier connect to Google Business Profile?',
+    a: 'Yes. You can securely connect your Google Business Profile to manage reviews and reply workflows directly from Replyfier.',
   },
   {
     q: 'Which languages does it support?',
-    a: 'Any language. Replyfier detects the language of the review automatically and replies in the same language — no settings to configure.',
-  },
-  {
-    q: 'How do I include my business name in the reply?',
-    a: 'After your first reply is generated, a refinement panel appears. Type your business name there and click Regenerate — it will be included naturally in the new reply.',
-  },
-  {
-    q: 'What happens when I reach the free limit?',
-    a: 'A paywall appears with two subscription options. You can choose the Starter plan ($29/mo) for a single location or the Pro plan ($59/mo) for up to five locations.',
+    a: 'Replyfier can support reviews in multiple languages and helps generate replies in the language customers use.',
   },
   {
     q: 'Can I use Replyfier for multiple locations?',
-    a: 'Yes. The Pro plan supports up to 5 locations, each with its own custom brand tone. Additional locations can be added for $10/mo each.',
+    a: 'Yes. Replyfier is built for businesses that manage one or more locations, with workflows that can scale across multiple Google Business Profiles.',
   },
   {
-    q: 'Is my review data stored or used for AI training?',
-    a: 'No. Review text is sent to the Claude API in real-time and is not stored on our servers or used for any training purposes.',
+    q: 'What happens after the free trial?',
+    a: 'After the trial ends, you can choose a subscription plan based on the number of business locations you manage.',
   },
   {
-    q: 'Can I cancel my subscription at any time?',
-    a: 'Yes. You can cancel from your billing portal at any time. You will keep access until the end of the billing period — no cancellation fees.',
+    q: 'Is my review data used for AI training?',
+    a: 'No. Review data is processed securely to generate replies and is not used to train AI models.',
+  },
+  {
+    q: 'Can I cancel at any time?',
+    a: 'Yes. You can cancel your subscription at any time and keep access until the end of your billing period.',
   },
 ]
 
