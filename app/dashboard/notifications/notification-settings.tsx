@@ -7,8 +7,7 @@ type DraftReminderFrequency = 'daily' | 'every_2_days' | 'weekly'
 type WeeklySummaryDay = 'monday' | 'friday'
 
 type NotificationSettingsState = {
-  newReviewEmail: boolean
-  newReviewInApp: boolean
+  newReviewEnabled: boolean
   lowRatingEnabled: boolean
   lowRatingThreshold: LowRatingThreshold
   draftReminderEnabled: boolean
@@ -22,8 +21,7 @@ type NotificationSettingsState = {
 const STORAGE_KEY = 'replyfier.notificationSettings'
 
 const DEFAULT_SETTINGS: NotificationSettingsState = {
-  newReviewEmail: true,
-  newReviewInApp: false,
+  newReviewEnabled: true,
   lowRatingEnabled: true,
   lowRatingThreshold: 2,
   draftReminderEnabled: true,
@@ -208,9 +206,9 @@ export default function NotificationSettings() {
       <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Operational alerts</p>
+            <p className="text-sm font-semibold text-slate-900">Email alerts</p>
             <p className="mt-0.5 text-[13px] text-slate-600">
-              These settings are saved locally for now and are structured for account-level persistence later.
+              Replyfier currently sends operational notifications by email.
             </p>
           </div>
           {saved && (
@@ -224,27 +222,17 @@ export default function NotificationSettings() {
       <SettingsCard title="Review alerts">
         <SettingRow
           title="New reviews"
-          description="Get notified when new Google reviews arrive."
+          description="Receive an email when new Google reviews arrive."
         >
-          <span className="text-xs font-medium text-slate-500">Email</span>
           <Toggle
-            checked={settings.newReviewEmail}
-            onChange={newReviewEmail => updateSettings({ newReviewEmail })}
+            checked={settings.newReviewEnabled}
+            onChange={newReviewEnabled => updateSettings({ newReviewEnabled })}
           />
-          <span className="ml-2 text-xs font-medium text-slate-400">In-app</span>
-          <Toggle
-            checked={settings.newReviewInApp}
-            disabled
-            onChange={newReviewInApp => updateSettings({ newReviewInApp })}
-          />
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
-            Soon
-          </span>
         </SettingRow>
 
         <SettingRow
           title="Low-rating reviews"
-          description="Get notified immediately when a review needs urgent attention."
+          description="Receive an email when a review needs urgent attention."
         >
           <Toggle
             checked={settings.lowRatingEnabled}
@@ -263,7 +251,7 @@ export default function NotificationSettings() {
       <SettingsCard title="Reply workflow">
         <SettingRow
           title="Draft approval reminders"
-          description="Remind me when draft replies are waiting for approval."
+          description="Receive an email when draft replies are waiting for approval."
         >
           <Toggle
             checked={settings.draftReminderEnabled}
@@ -280,7 +268,7 @@ export default function NotificationSettings() {
 
         <SettingRow
           title="Queue completed"
-          description="Notify me when all queued replies have been published."
+          description="Receive an email when all queued replies have been published."
         >
           <Toggle
             checked={settings.queueCompletedEnabled}
@@ -290,7 +278,7 @@ export default function NotificationSettings() {
 
         <SettingRow
           title="Publishing failed"
-          description="Notify me if a scheduled reply fails to publish."
+          description="Receive an email if a scheduled reply fails to publish."
         >
           <Toggle
             checked={settings.publishingFailedEnabled}
@@ -302,7 +290,7 @@ export default function NotificationSettings() {
       <SettingsCard title="Weekly summary">
         <SettingRow
           title="Weekly performance summary"
-          description="Receive a weekly overview of reviews received, reply rate, pending reviews, and average response time."
+          description="Receive a weekly email summary of reviews, reply rate, pending replies, and average response time."
         >
           <Toggle
             checked={settings.weeklySummaryEnabled}
