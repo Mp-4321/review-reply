@@ -72,11 +72,13 @@ export default defineSchema({
     draft:       v.string(),
     status:      v.union(
       v.literal('draft'),
+      v.literal('queued'),
       v.literal('approved'),
       v.literal('published'),
       v.literal('rejected'),
     ),
     generatedAt: v.number(),
+    scheduledAt: v.optional(v.number()),
     publishedAt: v.optional(v.number()),
   })
     .index('by_review', ['reviewId'])
