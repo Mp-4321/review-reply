@@ -18,7 +18,7 @@ const TONES: { value: Tone; label: string; description: string }[] = [
 const LENGTHS: { value: ReplyLength; label: string; description: string }[] = [
   { value: 'short',    label: 'Short',    description: '1–2 sentences'        },
   { value: 'balanced', label: 'Balanced', description: '2–4 sentences'        },
-  { value: 'detailed', label: 'Detailed', description: 'More personalized reply' },
+  { value: 'detailed', label: 'Detailed', description: 'Full paragraph reply'    },
 ]
 
 export default function AISettingsForm() {
