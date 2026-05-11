@@ -5,6 +5,7 @@ import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 
 type Period = '7d' | '30d' | '90d' | 'all'
+type Bucket = { label: string; start: Date; end: Date; reviews: number; replies: number }
 
 const PERIODS: { label: string; value: Period; days: number | null }[] = [
   { label: 'Last 7 days',  value: '7d',  days: 7 },
@@ -47,8 +48,18 @@ function formatDuration(ms: number) {
 }
 
 function formatBucketLabel(date: Date, period: Period) {
-  if (period === 'all') return date.toLocaleDateString('en-US', { month: 'short' })
+  if (period === '90d' || period === 'all') return date.toLocaleDateString('en-US', { month: 'short' })
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function formatTooltipTitle(bucket: Bucket, period: Period) {
+  if (period === '7d') {
+    return bucket.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+  if (period === '30d') {
+    return `Week of ${bucket.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+  }
+  return bucket.start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 }
 
 function percent(numerator: number, denominator: number) {
@@ -90,9 +101,11 @@ function getWindowStart(period: Period, now: Date, reviews: Review[]) {
 }
 
 function buildBuckets(period: Period, start: Date, now: Date) {
-  if (period === 'all') {
-    const buckets: { label: string; start: Date; end: Date; reviews: number; replies: number }[] = []
-    const cursor = new Date(start.getFullYear(), start.getMonth(), 1)
+  if (period === '90d' || period === 'all') {
+    const buckets: Bucket[] = []
+    const cursor = period === '90d'
+      ? new Date(addMonths(now, -2).getFullYear(), addMonths(now, -2).getMonth(), 1)
+      : new Date(start.getFullYear(), start.getMonth(), 1)
     const last = new Date(now.getFullYear(), now.getMonth(), 1)
 
     while (cursor <= last) {
@@ -104,9 +117,9 @@ function buildBuckets(period: Period, start: Date, now: Date) {
     return buckets.length > 0 ? buckets : [{ label: 'Now', start, end: addDays(now, 1), reviews: 0, replies: 0 }]
   }
 
-  const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
-  const step = period === '90d' ? 7 : 1
-  const buckets = []
+  const days = period === '7d' ? 7 : 30
+  const step = period === '7d' ? 1 : 7
+  const buckets: Bucket[] = []
 
   for (let offset = 0; offset < days; offset += step) {
     const bucketStart = addDays(start, offset)
@@ -182,25 +195,28 @@ function buildAnalytics(reviews: Review[], period: Period, now: Date) {
 
 function ReplyRateChart({
   buckets,
+  period,
 }: {
   buckets: ReturnType<typeof buildAnalytics>['buckets']
+  period: Period
 }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const maxValue = Math.max(1, ...buckets.flatMap(bucket => [bucket.reviews, bucket.replies]))
   const width = 760
   const height = 250
   const pad = { top: 18, right: 22, bottom: 42, left: 34 }
   const plotWidth = width - pad.left - pad.right
   const plotHeight = height - pad.top - pad.bottom
-  const xFor = (index: number) => {
-    if (buckets.length <= 1) return pad.left + plotWidth / 2
-    return pad.left + (plotWidth * index) / (buckets.length - 1)
-  }
-  const yFor = (value: number) => pad.top + plotHeight - (value / maxValue) * plotHeight
-  const reviewPoints = buckets.map((bucket, index) => `${xFor(index)},${yFor(bucket.reviews)}`).join(' ')
-  const replyPoints = buckets.map((bucket, index) => `${xFor(index)},${yFor(bucket.replies)}`).join(' ')
+  const groupWidth = plotWidth / Math.max(1, buckets.length)
+  const barWidth = Math.max(8, Math.min(24, groupWidth * 0.22))
+  const gap = Math.max(3, Math.min(6, groupWidth * 0.08))
+  const hovered = hoveredIndex === null ? null : buckets[hoveredIndex]
+  const tooltipLeft = hoveredIndex === null
+    ? 50
+    : ((pad.left + groupWidth * hoveredIndex + groupWidth / 2) / width) * 100
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm">
+    <div className="relative rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">Reviews and replies over time</h2>
@@ -218,7 +234,24 @@ function ReplyRateChart({
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-64 w-full overflow-visible" role="img" aria-label="Reviews received and replies published over time">
+      {hovered && (
+        <div
+          className="pointer-events-none absolute top-16 z-10 min-w-44 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-lg"
+          style={{ left: `${tooltipLeft}%`, transform: 'translateX(-50%)' }}
+        >
+          <p className="font-semibold text-slate-900">{formatTooltipTitle(hovered, period)}</p>
+          <p className="mt-1 text-slate-500">{hovered.reviews} reviews received</p>
+          <p className="text-slate-500">{hovered.replies} replies published</p>
+        </div>
+      )}
+
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="h-64 w-full overflow-visible"
+        role="img"
+        aria-label="Reviews received and replies published over time"
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
         {[0, 0.5, 1].map(tick => {
           const y = pad.top + plotHeight - plotHeight * tick
           const value = Math.round(maxValue * tick)
@@ -230,17 +263,41 @@ function ReplyRateChart({
           )
         })}
 
-        <polyline points={reviewPoints} fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        <polyline points={replyPoints} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-
         {buckets.map((bucket, index) => {
-          const showLabel = buckets.length <= 10 || index === 0 || index === buckets.length - 1 || index % Math.ceil(buckets.length / 5) === 0
-          const x = xFor(index)
+          const x = pad.left + index * groupWidth + groupWidth / 2
+          const reviewHeight = (bucket.reviews / maxValue) * plotHeight
+          const replyHeight = (bucket.replies / maxValue) * plotHeight
+          const showLabel = buckets.length <= 8 || index === 0 || index === buckets.length - 1 || index % Math.ceil(buckets.length / 5) === 0
 
           return (
-            <g key={`${bucket.label}-${index}`}>
-              <circle cx={x} cy={yFor(bucket.reviews)} r="3.5" fill="#94a3b8" stroke="#fff" strokeWidth="2" />
-              <circle cx={x} cy={yFor(bucket.replies)} r="3.5" fill="#2563eb" stroke="#fff" strokeWidth="2" />
+            <g
+              key={`${bucket.label}-${index}`}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onFocus={() => setHoveredIndex(index)}
+            >
+              <rect
+                x={pad.left + index * groupWidth}
+                y={pad.top}
+                width={groupWidth}
+                height={plotHeight}
+                fill="transparent"
+              />
+              <rect
+                x={x - barWidth - gap / 2}
+                y={pad.top + plotHeight - reviewHeight}
+                width={barWidth}
+                height={reviewHeight}
+                rx="4"
+                fill="#cbd5e1"
+              />
+              <rect
+                x={x + gap / 2}
+                y={pad.top + plotHeight - replyHeight}
+                width={barWidth}
+                height={replyHeight}
+                rx="4"
+                fill="#2563eb"
+              />
               {showLabel && (
                 <text x={x} y={height - 16} textAnchor="middle" className="fill-slate-400 text-[10px]">
                   {bucket.label}
@@ -260,6 +317,7 @@ export default function ReplyRateAnalytics() {
   const [period, setPeriod] = useState<Period>('30d')
   const [now] = useState(() => new Date())
   const reviews = useQuery(api.reviews.list, { limit: 500 })
+  const replyItems = useQuery(api.replies.listDraftsWithReviews)
 
   const analytics = useMemo(
     () => buildAnalytics(reviews ?? [], period, now),
@@ -281,6 +339,7 @@ export default function ReplyRateAnalytics() {
     : analytics.comparison < 0
       ? 'text-amber-600'
       : 'text-slate-500'
+  const queuedReplies = (replyItems ?? []).filter(({ reply }) => reply.status === 'queued').length
 
   return (
     <div className="space-y-4">
@@ -325,7 +384,7 @@ export default function ReplyRateAnalytics() {
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-medium text-slate-400">Reviews received</p>
           <p className="mt-2 text-2xl font-bold text-slate-900">{analytics.total}</p>
@@ -343,9 +402,14 @@ export default function ReplyRateAnalytics() {
           <p className="mt-2 text-2xl font-bold text-slate-900">{analytics.remaining}</p>
           <p className="mt-1 text-xs text-slate-400">reviews awaiting reply</p>
         </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium text-slate-400">Queued replies</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{queuedReplies}</p>
+          <p className="mt-1 text-xs text-slate-400">awaiting progressive publishing</p>
+        </div>
       </section>
 
-      <ReplyRateChart buckets={analytics.buckets} />
+      <ReplyRateChart buckets={analytics.buckets} period={period} />
     </div>
   )
 }
