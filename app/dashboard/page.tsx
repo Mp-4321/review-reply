@@ -2,6 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import RecentReplies from './recent-replies'
+import { DashboardSync } from './sync'
 
 const NAV_GROUPS = [
   {
@@ -187,6 +188,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        <DashboardSync />
         <RecentReplies />
 
       </main>
