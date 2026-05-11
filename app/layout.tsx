@@ -14,9 +14,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const TITLE       = "Replyfier — AI Replies for Google Reviews"
+const DESCRIPTION = "Reply to Google reviews faster with AI-powered replies tailored to your business. Save time, stay consistent, and improve your online reputation."
+
 export const metadata: Metadata = {
-  title: "Replyfier — Automated Google Review Replies",
-  description: "AI-powered Google review replies for restaurants, hotels, clinics, and local businesses. Reply faster, stay on-brand, and build customer trust.",
+  title:       TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title:       TITLE,
+    description: DESCRIPTION,
+    type:        'website',
+  },
+  twitter: {
+    card:        'summary',
+    title:       TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
