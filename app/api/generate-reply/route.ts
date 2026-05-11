@@ -53,13 +53,11 @@ export async function POST(request: Request) {
     // Build dynamic system prompt sections
     const systemSections: string[] = [BASE_SYSTEM_PROMPT]
 
-    if (tone && TONE_INSTRUCTIONS[tone]) {
-      systemSections.push(`Tone: ${TONE_INSTRUCTIONS[tone]}`)
-    }
+    const toneKey = tone && TONE_INSTRUCTIONS[tone] ? tone : 'professional'
+    systemSections.push(`Tone: ${TONE_INSTRUCTIONS[toneKey]}`)
 
-    if (replyLength && LENGTH_INSTRUCTIONS[replyLength]) {
-      systemSections.push(`Length: ${LENGTH_INSTRUCTIONS[replyLength]}`)
-    }
+    const lengthKey = replyLength && LENGTH_INSTRUCTIONS[replyLength] ? replyLength : 'balanced'
+    systemSections.push(`Length: ${LENGTH_INSTRUCTIONS[lengthKey]}`)
 
     if (businessDescription?.trim()) {
       systemSections.push(`Business context: ${businessDescription.trim()}`)
