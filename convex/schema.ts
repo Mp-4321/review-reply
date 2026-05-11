@@ -47,6 +47,25 @@ export default defineSchema({
     .index('by_user_and_status', ['userId', 'status'])
     .index('by_user_and_google_id', ['userId', 'googleReviewId']),
 
+  aiSettings: defineTable({
+    userId:              v.id('users'),
+    businessDescription: v.optional(v.string()),
+    tone:                v.optional(v.union(
+      v.literal('professional'),
+      v.literal('friendly'),
+      v.literal('warm'),
+      v.literal('casual'),
+      v.literal('formal'),
+    )),
+    replyLength:         v.optional(v.union(
+      v.literal('short'),
+      v.literal('balanced'),
+      v.literal('detailed'),
+    )),
+    signature:           v.optional(v.string()),
+    customInstructions:  v.optional(v.string()),
+  }).index('by_user', ['userId']),
+
   replies: defineTable({
     userId:      v.id('users'),
     reviewId:    v.id('reviews'),
