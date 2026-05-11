@@ -48,6 +48,17 @@ type GoogleUserInfoResponse = {
   email?: string
 }
 
+type GoogleApiErrorResponse = {
+  error?: {
+    code?: number
+    message?: string
+    status?: string
+    details?: Array<{
+      reason?: string
+    }>
+  }
+}
+
 export class GoogleBusinessError extends Error {
   constructor(
     message: string,
@@ -67,8 +78,8 @@ export async function requireClerkUserId() {
 }
 
 export function buildGoogleOAuthUrl(state: string) {
-  const clientId = requireEnv('GOOGLE_CLIENT_ID')
-  const redirectUri = requireEnv('GOOGLE_REDIRECT_URI')
+  const clientId = requireGoogleClientId()
+  const redirectUri = requireGoogleRedirectUri()
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -198,12 +209,23 @@ export async function listGoogleBusinessReviews(
   }>(response)
 }
 
+export async function disconnectGoogleBusiness(userId: string) {
+  const client = await clerkClient()
+  const user = await client.users.getUser(userId)
+  const privateMetadata = { ...user.privateMetadata }
+  delete privateMetadata.googleBusiness
+
+  await client.users.updateUserMetadata(userId, {
+    privateMetadata,
+  })
+}
+
 async function exchangeCodeForTokens(code: string) {
   const body = new URLSearchParams({
     code,
-    client_id: requireEnv('GOOGLE_CLIENT_ID'),
-    client_secret: requireEnv('GOOGLE_CLIENT_SECRET'),
-    redirect_uri: requireEnv('GOOGLE_REDIRECT_URI'),
+    client_id: requireGoogleClientId(),
+    client_secret: requireGoogleClientSecret(),
+    redirect_uri: requireGoogleRedirectUri(),
     grant_type: 'authorization_code',
   })
 
@@ -219,8 +241,8 @@ async function exchangeCodeForTokens(code: string) {
 async function refreshAccessToken(userId: string, connection: GoogleBusinessConnection) {
   const refreshToken = decryptToken(connection.refreshToken)
   const body = new URLSearchParams({
-    client_id: requireEnv('GOOGLE_CLIENT_ID'),
-    client_secret: requireEnv('GOOGLE_CLIENT_SECRET'),
+    client_id: requireGoogleClientId(),
+    client_secret: requireGoogleClientSecret(),
     refresh_token: refreshToken,
     grant_type: 'refresh_token',
   })
@@ -264,8 +286,7 @@ async function googleApiFetch(userId: string, url: string) {
   }
 
   if (!response.ok) {
-    const text = await response.text()
-    throw new GoogleBusinessError(text || 'Google Business Profile API request failed', response.status)
+    throw await createGoogleApiError(response)
   }
 
   return response
@@ -444,4 +465,70 @@ function requireEnv(name: string) {
   }
 
   return value
+}
+
+function requireGoogleClientId() {
+  const value = requireEnv('GOOGLE_CLIENT_ID')
+  if (!value.endsWith('.apps.googleusercontent.com')) {
+    throw new GoogleBusinessError(
+      'Invalid environment variable: GOOGLE_CLIENT_ID. Expected OAuth client ID ending in .apps.googleusercontent.com',
+      500
+    )
+  }
+
+  return value
+}
+
+function requireGoogleClientSecret() {
+  const value = requireEnv('GOOGLE_CLIENT_SECRET')
+  if (value === '...') {
+    throw new GoogleBusinessError(
+      'Invalid environment variable: GOOGLE_CLIENT_SECRET. Expected non-empty OAuth client secret.',
+      500
+    )
+  }
+
+  return value
+}
+
+function requireGoogleRedirectUri() {
+  const value = requireEnv('GOOGLE_REDIRECT_URI')
+  try {
+    const url = new URL(value)
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      throw new Error('Invalid protocol')
+    }
+  } catch {
+    throw new GoogleBusinessError(
+      'Invalid environment variable: GOOGLE_REDIRECT_URI. Expected absolute URL, for local testing use http://localhost:3000/api/google-business/callback',
+      500
+    )
+  }
+
+  return value
+}
+
+async function createGoogleApiError(response: Response) {
+  const fallback = 'Google Business Profile API request failed'
+
+  try {
+    const json = (await response.json()) as GoogleApiErrorResponse
+    const reason = json.error?.details?.find((detail) => detail.reason)?.reason
+    const status = json.error?.status
+    const message = json.error?.message ?? fallback
+
+    if (response.status === 403 && reason === 'ACCESS_TOKEN_SCOPE_INSUFFICIENT') {
+      return new GoogleBusinessError(
+        'Google Business Profile access token has insufficient scopes. Disconnect and reconnect Google Business Profile to grant business.manage.',
+        403
+      )
+    }
+
+    return new GoogleBusinessError(
+      [status, reason, message].filter(Boolean).join(': '),
+      response.status
+    )
+  } catch {
+    return new GoogleBusinessError(fallback, response.status)
+  }
 }

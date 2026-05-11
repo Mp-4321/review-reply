@@ -3,21 +3,35 @@
 import { useState, useEffect } from 'react'
 
 const WORDS = ['Customers', 'Bookings', 'Revenue']
+const DEFAULT_WORD_INDEX = 0
 
 export default function RotatingWord() {
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(DEFAULT_WORD_INDEX)
   const [visible, setVisible] = useState(true)
+  const [mounted, setMounted] = useState(false)
+  const renderedIndex = mounted ? index : DEFAULT_WORD_INDEX
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
+    let timeout: ReturnType<typeof setTimeout> | null = null
     const interval = setInterval(() => {
       setVisible(false)
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         setIndex(i => (i + 1) % WORDS.length)
         setVisible(true)
       }, 300)
     }, 2500)
-    return () => clearInterval(interval)
-  }, [])
+
+    return () => {
+      clearInterval(interval)
+      if (timeout) clearTimeout(timeout)
+    }
+  }, [mounted])
 
   return (
     <span
@@ -28,7 +42,7 @@ export default function RotatingWord() {
         transition: 'opacity 300ms ease, filter 300ms ease',
       }}
     >
-      {WORDS[index]}
+      {WORDS[renderedIndex]}
     </span>
   )
 }

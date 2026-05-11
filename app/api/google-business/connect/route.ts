@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-import { buildGoogleOAuthUrl, requireClerkUserId } from '@/app/lib/google-business'
+import { GoogleBusinessError, buildGoogleOAuthUrl, requireClerkUserId } from '@/app/lib/google-business'
 
 export const runtime = 'nodejs'
 
@@ -23,5 +23,14 @@ export async function GET() {
     maxAge: 10 * 60,
   })
 
-  return NextResponse.redirect(buildGoogleOAuthUrl(state))
+  try {
+    return NextResponse.redirect(buildGoogleOAuthUrl(state))
+  } catch (error) {
+    if (error instanceof GoogleBusinessError) {
+      return Response.json({ error: error.message }, { status: error.status })
+    }
+
+    console.error('Google Business connect error:', error)
+    return Response.json({ error: 'Failed to start Google Business OAuth flow' }, { status: 500 })
+  }
 }
