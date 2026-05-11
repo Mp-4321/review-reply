@@ -104,12 +104,14 @@ export default async function NotificationsPage() {
       </aside>
 
       <main className="flex-1 overflow-y-auto p-8">
-        <div className="mb-7">
+        <div className="mb-7 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
+            <p className="mt-1 text-sm text-slate-400">
+              Choose when Replyfier should alert you about reviews and reply activity.
+            </p>
+          </div>
           <DashboardBackLink />
-          <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            Choose when Replyfier should alert you about reviews and reply activity.
-          </p>
         </div>
 
         <NotificationSettings />

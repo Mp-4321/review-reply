@@ -8,9 +8,11 @@
  * @module
  */
 
+import type * as aiSettings from "../aiSettings.js";
 import type * as locations from "../locations.js";
 import type * as replies from "../replies.js";
 import type * as reviews from "../reviews.js";
+import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 
 import type {
@@ -20,9 +22,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  aiSettings: typeof aiSettings;
   locations: typeof locations;
   replies: typeof replies;
   reviews: typeof reviews;
+  seed: typeof seed;
   users: typeof users;
 }>;
 

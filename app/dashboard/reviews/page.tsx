@@ -106,12 +106,12 @@ export default async function ReviewsPage() {
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto p-8">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <DashboardBackLink />
             <h1 className="text-2xl font-bold text-slate-900">All Reviews</h1>
             <p className="mt-1 text-sm text-slate-400">5 reviews total</p>
           </div>
+          <DashboardBackLink />
         </div>
 
         <ReviewsTable />
