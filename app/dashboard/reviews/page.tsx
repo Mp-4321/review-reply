@@ -2,14 +2,9 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import ReviewsTable from './reviews-table'
+import DashboardBackLink from '../dashboard-back-link'
 
 const NAV_GROUPS = [
-  {
-    group: 'Overview',
-    items: [
-      { label: 'Dashboard', href: '/dashboard', soon: false },
-    ],
-  },
   {
     group: 'Reviews',
     items: [
@@ -113,6 +108,7 @@ export default async function ReviewsPage() {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
+            <DashboardBackLink />
             <h1 className="text-2xl font-bold text-slate-900">All Reviews</h1>
             <p className="mt-1 text-sm text-slate-400">5 reviews total</p>
           </div>

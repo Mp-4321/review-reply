@@ -2,14 +2,9 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import DraftQueue from './draft-queue'
+import DashboardBackLink from '../dashboard-back-link'
 
 const NAV_GROUPS = [
-  {
-    group: 'Overview',
-    items: [
-      { label: 'Dashboard', href: '/dashboard', soon: false },
-    ],
-  },
   {
     group: 'Reviews',
     items: [
@@ -114,6 +109,7 @@ export default async function DraftRepliesPage() {
       {/* Main content */}
       <main className="flex-1 overflow-y-auto p-8">
         <div className="mb-7">
+          <DashboardBackLink />
           <h1 className="text-2xl font-bold text-slate-900">Draft replies</h1>
           <p className="mt-1 text-sm text-slate-400">
             Review and queue AI-generated replies for progressive publishing.

@@ -7,12 +7,6 @@ import { DashboardStats } from './dashboard-stats'
 
 const NAV_GROUPS = [
   {
-    group: 'Overview',
-    items: [
-      { label: 'Dashboard', href: '/dashboard', soon: false },
-    ],
-  },
-  {
     group: 'Reviews',
     items: [
       { label: 'All reviews',        href: '/dashboard/reviews',   soon: false },
