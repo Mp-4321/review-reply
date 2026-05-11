@@ -330,12 +330,12 @@ export default function Home() {
           }
         >
           <div className="mt-6 flex flex-col items-center gap-2">
-            <a
+            <Link
               href="/sign-up"
               className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
             >
               Generate your first reply →
-            </a>
+            </Link>
             <p className="text-xs text-slate-400">Try for free · Cancel anytime</p>
           </div>
         </Show>

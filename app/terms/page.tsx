@@ -67,7 +67,7 @@ export default function TermsPage() {
             <ul className="list-disc space-y-1.5 pl-5">
               <li>Generate or post fake, misleading, or fraudulent reviews.</li>
               <li>Send spam or unsolicited messages to reviewers.</li>
-              <li>Violate Google's terms of service or review policies.</li>
+              <li>Violate Google&apos;s terms of service or review policies.</li>
               <li>Harass, threaten, or defame any individual.</li>
               <li>Use the service in any way that breaches applicable law.</li>
             </ul>
@@ -85,7 +85,7 @@ export default function TermsPage() {
               replies, any responses from reviewers, or any impact on your business reputation.
             </p>
             <p className="mt-3">
-              To the maximum extent permitted by law, Replyfier's liability for any claim arising out of
+              To the maximum extent permitted by law, Replyfier&apos;s liability for any claim arising out of
               or related to the service is limited to the amount you paid in the 12 months preceding the claim.
             </p>
           </section>

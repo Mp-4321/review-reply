@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
+import type { Doc } from '@/convex/_generated/dataModel'
 
 type Tone         = 'professional' | 'friendly' | 'warm' | 'casual' | 'concise'
 type ReplyLength  = 'short' | 'balanced' | 'detailed'
@@ -23,26 +24,31 @@ const LENGTHS: { value: ReplyLength; label: string; description: string }[] = [
 
 export default function AISettingsForm() {
   const settings = useQuery(api.aiSettings.get)
+
+  if (settings === undefined) {
+    return (
+      <div className="space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-100" />
+        ))}
+      </div>
+    )
+  }
+
+  return <AISettingsFields settings={settings} />
+}
+
+function AISettingsFields({ settings }: { settings: Doc<'aiSettings'> | null }) {
   const saveSettings = useMutation(api.aiSettings.save)
 
-  const [businessDescription, setBusinessDescription] = useState('')
-  const [tone,                 setTone]                = useState<Tone>('friendly')
-  const [replyLength,          setReplyLength]         = useState<ReplyLength>('balanced')
-  const [signature,            setSignature]           = useState('')
-  const [customInstructions,   setCustomInstructions]  = useState('')
+  const [businessDescription, setBusinessDescription] = useState(settings?.businessDescription ?? '')
+  const [tone,                 setTone]                = useState<Tone>(settings?.tone ?? 'friendly')
+  const [replyLength,          setReplyLength]         = useState<ReplyLength>(settings?.replyLength ?? 'balanced')
+  const [signature,            setSignature]           = useState(settings?.signature ?? '')
+  const [customInstructions,   setCustomInstructions]  = useState(settings?.customInstructions ?? '')
 
   const [saving,  setSaving]  = useState(false)
   const [saved,   setSaved]   = useState(false)
-
-  // Hydrate form when settings load
-  useEffect(() => {
-    if (!settings) return
-    if (settings.businessDescription) setBusinessDescription(settings.businessDescription)
-    if (settings.tone)                setTone(settings.tone as Tone)
-    if (settings.replyLength)         setReplyLength(settings.replyLength)
-    if (settings.signature != null)   setSignature(settings.signature)
-    if (settings.customInstructions)  setCustomInstructions(settings.customInstructions)
-  }, [settings])
 
   async function handleSave() {
     setSaving(true)
@@ -54,16 +60,6 @@ export default function AISettingsForm() {
     } finally {
       setSaving(false)
     }
-  }
-
-  if (settings === undefined) {
-    return (
-      <div className="space-y-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-100" />
-        ))}
-      </div>
-    )
   }
 
   return (

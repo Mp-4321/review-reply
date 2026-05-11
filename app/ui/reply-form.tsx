@@ -3,6 +3,7 @@
 import { useState, useMemo, Fragment, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 // ── Types & data ───────────────────────────────────────────────────────────
 
@@ -85,6 +86,7 @@ type PaywallMode = 'no_subscription' | 'trial_limit'
 export default function ReplyForm() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
+  const userId = user?.id
 
   const [review, setReview] = useState('')
   const [tone, setTone] = useState('professional')
@@ -103,25 +105,38 @@ export default function ReplyForm() {
 
   const loading = loadingInitial || loadingRegen
   const canGenerate = review.trim().length > 0
-  const isTrialOver = subStatus === 'trialing' && trialUsed >= TRIAL_LIMIT
+  const effectiveSubStatus: SubStatus = !isLoaded ? 'loading' : user ? subStatus : 'no_subscription'
+  const isTrialOver = effectiveSubStatus === 'trialing' && trialUsed >= TRIAL_LIMIT
   const trialLeft = Math.max(0, TRIAL_LIMIT - trialUsed)
 
   useEffect(() => {
-    if (!isLoaded) return
-    if (!user) { setSubStatus('no_subscription'); return }
+    if (!isLoaded || !userId) return
 
-    const key = TRIAL_KEY_PREFIX + user.id
-    const stored = localStorage.getItem(key)
-    if (stored) setTrialUsed(parseInt(stored, 10))
+    let cancelled = false
+    const key = TRIAL_KEY_PREFIX + userId
+
+    queueMicrotask(() => {
+      if (cancelled) return
+      const stored = localStorage.getItem(key)
+      setTrialUsed(stored ? parseInt(stored, 10) : 0)
+    })
 
     fetch('/api/subscription-status')
       .then(r => r.json())
-      .then((data: { status: SubStatus }) => {
-        setSubStatus(data.status)
-        if (data.status === 'expired') router.push('/pricing')
+      .then((data: { status?: SubStatus }) => {
+        if (cancelled) return
+        const status = data.status ?? 'no_subscription'
+        setSubStatus(status)
+        if (status === 'expired') router.push('/pricing')
       })
-      .catch(() => setSubStatus('no_subscription'))
-  }, [isLoaded, user])
+      .catch(() => {
+        if (!cancelled) setSubStatus('no_subscription')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isLoaded, userId, router])
 
   // Fixed random selection at mount — generic examples only
   const examples = useMemo(
@@ -148,7 +163,7 @@ export default function ReplyForm() {
       } else {
         setReply(data.reply)
         fetchKeywords(review)
-        if (subStatus === 'trialing' && user) {
+        if (effectiveSubStatus === 'trialing' && user) {
           const next = trialUsed + 1
           setTrialUsed(next)
           localStorage.setItem(TRIAL_KEY_PREFIX + user.id, String(next))
@@ -179,7 +194,7 @@ export default function ReplyForm() {
   async function handleGenerate() {
     if (!canGenerate) return
     if (!user) { router.push('/sign-up'); return }
-    if (subStatus === 'no_subscription') { setPaywallMode('no_subscription'); setPaywallOpen(true); return }
+    if (effectiveSubStatus === 'no_subscription') { setPaywallMode('no_subscription'); setPaywallOpen(true); return }
     if (isTrialOver) { setPaywallMode('trial_limit'); setPaywallOpen(true); return }
     setReply('')
     setKeywords([])
@@ -198,7 +213,7 @@ export default function ReplyForm() {
         body: JSON.stringify({ priceId }),
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
+      if (data.url) window.location.assign(data.url)
     } catch {
       // silently fail — user stays on page
     } finally {
@@ -255,12 +270,12 @@ export default function ReplyForm() {
           <p className="text-base font-semibold text-slate-800">Sign in to generate replies</p>
           <p className="mt-1 text-sm text-slate-500">Create a free account and get 3 replies on us.</p>
         </div>
-        <a
+        <Link
           href="/sign-up"
           className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
         >
           Get started free →
-        </a>
+        </Link>
       </div>
     )
   }
@@ -316,7 +331,7 @@ export default function ReplyForm() {
       </button>
 
       {/* Trial usage counter */}
-      {subStatus === 'trialing' && trialUsed > 0 && !isTrialOver && (
+      {effectiveSubStatus === 'trialing' && trialUsed > 0 && !isTrialOver && (
         <p className={`-mt-2 text-center text-xs ${trialLeft <= 5 ? 'text-amber-500' : 'text-slate-400'}`}>
           Trial: {trialUsed}/{TRIAL_LIMIT} replies used
         </p>
@@ -446,9 +461,9 @@ export default function ReplyForm() {
             </div>
             <h2 className="mt-4 text-xl font-bold text-slate-900">
               {paywallMode === 'trial_limit' ? (
-                <>You've reached your trial limit.<br />Upgrade to continue.</>
+                <>You&apos;ve reached your trial limit.<br />Upgrade to continue.</>
               ) : (
-                <>You've used your {TRIAL_LIMIT} free replies.<br />
+                <>You&apos;ve used your {TRIAL_LIMIT} free replies.<br />
                 Start your <span className="font-extrabold">7-day free trial</span> to keep going.</>
               )}
             </h2>

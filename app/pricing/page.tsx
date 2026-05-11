@@ -77,7 +77,7 @@ export default function PricingPage() {
           Simple, transparent pricing
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-lg text-slate-500">
-          Start with 5 free replies. Upgrade when you're ready — no contracts, cancel anytime.
+          Start with 5 free replies. Upgrade when you&apos;re ready — no contracts, cancel anytime.
         </p>
 
         {/* Billing toggle — pill style */}

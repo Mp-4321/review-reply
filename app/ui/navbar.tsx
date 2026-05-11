@@ -18,8 +18,8 @@ export default function Navbar() {
           <Link href="/#tool"     className="pointer-events-auto text-sm text-slate-500 transition hover:text-slate-900">Free Tool</Link>
         </div>
         <div className="relative z-10 ml-auto flex items-center gap-3">
-          <a href="/sign-in" className="text-sm text-slate-600 transition hover:text-slate-900">Sign in</a>
-          <a href="/sign-up" className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</a>
+          <Link href="/sign-in" className="text-sm text-slate-600 transition hover:text-slate-900">Sign in</Link>
+          <Link href="/sign-up" className="rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Sign up</Link>
         </div>
       </div>
     </nav>

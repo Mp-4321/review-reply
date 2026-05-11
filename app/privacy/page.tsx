@@ -73,7 +73,7 @@ export default function PrivacyPage() {
                   The Stripe.js library sets cookies named{' '}
                   <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">__stripe_mid</code> and{' '}
                   <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">__stripe_sid</code> for fraud prevention.
-                  Stripe's privacy policy is available at{' '}
+                  Stripe&apos;s privacy policy is available at{' '}
                   <span className="text-slate-500">stripe.com/privacy</span>.
                 </p>
               </div>
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
                 <p className="font-medium text-slate-800">Google OAuth (Google Business Profile access)</p>
                 <p>
                   When you connect your Google Business account, the OAuth authorisation flow passes through
-                  Google's servers. Google may set its own cookies during this redirect. We store only the
+                  Google&apos;s servers. Google may set its own cookies during this redirect. We store only the
                   OAuth access token, encrypted at rest, and use it solely to read and respond to your reviews.
                 </p>
               </div>
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
             <ul className="list-disc space-y-1.5 pl-5">
               <li><strong>Access</strong> the personal data we hold about you.</li>
               <li><strong>Rectify</strong> inaccurate data.</li>
-              <li><strong>Erasure</strong> ("right to be forgotten") — see Section 7.</li>
+              <li><strong>Erasure</strong> (&quot;right to be forgotten&quot;) — see Section 7.</li>
               <li><strong>Data portability</strong> — receive your data in a structured, machine-readable format.</li>
               <li><strong>Object</strong> to processing based on legitimate interest.</li>
             </ul>

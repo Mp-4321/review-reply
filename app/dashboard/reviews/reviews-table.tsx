@@ -15,8 +15,8 @@ function nameToColor(name: string) {
 function getInitials(name: string) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 }
-function formatDate(iso: string) {
-  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+function formatDate(iso: string, now: number) {
+  const days = Math.floor((now - new Date(iso).getTime()) / 86_400_000)
   if (days === 0) return 'Today'
   if (days === 1) return 'Yesterday'
   return `${days}d ago`
@@ -59,13 +59,14 @@ export default function ReviewsTable() {
   const [starFilter,   setStarFilter]   = useState<number | null>(null)
   const [statusFilter, setStatusFilter] = useState<Status | 'All'>('All')
   const [dateFilter,   setDateFilter]   = useState(9999)
+  const [now] = useState(() => Date.now())
 
   const reviews = useQuery(api.reviews.list, { limit: 50 }) ?? []
 
   const filtered = reviews.filter(r => {
     if (starFilter   !== null  && RATING_NUM[r.starRating] !== starFilter) return false
     if (statusFilter !== 'All' && r.status !== statusFilter)               return false
-    const days = (Date.now() - new Date(r.updateTime).getTime()) / 86_400_000
+    const days = (now - new Date(r.updateTime).getTime()) / 86_400_000
     if (days > dateFilter)                                                  return false
     return true
   })
@@ -154,7 +155,7 @@ export default function ReviewsTable() {
               <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
                 {STATUS_LABEL[r.status]}
               </span>
-              <p className="text-[12px] text-slate-400">{formatDate(r.updateTime)}</p>
+              <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
               {r.status === 'pending' ? (
                 <button className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
                   Generate reply

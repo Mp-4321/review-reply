@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 type ToneLabel = 'Professional' | 'Friendly' | 'Concise'
 
@@ -137,10 +137,7 @@ function StarRow({ count }: { count: number }) {
 }
 
 export default function DemoCarousel() {
-  const slidesRef = useRef(
-    SLIDE_PAIRS.map(pair => pair[Math.floor(Math.random() * 2)])
-  )
-  const slides = slidesRef.current
+  const [slides] = useState(() => SLIDE_PAIRS.map(pair => pair[Math.floor(Math.random() * 2)]))
   const [slideIndex, setSlideIndex]         = useState(0)
   const [displayedReply, setDisplayedReply] = useState('')
   const [contentVisible, setContentVisible] = useState(true)
@@ -148,12 +145,14 @@ export default function DemoCarousel() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const timeoutRef  = useRef<ReturnType<typeof setTimeout>  | null>(null)
 
-  function clearAll() {
+  const clearAll = useCallback(() => {
     if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
     if (timeoutRef.current)  { clearTimeout(timeoutRef.current);   timeoutRef.current  = null }
-  }
+  }, [])
 
-  function startSequence(idx: number) {
+  const goToSlideRef = useRef<(idx: number) => void>(() => {})
+
+  const startSequence = useCallback((idx: number) => {
     timeoutRef.current = setTimeout(() => {
       setTyping(true)
       const text = slides[idx].reply
@@ -166,13 +165,13 @@ export default function DemoCarousel() {
           intervalRef.current = null
           setTyping(false)
           const wait = idx === slides.length - 1 ? 3000 : 4000
-          timeoutRef.current = setTimeout(() => goToSlide((idx + 1) % slides.length), wait)
+          timeoutRef.current = setTimeout(() => goToSlideRef.current((idx + 1) % slides.length), wait)
         }
       }, 32)
     }, 1500)
-  }
+  }, [slides])
 
-  function goToSlide(idx: number) {
+  const goToSlide = useCallback((idx: number) => {
     clearAll()
     setContentVisible(false)
     timeoutRef.current = setTimeout(() => {
@@ -182,12 +181,16 @@ export default function DemoCarousel() {
       setContentVisible(true)
       startSequence(idx)
     }, 250)
-  }
+  }, [clearAll, startSequence])
+
+  useEffect(() => {
+    goToSlideRef.current = goToSlide
+  }, [goToSlide])
 
   useEffect(() => {
     startSequence(0)
     return clearAll
-  }, [])
+  }, [clearAll, startSequence])
 
   const slide = slides[slideIndex]
 
