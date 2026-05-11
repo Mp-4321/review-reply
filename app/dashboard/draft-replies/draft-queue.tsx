@@ -27,15 +27,14 @@ function formatAbsoluteTime(ts: number): string {
   const d    = new Date(ts)
   const now  = new Date()
   const tom  = new Date(); tom.setDate(now.getDate() + 1)
-  const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-  if (d.toDateString() === now.toDateString()) return `Today at ${time}`
-  if (d.toDateString() === tom.toDateString()) return `Tomorrow at ${time}`
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ` at ${time}`
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  if (d.toDateString() === now.toDateString()) return `today at ${time}`
+  if (d.toDateString() === tom.toDateString()) return `tomorrow at ${time}`
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ` at ${time}`
 }
 function formatScheduledCard(scheduledAt: number): string {
   const ms = scheduledAt - Date.now()
-  if (ms <= 0) return 'Publishing soon'
-  if (ms < 60 * 60 * 1000) return `Publishing in ~${Math.round(ms / 60_000)} min`
+  if (ms > 0 && ms < 60 * 60 * 1000) return `Publishing in ~${Math.max(1, Math.round(ms / 60_000))} min`
   return `Scheduled for ${formatAbsoluteTime(scheduledAt)}`
 }
 function estimatedCompletion(count: number, startAt: number): string {
@@ -285,7 +284,8 @@ export default function DraftQueue() {
   function toggleSelect(id: Id<'replies'>) {
     setSelected(prev => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
   }
@@ -440,37 +440,37 @@ export default function DraftQueue() {
       )}
 
       {selected.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
-          <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-xl">
-            <span className="self-center text-sm font-semibold text-slate-700">
+        <div className="fixed bottom-6 left-1/2 z-40 w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 px-4 sm:w-auto sm:px-0">
+          <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white/95 px-4 py-3 shadow-2xl shadow-slate-900/15 backdrop-blur sm:flex-row sm:items-center sm:px-5">
+            <span className="whitespace-nowrap text-sm font-semibold text-slate-900">
               {selected.size} selected
             </span>
-            <div className="h-4 w-px self-center bg-slate-200" />
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
+            <div className="hidden h-5 w-px bg-slate-200 sm:block" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => setShowQueueConfirm(true)}
                   disabled={queuing || discarding}
-                  className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                  className="cursor-pointer whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
                 >
                   {queuing ? 'Queuing…' : 'Queue selected replies'}
                 </button>
                 <button
                   onClick={() => setShowScheduleModal(true)}
                   disabled={queuing || discarding}
-                  className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-60"
+                  className="cursor-pointer whitespace-nowrap rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-60"
                 >
                   Schedule for later
                 </button>
                 <button
                   onClick={handleDiscard}
                   disabled={queuing || discarding}
-                  className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-500 transition hover:border-red-200 hover:text-red-600 disabled:opacity-60"
+                  className="cursor-pointer whitespace-nowrap rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-red-200 hover:text-red-600 disabled:opacity-60"
                 >
                   {discarding ? 'Discarding…' : 'Discard'}
                 </button>
               </div>
-              <p className="px-1 text-[11px] text-slate-400">
+              <p className="text-[11px] font-medium text-slate-400 sm:border-l sm:border-slate-200 sm:pl-3">
                 Replies will be published gradually to maintain a natural posting pattern.
               </p>
             </div>
@@ -572,7 +572,7 @@ function DraftCard({
                 </p>
                 {reply.draft.length > 120 && (
                   <button onClick={() => setExpanded(e => !e)} className="mt-1 text-[11px] font-medium text-blue-500 hover:text-blue-700">
-                    {expanded ? 'Show less' : 'Show more'}
+                    {expanded ? 'Collapse reply' : 'Expand reply'}
                   </button>
                 )}
               </>
@@ -628,7 +628,7 @@ function QueuedCard({ reply, review }: { reply: Item['reply']; review: Item['rev
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-start gap-4 px-5 py-4">
         <div className="h-4 w-4 shrink-0" />
         <div
@@ -639,33 +639,33 @@ function QueuedCard({ reply, review }: { reply: Item['reply']; review: Item['rev
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
-            <p className="text-sm font-semibold text-slate-700">{review.reviewerName}</p>
+            <p className="text-sm font-semibold text-slate-800">{review.reviewerName}</p>
             <Stars count={RATING_NUM[review.starRating]} />
             <span className="text-[11px] text-slate-400">{formatDate(review.createTime)}</span>
           </div>
-          <p className="text-[13px] leading-relaxed text-slate-500 line-clamp-2">
+          <p className="text-[13px] leading-relaxed text-slate-600 line-clamp-2">
             {review.comment ?? <span className="italic">No comment left.</span>}
           </p>
-          <div className="mt-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
+          <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
             <div className="mb-1.5 flex items-center gap-1.5">
-              <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-3.5 w-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="text-[11px] font-semibold text-slate-500">
-                {reply.scheduledAt ? formatScheduledCard(reply.scheduledAt) : 'Queued'}
+              <span className="text-[11px] font-semibold text-blue-700">
+                {reply.scheduledAt ? formatScheduledCard(reply.scheduledAt) : 'Queued for publishing'}
               </span>
             </div>
-            <p className={`text-[13px] leading-relaxed text-slate-500 ${!expanded ? 'line-clamp-2' : ''}`}>
+            <p className={`text-[13px] leading-relaxed text-slate-700 ${!expanded ? 'line-clamp-2' : ''}`}>
               {reply.draft}
             </p>
             {reply.draft.length > 120 && (
-              <button onClick={() => setExpanded(e => !e)} className="mt-1 text-[11px] font-medium text-slate-400 hover:text-slate-600">
-                {expanded ? 'Show less' : 'Show more'}
+              <button onClick={() => setExpanded(e => !e)} className="mt-1 text-[11px] font-medium text-blue-600 hover:text-blue-700">
+                {expanded ? 'Collapse reply' : 'Expand reply'}
               </button>
             )}
           </div>
         </div>
-        <span className="shrink-0 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[11px] font-medium text-slate-500">
+        <span className="shrink-0 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-0.5 text-[11px] font-medium text-blue-700">
           Queued
         </span>
       </div>

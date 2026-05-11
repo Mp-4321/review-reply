@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
-import { Id, Doc } from '@/convex/_generated/dataModel'
+import { Id } from '@/convex/_generated/dataModel'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
@@ -50,22 +50,20 @@ export default function AwaitingReplyQueue() {
   const [expanded,      setExpanded]      = useState<Id<'reviews'> | null>(null)
   const [dismissed,     setDismissed]     = useState<Id<'reviews'>[]>([])
   const [generatingFor, setGeneratingFor] = useState<Id<'reviews'> | null>(null)
-  const [editingFor,    setEditingFor]    = useState<Id<'reviews'> | null>(null)
-  const [editText,      setEditText]      = useState('')
   const [error,         setError]         = useState<string | null>(null)
 
-  const reviews    = useQuery(api.reviews.list, { status: 'pending', limit: 50 }) ?? []
-  const allDrafts  = useQuery(api.replies.listDrafts) ?? []
-  const aiSettings = useQuery(api.aiSettings.get)
-  const saveDraft    = useMutation(api.replies.save)
-  const updateDraft  = useMutation(api.replies.updateDraft)
-  const approveDraft = useMutation(api.replies.approve)
+  const reviews          = useQuery(api.reviews.list, { status: 'pending', limit: 50 }) ?? []
+  const existingItems    = useQuery(api.replies.listDraftsWithReviews)
+  const aiSettings       = useQuery(api.aiSettings.get)
+  const saveDraft        = useMutation(api.replies.save)
 
-  // Map reviewId → latest draft reply
-  const draftMap = new Map<string, Doc<'replies'>>()
-  for (const d of allDrafts) draftMap.set(d.reviewId, d)
+  const reviewIdsWithDrafts = useMemo(
+    () => new Set((existingItems ?? []).map(({ reply }) => reply.reviewId)),
+    [existingItems],
+  )
 
   const visible = reviews
+    .filter(r => !reviewIdsWithDrafts.has(r._id))
     .filter(r => !dismissed.includes(r._id))
     .filter(r => starFilter === null || RATING_NUM[r.starRating] === starFilter)
     .sort((a, b) => {
@@ -75,7 +73,7 @@ export default function AwaitingReplyQueue() {
       return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
     })
 
-  async function generate(review: typeof reviews[number], regenerate = false) {
+  async function generate(review: typeof reviews[number]) {
     setGeneratingFor(review._id)
     setExpanded(review._id)
     setError(null)
@@ -95,24 +93,12 @@ export default function AwaitingReplyQueue() {
       const data = (await res.json()) as { reply?: string; error?: string }
       if (!res.ok || !data.reply) throw new Error(data.error ?? 'Failed to generate reply')
 
-      const existing = draftMap.get(review._id)
-      if (regenerate && existing) {
-        await updateDraft({ replyId: existing._id, draft: data.reply })
-      } else {
-        await saveDraft({ reviewId: review._id, draft: data.reply })
-      }
+      await saveDraft({ reviewId: review._id, draft: data.reply })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
       setGeneratingFor(null)
     }
-  }
-
-  async function saveEdit(review: typeof reviews[number]) {
-    const existing = draftMap.get(review._id)
-    if (!existing) return
-    await updateDraft({ replyId: existing._id, draft: editText })
-    setEditingFor(null)
   }
 
   return (
@@ -158,17 +144,13 @@ export default function AwaitingReplyQueue() {
       {visible.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
           <p className="text-sm font-medium text-slate-400">
-            {reviews.length === 0
-              ? 'No reviews yet — connect Google Business to sync.'
-              : 'All caught up — no reviews awaiting a reply.'}
+            All caught up — no reviews awaiting a reply.
           </p>
         </div>
       ) : (
         <div className="space-y-3">
           {visible.map(r => {
-            const draft     = draftMap.get(r._id)
             const isLoading = generatingFor === r._id
-            const isEditing = editingFor === r._id
 
             return (
               <div
@@ -205,22 +187,13 @@ export default function AwaitingReplyQueue() {
                     <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-700">
                       Pending
                     </span>
-                    {draft ? (
-                      <button
-                        onClick={() => setExpanded(expanded === r._id ? null : r._id)}
-                        className="cursor-pointer whitespace-nowrap rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-100"
-                      >
-                        {expanded === r._id ? 'Hide draft' : 'View draft'}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => generate(r)}
-                        disabled={isLoading}
-                        className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
-                      >
-                        {isLoading ? 'Generating…' : 'Generate reply'}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => generate(r)}
+                      disabled={isLoading}
+                      className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                    >
+                      {isLoading ? 'Generating…' : 'Generate reply'}
+                    </button>
                     <button
                       onClick={() => setDismissed(prev => [...prev, r._id])}
                       className="cursor-pointer text-[11px] text-slate-400 transition hover:text-slate-600"
@@ -230,75 +203,19 @@ export default function AwaitingReplyQueue() {
                   </div>
                 </div>
 
-                {/* Draft panel */}
-                {expanded === r._id && (
+                {/* Generating panel */}
+                {expanded === r._id && isLoading && (
                   <div className="mx-6 mb-5 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
                     <div className="mb-2.5 flex items-center gap-1.5 text-blue-600">
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                       <span className="text-xs font-semibold">
-                        {isLoading ? 'Generating reply…' : 'AI-generated reply'}
+                        Generating reply…
                       </span>
                     </div>
 
-                    {isLoading ? (
-                      <div className="h-12 animate-pulse rounded-lg bg-blue-100" />
-                    ) : isEditing ? (
-                      <textarea
-                        value={editText}
-                        onChange={e => setEditText(e.target.value)}
-                        rows={4}
-                        className="w-full resize-none rounded-lg border border-blue-200 bg-white px-3 py-2 text-[13px] leading-relaxed text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      />
-                    ) : (
-                      <p className="text-[13px] leading-relaxed text-slate-700">{draft?.draft}</p>
-                    )}
-
-                    {!isLoading && (
-                      <div className="mt-3.5 flex items-center gap-2">
-                        {isEditing ? (
-                          <>
-                            <button
-                              onClick={() => saveEdit(r)}
-                              className="cursor-pointer rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => setEditingFor(null)}
-                              className="cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300"
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => draft && approveDraft({ replyId: draft._id })}
-                              className="cursor-pointer rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => {
-                                setEditText(draft?.draft ?? '')
-                                setEditingFor(r._id)
-                              }}
-                              className="cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => generate(r, true)}
-                              className="cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300"
-                            >
-                              Regenerate
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )}
+                    <div className="h-12 animate-pulse rounded-lg bg-blue-100" />
                   </div>
                 )}
               </div>

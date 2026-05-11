@@ -1,18 +1,7 @@
-import { mutation, query, QueryCtx } from './_generated/server'
+import { mutation, query } from './_generated/server'
 import { v } from 'convex/values'
 
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
-
-async function requireUser(ctx: QueryCtx) {
-  const identity = await ctx.auth.getUserIdentity()
-  if (!identity) throw new Error('Unauthenticated')
-  const user = await ctx.db
-    .query('users')
-    .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
-    .unique()
-  if (!user) throw new Error('User not found')
-  return user
-}
 
 export const list = query({
   args: {
