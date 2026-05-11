@@ -16,9 +16,9 @@ const TONES: { value: Tone; label: string; description: string }[] = [
 ]
 
 const LENGTHS: { value: ReplyLength; label: string; description: string }[] = [
-  { value: 'short',    label: 'Short',    description: '1–2 sentences'       },
-  { value: 'balanced', label: 'Balanced', description: '3–4 sentences'       },
-  { value: 'detailed', label: 'Detailed', description: 'Full paragraph reply' },
+  { value: 'short',    label: 'Short',    description: '1–2 sentences'        },
+  { value: 'balanced', label: 'Balanced', description: '2–4 sentences'        },
+  { value: 'detailed', label: 'Detailed', description: 'More personalized reply' },
 ]
 
 export default function AISettingsForm() {
@@ -114,7 +114,7 @@ export default function AISettingsForm() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-slate-900">Reply length</h2>
-          <p className="mt-0.5 text-[13px] text-slate-400">How long should generated replies be?</p>
+          <p className="mt-0.5 text-[13px] text-slate-400">Select how detailed replies should be.</p>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {LENGTHS.map(l => (
