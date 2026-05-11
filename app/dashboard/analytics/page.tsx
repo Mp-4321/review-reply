@@ -1,13 +1,13 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import ReviewsTable from './reviews-table'
+import ReplyRateAnalytics from './reply-rate-analytics'
 
 const NAV_GROUPS = [
   {
     group: 'Reviews',
     items: [
-      { label: 'All reviews',    href: '/dashboard/reviews',   soon: false },
+      { label: 'All reviews',    href: '/dashboard/reviews',        soon: false },
       { label: 'Awaiting reply', href: '/dashboard/awaiting-reply', soon: false },
       { label: 'Draft replies',  href: '/dashboard/draft-replies', soon: false },
     ],
@@ -35,20 +35,17 @@ const NAV_GROUPS = [
   },
 ]
 
-export default async function ReviewsPage() {
+export default async function ReplyRatePage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const user = await currentUser()
+  const user     = await currentUser()
   const email    = user?.emailAddresses[0]?.emailAddress ?? ''
   const initials = [user?.firstName, user?.lastName].filter(Boolean).map(s => s![0]).join('').toUpperCase() || '?'
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-
-      {/* Sidebar */}
       <aside className="flex w-52 flex-col border-r border-slate-200 bg-white">
-
         <div className="flex h-14 items-center gap-2 border-b border-slate-100 px-4">
           <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -75,7 +72,9 @@ export default async function ReviewsPage() {
                   key={href}
                   href={href}
                   className={`flex items-center justify-between rounded-md px-2 py-1 text-[13px] transition hover:bg-slate-100 hover:text-slate-900 ${
-                    href === '/dashboard/reviews' ? 'bg-blue-50 font-semibold text-blue-700' : 'text-slate-600'
+                    href === '/dashboard/analytics'
+                      ? 'bg-blue-50 font-semibold text-blue-700'
+                      : 'text-slate-600'
                   }`}
                 >
                   <span>{label}</span>
@@ -103,16 +102,15 @@ export default async function ReviewsPage() {
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 overflow-y-auto p-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">All Reviews</h1>
-            <p className="mt-1 text-sm text-slate-400">5 reviews total</p>
-          </div>
+        <div className="mb-7">
+          <h1 className="text-2xl font-bold text-slate-900">Reply rate</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            Track how consistently your business responds to reviews.
+          </p>
         </div>
 
-        <ReviewsTable />
+        <ReplyRateAnalytics />
       </main>
     </div>
   )

@@ -20,9 +20,9 @@ const NAV_GROUPS = [
     ],
   },
   {
-    group: 'Insights',
+    group: 'Analytics',
     items: [
-      { label: 'Analytics', href: '/dashboard/analytics', soon: true },
+      { label: 'Reply rate', href: '/dashboard/analytics', soon: false },
     ],
   },
   {
