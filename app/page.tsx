@@ -98,7 +98,7 @@ const FAQS = [
   },
   {
     q: 'Can I cancel at any time?',
-    a: 'Yes. You can cancel your subscription at any time and keep access until the end of your billing period.',
+    a: 'Yes. You can cancel your subscription at any time. Your access will remain active until the end of your current monthly or annual billing period.',
   },
   {
     q: 'How can I contact support?',
