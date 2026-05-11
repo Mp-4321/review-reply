@@ -120,7 +120,10 @@ export const updateDraft = mutation({
 })
 
 export const queueReplies = mutation({
-  args: { replyIds: v.array(v.id('replies')) },
+  args: {
+    replyIds: v.array(v.id('replies')),
+    startAt:  v.optional(v.number()),
+  },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) throw new Error('Unauthenticated')
@@ -130,7 +133,7 @@ export const queueReplies = mutation({
       .unique()
     if (!user) throw new Error('User not found')
 
-    let scheduledAt = Date.now()
+    let scheduledAt = args.startAt ?? Date.now()
     for (const replyId of args.replyIds) {
       const reply = await ctx.db.get(replyId)
       if (!reply || reply.userId !== user._id) continue
