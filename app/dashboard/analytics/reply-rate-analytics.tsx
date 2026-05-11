@@ -34,15 +34,16 @@ function addMonths(date: Date, months: number) {
 }
 
 function formatDuration(ms: number) {
-  if (!Number.isFinite(ms) || ms <= 0) return '0m'
+  if (!Number.isFinite(ms) || ms <= 0) return 'Under 1 minute'
   const minutes = Math.round(ms / 60_000)
+  if (minutes < 60) return minutes === 1 ? '1 minute' : `${minutes} minutes`
+
   const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  if (hours === 0) return `${mins}m`
-  if (hours < 48) return `${hours}h ${mins}m`
-  const days = Math.floor(hours / 24)
-  const remHours = hours % 24
-  return `${days}d ${remHours}h`
+  if (hours < 24) return hours === 1 ? '~1 hour' : `~${hours} hours`
+
+  const days = Math.round(hours / 24)
+  if (days <= 1) return '1 day'
+  return `${days} days`
 }
 
 function formatBucketLabel(date: Date, period: Period) {
@@ -53,6 +54,26 @@ function formatBucketLabel(date: Date, period: Period) {
 function percent(numerator: number, denominator: number) {
   if (denominator === 0) return 0
   return Math.round((numerator / denominator) * 100)
+}
+
+function formatComparison(comparison: number, period: Period) {
+  if (period === 'all') return 'All-time reply coverage'
+  if (comparison > 0) return `+${comparison}% vs previous period`
+  if (comparison < 0) return 'Response rate lower than previous period'
+  return 'In line with previous period'
+}
+
+function insightTitle(rate: number, remaining: number) {
+  if (remaining === 0) return 'Reply coverage is complete'
+  if (rate >= 80) return 'Reply coverage is strong'
+  if (rate >= 50) return 'Reply coverage has room to improve'
+  return 'Reply coverage is below average'
+}
+
+function insightCopy(replied: number, total: number, remaining: number) {
+  if (total === 0) return 'No reviews were received in this period. New reviews will appear here as they sync.'
+  if (remaining === 0) return `You replied to all ${total} reviews in this period. Keep this cadence as new reviews arrive.`
+  return `You replied to ${replied} out of ${total} reviews in this period. ${remaining} reviews still need attention.`
 }
 
 function getWindowStart(period: Period, now: Date, reviews: Review[]) {
@@ -165,20 +186,25 @@ function ReplyRateChart({
   buckets: ReturnType<typeof buildAnalytics>['buckets']
 }) {
   const maxValue = Math.max(1, ...buckets.flatMap(bucket => [bucket.reviews, bucket.replies]))
-  const width = 720
-  const height = 280
-  const pad = { top: 20, right: 20, bottom: 48, left: 36 }
+  const width = 760
+  const height = 250
+  const pad = { top: 18, right: 22, bottom: 42, left: 34 }
   const plotWidth = width - pad.left - pad.right
   const plotHeight = height - pad.top - pad.bottom
-  const groupWidth = plotWidth / Math.max(1, buckets.length)
-  const barWidth = Math.max(4, Math.min(14, groupWidth / 4))
+  const xFor = (index: number) => {
+    if (buckets.length <= 1) return pad.left + plotWidth / 2
+    return pad.left + (plotWidth * index) / (buckets.length - 1)
+  }
+  const yFor = (value: number) => pad.top + plotHeight - (value / maxValue) * plotHeight
+  const reviewPoints = buckets.map((bucket, index) => `${xFor(index)},${yFor(bucket.reviews)}`).join(' ')
+  const replyPoints = buckets.map((bucket, index) => `${xFor(index)},${yFor(bucket.replies)}`).join(' ')
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white px-4 py-4">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">Reviews and replies over time</h2>
-          <p className="mt-1 text-xs text-slate-400">Compare review volume with published replies.</p>
+          <p className="mt-1 text-xs text-slate-400">Track review intake against published replies.</p>
         </div>
         <div className="flex items-center gap-4 text-xs">
           <span className="flex items-center gap-1.5 text-slate-500">
@@ -192,7 +218,7 @@ function ReplyRateChart({
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-72 w-full overflow-visible" role="img" aria-label="Reviews received and replies published over time">
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-64 w-full overflow-visible" role="img" aria-label="Reviews received and replies published over time">
         {[0, 0.5, 1].map(tick => {
           const y = pad.top + plotHeight - plotHeight * tick
           const value = Math.round(maxValue * tick)
@@ -204,32 +230,19 @@ function ReplyRateChart({
           )
         })}
 
+        <polyline points={reviewPoints} fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={replyPoints} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+
         {buckets.map((bucket, index) => {
-          const x = pad.left + index * groupWidth + groupWidth / 2
-          const reviewHeight = (bucket.reviews / maxValue) * plotHeight
-          const replyHeight = (bucket.replies / maxValue) * plotHeight
           const showLabel = buckets.length <= 10 || index === 0 || index === buckets.length - 1 || index % Math.ceil(buckets.length / 5) === 0
+          const x = xFor(index)
 
           return (
             <g key={`${bucket.label}-${index}`}>
-              <rect
-                x={x - barWidth - 2}
-                y={pad.top + plotHeight - reviewHeight}
-                width={barWidth}
-                height={reviewHeight}
-                rx="3"
-                fill="#cbd5e1"
-              />
-              <rect
-                x={x + 2}
-                y={pad.top + plotHeight - replyHeight}
-                width={barWidth}
-                height={replyHeight}
-                rx="3"
-                fill="#2563eb"
-              />
+              <circle cx={x} cy={yFor(bucket.reviews)} r="3.5" fill="#94a3b8" stroke="#fff" strokeWidth="2" />
+              <circle cx={x} cy={yFor(bucket.replies)} r="3.5" fill="#2563eb" stroke="#fff" strokeWidth="2" />
               {showLabel && (
-                <text x={x} y={height - 18} textAnchor="middle" className="fill-slate-400 text-[10px]">
+                <text x={x} y={height - 16} textAnchor="middle" className="fill-slate-400 text-[10px]">
                   {bucket.label}
                 </text>
               )}
@@ -262,10 +275,15 @@ export default function ReplyRateAnalytics() {
     )
   }
 
-  const comparisonLabel = `${analytics.comparison >= 0 ? '+' : ''}${analytics.comparison}% vs previous period`
+  const comparisonLabel = formatComparison(analytics.comparison, period)
+  const comparisonTone = analytics.comparison > 0
+    ? 'text-emerald-600'
+    : analytics.comparison < 0
+      ? 'text-amber-600'
+      : 'text-slate-500'
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         {PERIODS.map(option => (
           <button
@@ -282,35 +300,32 @@ export default function ReplyRateAnalytics() {
         ))}
       </div>
 
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-slate-400">Reply rate</p>
-          <div className="mt-4 flex flex-wrap items-end gap-x-4 gap-y-2">
-            <p className="text-5xl font-bold text-slate-950">{analytics.rate}%</p>
+          <div className="mt-3 flex flex-wrap items-end gap-x-4 gap-y-2">
+            <p className="text-4xl font-bold text-slate-950">{analytics.rate}%</p>
             <div className="pb-1">
               <p className="text-sm font-medium text-slate-700">
                 {analytics.replied} of {analytics.total} reviews replied to
               </p>
-              <p className={`mt-1 text-xs font-semibold ${analytics.comparison >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+              <p className={`mt-1 text-xs font-semibold ${comparisonTone}`}>
                 {comparisonLabel}
               </p>
             </div>
           </div>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full rounded-full bg-blue-600" style={{ width: `${analytics.rate}%` }} />
-          </div>
         </div>
 
-        <div className="rounded-lg border border-blue-100 bg-blue-50 p-5 shadow-sm">
+        <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase text-blue-600">Insight</p>
-          <h2 className="mt-2 text-sm font-semibold text-slate-900">Keep reply coverage consistent</h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            You replied to {analytics.rate}% of reviews in this period. Replying to the remaining {analytics.remaining} reviews could help keep your business profile active and trustworthy.
+          <h2 className="mt-2 text-sm font-semibold text-slate-900">{insightTitle(analytics.rate, analytics.remaining)}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+            {insightCopy(analytics.replied, analytics.total, analytics.remaining)}
           </p>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-medium text-slate-400">Reviews received</p>
           <p className="mt-2 text-2xl font-bold text-slate-900">{analytics.total}</p>
@@ -322,6 +337,11 @@ export default function ReplyRateAnalytics() {
         <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-medium text-slate-400">Average response time</p>
           <p className="mt-2 text-2xl font-bold text-slate-900">{analytics.avgResponse}</p>
+        </div>
+        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-medium text-slate-400">Needs attention</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{analytics.remaining}</p>
+          <p className="mt-1 text-xs text-slate-400">reviews awaiting reply</p>
         </div>
       </section>
 
