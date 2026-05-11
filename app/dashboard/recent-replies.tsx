@@ -1,27 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
-const STATUS_STYLES: Record<string, string> = {
-  Replied:    'bg-green-50 text-green-700 border border-green-200',
-  Pending:    'bg-amber-50 text-amber-700 border border-amber-200',
-  'AI Draft': 'bg-violet-50 text-violet-700 border border-violet-200',
+const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
+const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
+
+function nameToColor(name: string) {
+  let h = 0
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff
+  return COLORS[Math.abs(h) % COLORS.length]
+}
+function getInitials(name: string) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+}
+function formatDate(iso: string) {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+  if (days === 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  return `${days}d ago`
 }
 
-const ALL_ROWS = [
-  { initials: 'SL', color: '#6366f1', name: 'Sarah L.',   source: 'via Google', stars: 5, status: 'Replied',   reply: "Thanks so much for your kind words! We're…", date: 'Today, 9:41 AM' },
-  { initials: 'MR', color: '#f59e0b', name: 'Mike R.',    source: 'via Google', stars: 3, status: 'Pending',   reply: '—',                                          date: 'Yesterday' },
-  { initials: 'ET', color: '#10b981', name: 'Emma T.',    source: 'via Google', stars: 5, status: 'AI Draft',  reply: "Thank you for your amazing review! We're…",  date: '2d ago' },
-  { initials: 'JK', color: '#3b82f6', name: 'James K.',   source: 'via Google', stars: 4, status: 'Replied',   reply: "We're so glad you had a great experience!",  date: '3d ago' },
-  { initials: 'OP', color: '#ec4899', name: 'Olivia P.',  source: 'via Google', stars: 5, status: 'Replied',   reply: "It means the world to us, thank you Olivia!", date: '4d ago' },
-  { initials: 'DW', color: '#8b5cf6', name: 'Daniel W.',  source: 'via Google', stars: 2, status: 'Pending',   reply: '—',                                          date: '4d ago' },
-  { initials: 'CH', color: '#14b8a6', name: 'Claire H.',  source: 'via Google', stars: 5, status: 'AI Draft',  reply: "Thank you so much Claire, we loved having…", date: '5d ago' },
-  { initials: 'RS', color: '#f97316', name: 'Ryan S.',    source: 'via Google', stars: 4, status: 'Replied',   reply: "Great to hear, Ryan! Hope to see you again.", date: '6d ago' },
-  { initials: 'LB', color: '#6366f1', name: 'Laura B.',   source: 'via Google', stars: 5, status: 'Replied',   reply: "Your kind words make our day, thank you!",   date: '7d ago' },
-  { initials: 'TN', color: '#64748b', name: 'Tom N.',     source: 'via Google', stars: 3, status: 'Pending',   reply: '—',                                          date: '8d ago' },
-  { initials: 'AJ', color: '#22c55e', name: 'Anna J.',    source: 'via Google', stars: 5, status: 'Replied',   reply: "We're thrilled you loved the experience!",   date: '9d ago' },
-  { initials: 'BF', color: '#ef4444', name: 'Ben F.',     source: 'via Google', stars: 1, status: 'AI Draft',  reply: "We're sorry to hear this, Ben. Please…",     date: '10d ago' },
-]
+const STATUS_STYLES: Record<string, string> = {
+  replied: 'bg-green-50 text-green-700 border border-green-200',
+  pending: 'bg-amber-50 text-amber-700 border border-amber-200',
+  ignored: 'bg-slate-50 text-slate-500 border border-slate-200',
+}
+const STATUS_LABEL: Record<string, string> = {
+  replied: 'Replied',
+  pending: 'Pending',
+  ignored: 'Ignored',
+}
 
 function Stars({ count }: { count: number }) {
   return (
@@ -37,12 +47,13 @@ function Stars({ count }: { count: number }) {
 
 export default function RecentReplies() {
   const [expanded, setExpanded] = useState(false)
-  const rows = expanded ? ALL_ROWS : ALL_ROWS.slice(0, 5)
+  const reviews = useQuery(api.reviews.list, { limit: 12 }) ?? []
+  const rows = expanded ? reviews : reviews.slice(0, 5)
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-        <h2 className="text-base font-semibold text-slate-900">Recent replies</h2>
+        <h2 className="text-base font-semibold text-slate-900">Recent reviews</h2>
         <button
           onClick={() => setExpanded(e => !e)}
           className="cursor-pointer text-xs font-medium text-blue-600 hover:text-blue-700"
@@ -51,50 +62,55 @@ export default function RecentReplies() {
         </button>
       </div>
 
-      {/* Google Business slim banner */}
-      <div className="mx-4 mt-3 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5">
-        <p className="text-xs text-slate-500">Connect Google Business to sync reviews automatically</p>
-        <span className="ml-3 shrink-0 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-600">Coming soon</span>
-      </div>
-
-      {/* Table header */}
-      <div className="mt-3 grid grid-cols-[1.5fr_1fr_1fr_2fr_1fr] border-b border-slate-100 px-6 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-        <span>Customer</span>
-        <span>Rating</span>
-        <span>Status</span>
-        <span>Reply</span>
-        <span>Date</span>
-      </div>
-
-      {rows.map((row) => (
-        <div
-          key={row.name + row.date}
-          className="grid grid-cols-[1.5fr_1fr_1fr_2fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
-        >
-          <div className="flex items-center gap-2.5">
-            <div
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-              style={{ backgroundColor: row.color }}
-            >
-              {row.initials}
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-900">{row.name}</p>
-              <p className="text-[11px] text-slate-400">{row.source}</p>
-            </div>
-          </div>
-          <Stars count={row.stars} />
-          <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[row.status]}`}>
-            {row.status}
-          </span>
-          <p className="truncate pr-4 text-[13px] text-slate-500">{row.reply}</p>
-          <p className="text-[12px] text-slate-400">{row.date}</p>
+      {reviews.length === 0 ? (
+        <div className="px-6 py-12 text-center text-sm text-slate-400">
+          {reviews === undefined
+            ? 'Loading reviews…'
+            : 'No reviews yet — connect Google Business to sync.'}
         </div>
-      ))}
+      ) : (
+        <>
+          <div className="mt-3 grid grid-cols-[1.5fr_1fr_1fr_2fr_1fr] border-b border-slate-100 px-6 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <span>Customer</span>
+            <span>Rating</span>
+            <span>Status</span>
+            <span>Reply</span>
+            <span>Date</span>
+          </div>
 
-      <div className="px-6 py-3 text-center text-xs text-slate-400">
-        Showing {rows.length} of {ALL_ROWS.length}
-      </div>
+          {rows.map((r) => (
+            <div
+              key={r._id}
+              className="grid grid-cols-[1.5fr_1fr_1fr_2fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                  style={{ backgroundColor: nameToColor(r.reviewerName) }}
+                >
+                  {getInitials(r.reviewerName)}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-900">{r.reviewerName}</p>
+                  <p className="text-[11px] text-slate-400">via Google</p>
+                </div>
+              </div>
+              <Stars count={RATING_NUM[r.starRating]} />
+              <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
+                {STATUS_LABEL[r.status]}
+              </span>
+              <p className="truncate pr-4 text-[13px] text-slate-500">
+                {r.replyComment ?? (r.comment ? `"${r.comment.slice(0, 60)}…"` : '—')}
+              </p>
+              <p className="text-[12px] text-slate-400">{formatDate(r.updateTime)}</p>
+            </div>
+          ))}
+
+          <div className="px-6 py-3 text-center text-xs text-slate-400">
+            Showing {rows.length} of {reviews.length}
+          </div>
+        </>
+      )}
     </div>
   )
 }

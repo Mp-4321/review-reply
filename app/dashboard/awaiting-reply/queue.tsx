@@ -1,34 +1,36 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
+
+const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
+const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
+
+function nameToColor(name: string) {
+  let h = 0
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff
+  return COLORS[Math.abs(h) % COLORS.length]
+}
+function getInitials(name: string) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+}
+function formatDate(iso: string) {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+  if (days === 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  return `${days}d ago`
+}
 
 type SortOption = 'newest' | 'oldest' | 'lowest' | 'highest'
 
-const REVIEWS = [
-  {
-    id: 1,
-    initials: 'SL', color: '#6366f1',
-    name: 'Sarah L.', date: 'Today, 9:41 AM', stars: 5,
-    text: 'Absolutely love this place! The staff were so friendly and the service was impeccable. We came in for a last-minute appointment and were seen straight away. Will definitely be back soon.',
-    aiDraft: "Dear Sarah, thank you so much for your wonderful words! We're truly delighted to hear you had such a great experience with our team. Welcoming you at short notice was our pleasure — that's exactly the kind of service we strive to provide every day. We look forward to seeing you again very soon!",
-    expanded: true,
-  },
-  {
-    id: 2,
-    initials: 'MR', color: '#f59e0b',
-    name: 'Mike R.', date: 'Yesterday', stars: 3,
-    text: 'Decent experience overall. The quality of the work was good but we had to wait quite a long time despite having a booking. Would be great if the scheduling was a bit tighter.',
-    aiDraft: '',
-    expanded: false,
-  },
-  {
-    id: 3,
-    initials: 'JK', color: '#ef4444',
-    name: 'James K.', date: '3 days ago', stars: 1,
-    text: "Very disappointed with our visit. There were multiple issues and when we raised them, the response wasn't what we'd hoped for. Expected more given the reputation of the business.",
-    aiDraft: '',
-    expanded: false,
-  },
+const STAR_OPTS: (number | null)[] = [null, 5, 4, 3, 2, 1]
+const SORT_OPTS: { label: string; value: SortOption }[] = [
+  { label: 'Newest first',   value: 'newest'  },
+  { label: 'Oldest first',   value: 'oldest'  },
+  { label: 'Lowest rating',  value: 'lowest'  },
+  { label: 'Highest rating', value: 'highest' },
 ]
 
 function Stars({ count }: { count: number }) {
@@ -43,33 +45,27 @@ function Stars({ count }: { count: number }) {
   )
 }
 
-const STAR_OPTS: (number | null)[] = [null, 5, 4, 3, 2, 1]
-const SORT_OPTS: { label: string; value: SortOption }[] = [
-  { label: 'Newest first',   value: 'newest'  },
-  { label: 'Oldest first',   value: 'oldest'  },
-  { label: 'Lowest rating',  value: 'lowest'  },
-  { label: 'Highest rating', value: 'highest' },
-]
-
 export default function AwaitingReplyQueue() {
   const [starFilter, setStarFilter] = useState<number | null>(null)
   const [sort,       setSort]       = useState<SortOption>('newest')
-  const [expanded,   setExpanded]   = useState<number | null>(1)
-  const [resolved,   setResolved]   = useState<number[]>([])
+  const [expanded,   setExpanded]   = useState<Id<'reviews'> | null>(null)
+  const [dismissed,  setDismissed]  = useState<Id<'reviews'>[]>([])
 
-  const visible = REVIEWS
-    .filter(r => !resolved.includes(r.id))
-    .filter(r => starFilter === null || r.stars === starFilter)
+  const reviews = useQuery(api.reviews.list, { status: 'pending', limit: 50 }) ?? []
+
+  const visible = reviews
+    .filter(r => !dismissed.includes(r._id))
+    .filter(r => starFilter === null || RATING_NUM[r.starRating] === starFilter)
     .sort((a, b) => {
-      if (sort === 'lowest')  return a.stars - b.stars
-      if (sort === 'highest') return b.stars - a.stars
-      if (sort === 'oldest')  return b.id - a.id
-      return a.id - b.id
+      if (sort === 'lowest')  return RATING_NUM[a.starRating] - RATING_NUM[b.starRating]
+      if (sort === 'highest') return RATING_NUM[b.starRating] - RATING_NUM[a.starRating]
+      if (sort === 'oldest')  return new Date(a.createTime).getTime() - new Date(b.createTime).getTime()
+      return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
     })
 
   return (
     <div>
-      {/* Filters bar */}
+      {/* Filters */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-slate-400">Stars:</span>
@@ -87,7 +83,6 @@ export default function AwaitingReplyQueue() {
             </button>
           ))}
         </div>
-
         <div className="ml-auto">
           <select
             value={sort}
@@ -104,53 +99,54 @@ export default function AwaitingReplyQueue() {
       {/* Queue */}
       {visible.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-          <p className="text-sm font-medium text-slate-400">All caught up — no reviews awaiting a reply.</p>
+          <p className="text-sm font-medium text-slate-400">
+            {reviews.length === 0
+              ? 'No reviews yet — connect Google Business to sync.'
+              : 'All caught up — no reviews awaiting a reply.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
           {visible.map(r => (
             <div
-              key={r.id}
+              key={r._id}
               className="rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
             >
-              {/* Card body */}
               <div className="flex items-start gap-5 px-6 py-5">
-
-                {/* Left — avatar + meta */}
                 <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
                   <div
                     className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
-                    style={{ backgroundColor: r.color }}
+                    style={{ backgroundColor: nameToColor(r.reviewerName) }}
                   >
-                    {r.initials}
+                    {getInitials(r.reviewerName)}
                   </div>
-                  <Stars count={r.stars} />
+                  <Stars count={RATING_NUM[r.starRating]} />
                 </div>
 
-                {/* Center — customer info + review */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-semibold text-slate-900">{r.name}</p>
+                    <p className="text-sm font-semibold text-slate-900">{r.reviewerName}</p>
                     <span className="text-[11px] text-slate-400">via Google</span>
                     <span className="text-[11px] text-slate-300">·</span>
-                    <span className="text-[11px] text-slate-400">{r.date}</span>
+                    <span className="text-[11px] text-slate-400">{formatDate(r.createTime)}</span>
                   </div>
-                  <p className="text-[13.5px] leading-relaxed text-slate-600">{r.text}</p>
+                  <p className="text-[13.5px] leading-relaxed text-slate-600">
+                    {r.comment ?? <span className="italic text-slate-400">No comment left.</span>}
+                  </p>
                 </div>
 
-                {/* Right — status + actions */}
                 <div className="flex shrink-0 flex-col items-end gap-2.5">
                   <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-700">
                     Pending
                   </span>
                   <button
-                    onClick={() => setExpanded(expanded === r.id ? null : r.id)}
+                    onClick={() => setExpanded(expanded === r._id ? null : r._id)}
                     className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
                   >
                     Generate reply
                   </button>
                   <button
-                    onClick={() => setResolved(prev => [...prev, r.id])}
+                    onClick={() => setDismissed(prev => [...prev, r._id])}
                     className="cursor-pointer text-[11px] text-slate-400 transition hover:text-slate-600"
                   >
                     Mark as resolved
@@ -158,27 +154,17 @@ export default function AwaitingReplyQueue() {
                 </div>
               </div>
 
-              {/* AI Draft preview — expanded state */}
-              {expanded === r.id && r.aiDraft && (
+              {expanded === r._id && (
                 <div className="mx-6 mb-5 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
                   <div className="mb-2.5 flex items-center gap-1.5 text-blue-600">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span className="text-xs font-semibold">AI-generated reply</span>
+                    <span className="text-xs font-semibold">AI reply generation coming soon</span>
                   </div>
-                  <p className="text-[13px] leading-relaxed text-slate-700">{r.aiDraft}</p>
-                  <div className="mt-3.5 flex items-center gap-2">
-                    <button className="cursor-pointer rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
-                      Approve
-                    </button>
-                    <button className="cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300">
-                      Edit
-                    </button>
-                    <button className="cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300">
-                      Regenerate
-                    </button>
-                  </div>
+                  <p className="text-[13px] text-slate-500">
+                    The reply generator will be wired up in the next step.
+                  </p>
                 </div>
               )}
             </div>

@@ -1,6 +1,8 @@
 import { mutation, query, QueryCtx } from './_generated/server'
 import { v } from 'convex/values'
 
+const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
+
 async function requireUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity()
   if (!identity) throw new Error('Unauthenticated')
@@ -56,6 +58,35 @@ export const list = query({
       .withIndex('by_user', q => q.eq('userId', user._id))
       .order('desc')
       .take(n)
+  },
+})
+
+export const stats = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return { pending: 0, replied: 0, total: 0, avgRating: null as number | null }
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
+      .unique()
+    if (!user) return { pending: 0, replied: 0, total: 0, avgRating: null as number | null }
+
+    const pending = await ctx.db
+      .query('reviews')
+      .withIndex('by_user_and_status', (q) => q.eq('userId', user._id).eq('status', 'pending'))
+      .take(500)
+    const replied = await ctx.db
+      .query('reviews')
+      .withIndex('by_user_and_status', (q) => q.eq('userId', user._id).eq('status', 'replied'))
+      .take(500)
+
+    const all = [...pending, ...replied]
+    const avgRating = all.length > 0
+      ? Math.round((all.reduce((s, r) => s + RATING_NUM[r.starRating], 0) / all.length) * 10) / 10
+      : null
+
+    return { pending: pending.length, replied: replied.length, total: all.length, avgRating }
   },
 })
 
