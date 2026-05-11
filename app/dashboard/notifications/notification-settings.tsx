@@ -139,33 +139,53 @@ function SettingsCard({
   )
 }
 
-function SelectControl<T extends string | number>({
+function OptionGroup<T extends string | number>({
+  name,
   value,
   options,
   disabled,
   onChange,
 }: {
+  name: string
   value: T
   options: { value: T; label: string }[]
   disabled?: boolean
   onChange: (value: T) => void
 }) {
   return (
-    <select
-      value={value}
-      disabled={disabled}
-      onChange={event => {
-        const selected = options.find(option => String(option.value) === event.target.value)
-        if (selected) onChange(selected.value)
-      }}
-      className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-    >
+    <div className="flex flex-wrap items-center gap-1.5" role="radiogroup">
       {options.map(option => (
-        <option key={option.value} value={option.value}>
+        <label
+          key={option.value}
+          className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
+            value === option.value
+              ? 'border-blue-300 bg-blue-50 text-blue-700 ring-1 ring-blue-100'
+              : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+          } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+        >
+          <input
+            type="radio"
+            name={name}
+            value={String(option.value)}
+            checked={value === option.value}
+            disabled={disabled}
+            onChange={() => onChange(option.value)}
+            className="peer sr-only"
+          />
+          <span
+            className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border transition ${
+              value === option.value
+                ? 'border-blue-600 bg-blue-600'
+                : 'border-slate-300 bg-white'
+            } peer-focus-visible:ring-2 peer-focus-visible:ring-blue-200`}
+            aria-hidden="true"
+          >
+            <span className={`h-1.5 w-1.5 rounded-full bg-white transition ${value === option.value ? 'opacity-100' : 'opacity-0'}`} />
+          </span>
           {option.label}
-        </option>
+        </label>
       ))}
-    </select>
+    </div>
   )
 }
 
@@ -230,7 +250,8 @@ export default function NotificationSettings() {
             checked={settings.lowRatingEnabled}
             onChange={lowRatingEnabled => updateSettings({ lowRatingEnabled })}
           />
-          <SelectControl
+          <OptionGroup
+            name="low-rating-threshold"
             value={settings.lowRatingThreshold}
             options={LOW_RATING_OPTIONS}
             disabled={!settings.lowRatingEnabled}
@@ -248,7 +269,8 @@ export default function NotificationSettings() {
             checked={settings.draftReminderEnabled}
             onChange={draftReminderEnabled => updateSettings({ draftReminderEnabled })}
           />
-          <SelectControl
+          <OptionGroup
+            name="draft-reminder-frequency"
             value={settings.draftReminderFrequency}
             options={DRAFT_REMINDER_OPTIONS}
             disabled={!settings.draftReminderEnabled}
@@ -286,7 +308,8 @@ export default function NotificationSettings() {
             checked={settings.weeklySummaryEnabled}
             onChange={weeklySummaryEnabled => updateSettings({ weeklySummaryEnabled })}
           />
-          <SelectControl
+          <OptionGroup
+            name="weekly-summary-day"
             value={settings.weeklySummaryDay}
             options={SUMMARY_DAY_OPTIONS}
             disabled={!settings.weeklySummaryEnabled}
