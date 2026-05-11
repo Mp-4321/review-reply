@@ -73,13 +73,13 @@ export default function AISettingsForm() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-slate-900">Business context</h2>
-          <p className="mt-0.5 text-[13px] text-slate-400">Describe your business, customers, and communication style.</p>
+          <p className="mt-0.5 text-[13px] text-slate-400">Help Replyfier understand your business and customers.</p>
         </div>
         <textarea
           value={businessDescription}
           onChange={e => setBusinessDescription(e.target.value)}
           rows={4}
-          placeholder="Family-owned Italian restaurant focused on warm hospitality and authentic food."
+          placeholder="Independent coffee shop serving students, remote workers, and local customers."
           className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13.5px] leading-relaxed text-slate-700 placeholder-slate-300 transition focus:border-blue-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
         />
       </div>
