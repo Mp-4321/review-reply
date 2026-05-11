@@ -74,7 +74,7 @@ const FAQS = [
   },
   {
     q: 'Does Replyfier automatically post replies?',
-    a: 'No. Replies remain fully reviewable before publishing. You control which replies are approved, queued, and published.',
+    a: 'Replyfier gives you full control over how replies are published. You can review and publish replies manually, or approve multiple replies and let Replyfier publish them gradually over time.',
   },
   {
     q: 'Does Replyfier connect to Google Business Profile?',
@@ -90,7 +90,7 @@ const FAQS = [
   },
   {
     q: 'What happens after the free trial?',
-    a: 'After the trial ends, you can choose a subscription plan based on the number of business locations you manage.',
+    a: 'You get a 7-day free trial with full access to Replyfier. After the trial ends, you can choose a subscription plan based on the number of business locations you manage.',
   },
   {
     q: 'Is my review data used for AI training?',
