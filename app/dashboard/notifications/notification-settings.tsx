@@ -203,12 +203,11 @@ export default function NotificationSettings() {
 
   return (
     <div className="max-w-3xl space-y-5 pb-8">
-      <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+      <div className="rounded-lg border border-blue-100 bg-blue-50 px-3.5 py-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Email alerts</p>
-            <p className="mt-0.5 text-[13px] text-slate-600">
-              Replyfier currently sends operational notifications by email.
+            <p className="text-[13px] font-medium text-slate-700">
+              Operational notifications are currently delivered by email.
             </p>
           </div>
           {saved && (
@@ -222,7 +221,7 @@ export default function NotificationSettings() {
       <SettingsCard title="Review alerts">
         <SettingRow
           title="New reviews"
-          description="Receive an email when new Google reviews arrive."
+          description="Get notified when new Google reviews arrive."
         >
           <Toggle
             checked={settings.newReviewEnabled}
@@ -232,7 +231,7 @@ export default function NotificationSettings() {
 
         <SettingRow
           title="Low-rating reviews"
-          description="Receive an email when a review needs urgent attention."
+          description="Get notified when a review needs urgent attention."
         >
           <Toggle
             checked={settings.lowRatingEnabled}
@@ -251,7 +250,7 @@ export default function NotificationSettings() {
       <SettingsCard title="Reply workflow">
         <SettingRow
           title="Draft approval reminders"
-          description="Receive an email when draft replies are waiting for approval."
+          description="Get reminded when draft replies are waiting for approval."
         >
           <Toggle
             checked={settings.draftReminderEnabled}
@@ -268,7 +267,7 @@ export default function NotificationSettings() {
 
         <SettingRow
           title="Queue completed"
-          description="Receive an email when all queued replies have been published."
+          description="Get notified when all queued replies have been published."
         >
           <Toggle
             checked={settings.queueCompletedEnabled}
@@ -278,7 +277,7 @@ export default function NotificationSettings() {
 
         <SettingRow
           title="Publishing failed"
-          description="Receive an email if a scheduled reply fails to publish."
+          description="Get notified if a scheduled reply fails to publish."
         >
           <Toggle
             checked={settings.publishingFailedEnabled}
@@ -290,7 +289,7 @@ export default function NotificationSettings() {
       <SettingsCard title="Weekly summary">
         <SettingRow
           title="Weekly performance summary"
-          description="Receive a weekly email summary of reviews, reply rate, pending replies, and average response time."
+          description="Get a weekly summary of reviews, reply rate, pending replies, and average response time."
         >
           <Toggle
             checked={settings.weeklySummaryEnabled}
