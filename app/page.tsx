@@ -23,7 +23,7 @@ const FEATURES = [
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     ),
     title: 'Approval workflow',
-    description: "Review, approve, or edit replies before they're published.",
+    description: 'Review, edit, and approve replies before publishing.',
   },
   {
     color: '#10b981',
@@ -31,7 +31,7 @@ const FEATURES = [
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     ),
     title: 'Automatic language detection',
-    description: 'Replyfier detects the review language automatically and responds naturally.',
+    description: 'Automatically reply in the same language as the review.',
   },
   {
     color: '#f59e0b',
@@ -39,23 +39,23 @@ const FEATURES = [
       <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
     ),
     title: 'Brand-aware replies',
-    description: 'Keep every response aligned with your business voice and customer experience.',
+    description: 'Keep replies aligned with your brand voice and business style.',
   },
   {
     color: '#6366f1',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
     ),
-    title: 'Review before publishing',
-    description: 'Edit AI-generated replies before sending them live to Google.',
+    title: 'Scheduled publishing',
+    description: 'Queue replies and publish them gradually over time.',
   },
   {
     color: '#ec4899',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
     ),
-    title: 'Build customer trust',
-    description: 'Consistent, thoughtful replies help strengthen your online reputation.',
+    title: 'Reputation consistency',
+    description: 'Maintain a more active and consistent presence across your reviews.',
   },
 ]
 
