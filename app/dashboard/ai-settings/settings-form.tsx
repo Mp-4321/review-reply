@@ -156,7 +156,7 @@ export default function AISettingsForm() {
         <div className="mb-4">
           <h2 className="text-sm font-semibold text-slate-900">Custom instructions</h2>
           <p className="mt-0.5 text-[13px] text-slate-400">
-            Additional guidance for the AI. For example: "Always thank customers who mention staff by name" or "Avoid sounding corporate."
+            Add specific instructions to personalize how Replyfier writes replies for your business.
           </p>
         </div>
         <textarea
