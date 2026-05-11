@@ -64,6 +64,22 @@ export const approve = mutation({
   },
 })
 
+export const updateDraft = mutation({
+  args: { replyId: v.id('replies'), draft: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Unauthenticated')
+    const reply = await ctx.db.get(args.replyId)
+    if (!reply) throw new Error('Reply not found')
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_token', (q) => q.eq('tokenIdentifier', identity.tokenIdentifier))
+      .unique()
+    if (!user || reply.userId !== user._id) throw new Error('Unauthorized')
+    await ctx.db.patch(args.replyId, { draft: args.draft, status: 'draft' })
+  },
+})
+
 export const markPublished = mutation({
   args: { replyId: v.id('replies') },
   handler: async (ctx, args) => {
