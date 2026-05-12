@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useQuery, useMutation } from 'convex/react'
+import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
-import { Id } from '@/convex/_generated/dataModel'
 import Link from 'next/link'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
@@ -67,17 +66,12 @@ export default function ReviewsTable() {
   const [dateFilter,   setDateFilter]   = useState(9999)
   const [now] = useState(() => Date.now())
 
-  const [generatingFor, setGeneratingFor] = useState<Id<'reviews'> | null>(null)
-  const [error,         setError]         = useState<string | null>(null)
-
-  const reviews    = useQuery(api.reviews.list, { limit: 50 }) ?? []
-  const rawDrafts  = useQuery(api.replies.listDraftsWithReviews)
-  const aiSettings = useQuery(api.aiSettings.get)
-  const saveDraft  = useMutation(api.replies.save)
+  const reviews   = useQuery(api.reviews.list, { limit: 50 }) ?? []
+  const rawDrafts = useQuery(api.replies.listDraftsWithReviews)
 
   // Map reviewId → display-level reply status (draft or queued)
   const reviewReplyMap = useMemo(() => {
-    const map = new Map<Id<'reviews'>, 'draft' | 'queued'>()
+    const map = new Map<string, 'draft' | 'queued'>()
     for (const { reply } of (rawDrafts ?? [])) {
       if (reply.status === 'draft' || reply.status === 'queued') {
         map.set(reply.reviewId, reply.status)
@@ -89,33 +83,7 @@ export default function ReviewsTable() {
   function getDisplayStatus(r: typeof reviews[number]): DisplayStatus {
     if (r.status === 'replied') return 'replied'
     if (r.status === 'ignored') return 'ignored'
-    return reviewReplyMap.get(r._id) ?? 'pending'
-  }
-
-  async function generate(review: typeof reviews[number]) {
-    setGeneratingFor(review._id)
-    setError(null)
-    try {
-      const res = await fetch('/api/generate-reply', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          review:              review.comment ?? '',
-          tone:                aiSettings?.tone,
-          replyLength:         aiSettings?.replyLength,
-          businessDescription: aiSettings?.businessDescription,
-          signature:           aiSettings?.signature,
-          customInstructions:  aiSettings?.customInstructions,
-        }),
-      })
-      const data = (await res.json()) as { reply?: string; error?: string }
-      if (!res.ok || !data.reply) throw new Error(data.error ?? 'Failed to generate reply')
-      await saveDraft({ reviewId: review._id, draft: data.reply })
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Unknown error')
-    } finally {
-      setGeneratingFor(null)
-    }
+    return (reviewReplyMap.get(r._id) ?? 'pending') as DisplayStatus
   }
 
   const filtered = reviews.filter(r => {
@@ -172,12 +140,6 @@ export default function ReviewsTable() {
         </div>
       </div>
 
-      {error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          {error}
-        </div>
-      )}
-
       {/* Table */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr_120px] border-b border-slate-100 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -196,7 +158,6 @@ export default function ReviewsTable() {
         ) : (
           filtered.map((r) => {
             const displayStatus = getDisplayStatus(r)
-            const isGenerating  = generatingFor === r._id
 
             return (
               <div
@@ -223,13 +184,12 @@ export default function ReviewsTable() {
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
 
                 {displayStatus === 'pending' && (
-                  <button
-                    onClick={() => generate(r)}
-                    disabled={isGenerating}
-                    className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                  <Link
+                    href="/dashboard/awaiting-reply"
+                    className="whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
                   >
-                    {isGenerating ? 'Generating…' : 'Generate reply'}
-                  </button>
+                    Review
+                  </Link>
                 )}
                 {displayStatus === 'draft' && (
                   <Link
@@ -240,9 +200,12 @@ export default function ReviewsTable() {
                   </Link>
                 )}
                 {displayStatus === 'queued' && (
-                  <span className="whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-600">
-                    Queued
-                  </span>
+                  <Link
+                    href="/dashboard/draft-replies"
+                    className="whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-100"
+                  >
+                    View queue
+                  </Link>
                 )}
                 {(displayStatus === 'replied' || displayStatus === 'ignored') && (
                   <button className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
