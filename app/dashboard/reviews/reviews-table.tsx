@@ -186,7 +186,7 @@ export default function ReviewsTable() {
                 {displayStatus === 'pending' && (
                   <Link
                     href="/dashboard/awaiting-reply"
-                    className="whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-blue-600 px-2 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
                   >
                     Review
                   </Link>
@@ -194,7 +194,7 @@ export default function ReviewsTable() {
                 {displayStatus === 'draft' && (
                   <Link
                     href="/dashboard/draft-replies"
-                    className="whitespace-nowrap rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-violet-200 bg-violet-50 px-2 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
                   >
                     Review draft
                   </Link>
@@ -202,13 +202,13 @@ export default function ReviewsTable() {
                 {displayStatus === 'queued' && (
                   <Link
                     href="/dashboard/draft-replies"
-                    className="whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-100"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-2 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-100"
                   >
                     View queue
                   </Link>
                 )}
                 {(displayStatus === 'replied' || displayStatus === 'ignored') && (
-                  <button className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+                  <button className="inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
                     View reply
                   </button>
                 )}
