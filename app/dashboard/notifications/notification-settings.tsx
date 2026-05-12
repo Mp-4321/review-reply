@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Bell, CheckCheck, BarChart3 } from 'lucide-react'
 
 type LowRatingThreshold = 1 | 2 | 3
 type DraftReminderFrequency = 'daily' | 'every_2_days' | 'weekly'
@@ -121,15 +122,19 @@ function SettingRow({
 
 function SettingsCard({
   title,
+  icon,
   children,
 }: {
   title: string
+  icon: React.ReactNode
   children: React.ReactNode
 }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <span className="h-2 w-2 rounded-full bg-blue-500" />
+      <div className="mb-4 flex items-center gap-2.5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50">
+          {icon}
+        </div>
         <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
       </div>
       {children}
@@ -218,7 +223,7 @@ export default function NotificationSettings() {
         </div>
       </div>
 
-      <SettingsCard title="Review alerts">
+      <SettingsCard title="Review alerts" icon={<Bell className="h-4 w-4 text-blue-600" strokeWidth={2} />}>
         <SettingRow
           title="New reviews"
           description="Get notified when new Google reviews arrive."
@@ -247,7 +252,7 @@ export default function NotificationSettings() {
         </SettingRow>
       </SettingsCard>
 
-      <SettingsCard title="Reply workflow">
+      <SettingsCard title="Reply workflow" icon={<CheckCheck className="h-4 w-4 text-blue-600" strokeWidth={2} />}>
         <SettingRow
           title="Draft approval reminders"
           description="Get reminded when draft replies are waiting for approval."
@@ -286,7 +291,7 @@ export default function NotificationSettings() {
         </SettingRow>
       </SettingsCard>
 
-      <SettingsCard title="Weekly summary">
+      <SettingsCard title="Weekly summary" icon={<BarChart3 className="h-4 w-4 text-blue-600" strokeWidth={2} />}>
         <SettingRow
           title="Weekly performance summary"
           description="Get a weekly summary of reviews, reply rate, pending replies, and average response time."
