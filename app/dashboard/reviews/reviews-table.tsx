@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { useQuery } from 'convex/react'
+import { useState, useMemo } from 'react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
+import Link from 'next/link'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
@@ -22,24 +24,28 @@ function formatDate(iso: string, now: number) {
   return `${days}d ago`
 }
 
-type Status = 'pending' | 'replied' | 'ignored'
+type DisplayStatus = 'pending' | 'draft' | 'queued' | 'replied' | 'ignored'
 
-const STATUS_STYLES: Record<Status, string> = {
-  replied: 'bg-green-50 text-green-700 border border-green-200',
+const STATUS_STYLES: Record<DisplayStatus, string> = {
   pending: 'bg-amber-50 text-amber-700 border border-amber-200',
+  draft:   'bg-violet-50 text-violet-700 border border-violet-200',
+  queued:  'bg-sky-50 text-sky-700 border border-sky-200',
+  replied: 'bg-green-50 text-green-700 border border-green-200',
   ignored: 'bg-slate-50 text-slate-500 border border-slate-200',
 }
-const STATUS_LABEL: Record<Status, string> = {
-  replied: 'Replied',
+const STATUS_LABEL: Record<DisplayStatus, string> = {
   pending: 'Pending',
+  draft:   'Draft',
+  queued:  'Queued',
+  replied: 'Replied',
   ignored: 'Ignored',
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (Status | 'All')[] = ['All', 'pending', 'replied']
+const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied']
 const DATE_OPTIONS = [
-  { label: 'Last 7 days',  days: 7   },
-  { label: 'Last 30 days', days: 30  },
+  { label: 'Last 7 days',  days: 7    },
+  { label: 'Last 30 days', days: 30   },
   { label: 'All time',     days: 9999 },
 ]
 
@@ -57,17 +63,66 @@ function Stars({ count }: { count: number }) {
 
 export default function ReviewsTable() {
   const [starFilter,   setStarFilter]   = useState<number | null>(null)
-  const [statusFilter, setStatusFilter] = useState<Status | 'All'>('All')
+  const [statusFilter, setStatusFilter] = useState<DisplayStatus | 'All'>('All')
   const [dateFilter,   setDateFilter]   = useState(9999)
   const [now] = useState(() => Date.now())
 
-  const reviews = useQuery(api.reviews.list, { limit: 50 }) ?? []
+  const [generatingFor, setGeneratingFor] = useState<Id<'reviews'> | null>(null)
+  const [error,         setError]         = useState<string | null>(null)
+
+  const reviews    = useQuery(api.reviews.list, { limit: 50 }) ?? []
+  const rawDrafts  = useQuery(api.replies.listDraftsWithReviews)
+  const aiSettings = useQuery(api.aiSettings.get)
+  const saveDraft  = useMutation(api.replies.save)
+
+  // Map reviewId → display-level reply status (draft or queued)
+  const reviewReplyMap = useMemo(() => {
+    const map = new Map<Id<'reviews'>, 'draft' | 'queued'>()
+    for (const { reply } of (rawDrafts ?? [])) {
+      if (reply.status === 'draft' || reply.status === 'queued') {
+        map.set(reply.reviewId, reply.status)
+      }
+    }
+    return map
+  }, [rawDrafts])
+
+  function getDisplayStatus(r: typeof reviews[number]): DisplayStatus {
+    if (r.status === 'replied') return 'replied'
+    if (r.status === 'ignored') return 'ignored'
+    return reviewReplyMap.get(r._id) ?? 'pending'
+  }
+
+  async function generate(review: typeof reviews[number]) {
+    setGeneratingFor(review._id)
+    setError(null)
+    try {
+      const res = await fetch('/api/generate-reply', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          review:              review.comment ?? '',
+          tone:                aiSettings?.tone,
+          replyLength:         aiSettings?.replyLength,
+          businessDescription: aiSettings?.businessDescription,
+          signature:           aiSettings?.signature,
+          customInstructions:  aiSettings?.customInstructions,
+        }),
+      })
+      const data = (await res.json()) as { reply?: string; error?: string }
+      if (!res.ok || !data.reply) throw new Error(data.error ?? 'Failed to generate reply')
+      await saveDraft({ reviewId: review._id, draft: data.reply })
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Unknown error')
+    } finally {
+      setGeneratingFor(null)
+    }
+  }
 
   const filtered = reviews.filter(r => {
-    if (starFilter   !== null  && RATING_NUM[r.starRating] !== starFilter) return false
-    if (statusFilter !== 'All' && r.status !== statusFilter)               return false
+    if (starFilter   !== null  && RATING_NUM[r.starRating] !== starFilter)  return false
+    if (statusFilter !== 'All' && getDisplayStatus(r) !== statusFilter)     return false
     const days = (now - new Date(r.updateTime).getTime()) / 86_400_000
-    if (days > dateFilter)                                                  return false
+    if (days > dateFilter)                                                   return false
     return true
   })
 
@@ -117,6 +172,12 @@ export default function ReviewsTable() {
         </div>
       </div>
 
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
       {/* Table */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr_120px] border-b border-slate-100 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -133,40 +194,64 @@ export default function ReviewsTable() {
             No reviews match the selected filters.
           </div>
         ) : (
-          filtered.map((r) => (
-            <div
-              key={r._id}
-              className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr_120px] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
-            >
-              <div className="flex items-center gap-2.5">
-                <div
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                  style={{ backgroundColor: nameToColor(r.reviewerName) }}
-                >
-                  {getInitials(r.reviewerName)}
+          filtered.map((r) => {
+            const displayStatus = getDisplayStatus(r)
+            const isGenerating  = generatingFor === r._id
+
+            return (
+              <div
+                key={r._id}
+                className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr_120px] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                    style={{ backgroundColor: nameToColor(r.reviewerName) }}
+                  >
+                    {getInitials(r.reviewerName)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium leading-tight text-slate-900">{r.reviewerName}</p>
+                    <p className="text-[11px] leading-tight text-slate-400">via Google</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium leading-tight text-slate-900">{r.reviewerName}</p>
-                  <p className="text-[11px] leading-tight text-slate-400">via Google</p>
-                </div>
+                <Stars count={RATING_NUM[r.starRating]} />
+                <p className="truncate pr-4 text-[13px] text-slate-600">{r.comment ?? '—'}</p>
+                <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}`}>
+                  {STATUS_LABEL[displayStatus]}
+                </span>
+                <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
+
+                {displayStatus === 'pending' && (
+                  <button
+                    onClick={() => generate(r)}
+                    disabled={isGenerating}
+                    className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                  >
+                    {isGenerating ? 'Generating…' : 'Generate reply'}
+                  </button>
+                )}
+                {displayStatus === 'draft' && (
+                  <Link
+                    href="/dashboard/draft-replies"
+                    className="whitespace-nowrap rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
+                  >
+                    Review draft
+                  </Link>
+                )}
+                {displayStatus === 'queued' && (
+                  <span className="whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-600">
+                    Queued
+                  </span>
+                )}
+                {(displayStatus === 'replied' || displayStatus === 'ignored') && (
+                  <button className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+                    View reply
+                  </button>
+                )}
               </div>
-              <Stars count={RATING_NUM[r.starRating]} />
-              <p className="truncate pr-4 text-[13px] text-slate-600">{r.comment ?? '—'}</p>
-              <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
-                {STATUS_LABEL[r.status]}
-              </span>
-              <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
-              {r.status === 'pending' ? (
-                <button className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
-                  Generate reply
-                </button>
-              ) : (
-                <button className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
-                  View reply
-                </button>
-              )}
-            </div>
-          ))
+            )
+          })
         )}
 
         <div className="px-6 py-3 text-center text-xs text-slate-400">
