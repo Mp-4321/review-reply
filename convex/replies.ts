@@ -1,8 +1,9 @@
 import { mutation, query } from './_generated/server'
 import { v } from 'convex/values'
 
-const MIN_INTERVAL_MS = 12 * 60 * 1000
-const MAX_INTERVAL_MS = 27 * 60 * 1000
+const MIN_INTERVAL_MS = 10  * 60 * 1000  // 10 minutes
+const MAX_INTERVAL_MS = 180 * 60 * 1000  // 180 minutes
+const MAX_PER_DAY     = 5
 
 export const listDrafts = query({
   args: {},
@@ -138,8 +139,20 @@ export const queueReplies = mutation({
       .unique()
     if (!user) throw new Error('User not found')
 
+    const startOfTodayMs = new Date().setHours(0, 0, 0, 0)
+    const alreadyQueued = await ctx.db
+      .query('replies')
+      .withIndex('by_user_and_status', q => q.eq('userId', user._id).eq('status', 'queued'))
+      .take(100)
+    const scheduledTodayCount = alreadyQueued.filter(
+      r => r.scheduledAt !== undefined && r.scheduledAt >= startOfTodayMs,
+    ).length
+    const slotsRemaining = Math.max(0, MAX_PER_DAY - scheduledTodayCount)
+
     let scheduledAt = args.startAt ?? Date.now()
+    let queued = 0
     for (const replyId of args.replyIds) {
+      if (queued >= slotsRemaining) break
       const reply = await ctx.db.get(replyId)
       if (!reply || reply.userId !== user._id) continue
       if (reply.status !== 'draft') continue
@@ -147,6 +160,7 @@ export const queueReplies = mutation({
       await ctx.db.patch(replyId, { status: 'queued', scheduledAt })
       const interval = MIN_INTERVAL_MS + Math.random() * (MAX_INTERVAL_MS - MIN_INTERVAL_MS)
       scheduledAt += interval
+      queued++
     }
   },
 })

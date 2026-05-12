@@ -160,7 +160,7 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Clock className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Progressive publishing"
-        description="Approved replies are published gradually — one every 10 to 60 minutes, up to 5 per day — for a natural posting pattern."
+        description="Approved replies are published gradually — one every 10 to 180 minutes, up to 5 per day — for a natural posting pattern."
         checked={settings.progressivePublishingEnabled}
         onChange={progressivePublishingEnabled => update({ progressivePublishingEnabled })}
       />
