@@ -27,25 +27,27 @@ function formatFullDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-type DisplayStatus = 'pending' | 'draft' | 'queued' | 'replied' | 'ignored'
+type DisplayStatus = 'pending' | 'draft' | 'queued' | 'replied' | 'ignored' | 'needs_review'
 
 const STATUS_STYLES: Record<DisplayStatus, string> = {
-  pending: 'bg-amber-50 text-amber-700 border border-amber-200',
-  draft:   'bg-violet-50 text-violet-700 border border-violet-200',
-  queued:  'bg-sky-50 text-sky-700 border border-sky-200',
-  replied: 'bg-green-50 text-green-700 border border-green-200',
-  ignored: 'bg-slate-50 text-slate-500 border border-slate-200',
+  pending:      'bg-amber-50 text-amber-700 border border-amber-200',
+  draft:        'bg-violet-50 text-violet-700 border border-violet-200',
+  queued:       'bg-sky-50 text-sky-700 border border-sky-200',
+  replied:      'bg-green-50 text-green-700 border border-green-200',
+  ignored:      'bg-slate-50 text-slate-500 border border-slate-200',
+  needs_review: 'bg-red-50 text-red-700 border border-red-200',
 }
 const STATUS_LABEL: Record<DisplayStatus, string> = {
-  pending: 'Pending',
-  draft:   'Draft',
-  queued:  'Queued',
-  replied: 'Replied',
-  ignored: 'Ignored',
+  pending:      'Pending',
+  draft:        'Draft',
+  queued:       'Queued',
+  replied:      'Replied',
+  ignored:      'Ignored',
+  needs_review: 'Review',
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied']
+const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied', 'needs_review']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7    },
   { label: 'Last 30 days', days: 30   },
@@ -144,11 +146,11 @@ export default function ReviewsTable() {
   const reviews   = useQuery(api.reviews.list, { limit: 50 }) ?? []
   const rawDrafts = useQuery(api.replies.listDraftsWithReviews)
 
-  // Map reviewId → display-level reply status (draft or queued)
+  // Map reviewId → display-level reply status
   const reviewReplyMap = useMemo(() => {
-    const map = new Map<string, 'draft' | 'queued'>()
+    const map = new Map<string, 'draft' | 'queued' | 'needs_review'>()
     for (const { reply } of (rawDrafts ?? [])) {
-      if (reply.status === 'draft' || reply.status === 'queued') {
+      if (reply.status === 'draft' || reply.status === 'queued' || reply.status === 'needs_review') {
         map.set(reply.reviewId, reply.status)
       }
     }
@@ -280,6 +282,14 @@ export default function ReviewsTable() {
                     className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-1 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-100"
                   >
                     View queue
+                  </Link>
+                )}
+                {displayStatus === 'needs_review' && (
+                  <Link
+                    href="/dashboard/draft-replies"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-1 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100"
+                  >
+                    Review now
                   </Link>
                 )}
                 {(displayStatus === 'replied' || displayStatus === 'ignored') && (

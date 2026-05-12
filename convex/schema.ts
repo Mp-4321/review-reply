@@ -10,7 +10,7 @@ export default defineSchema({
 
   locations: defineTable({
     userId:           v.id('users'),
-    googleLocationId: v.string(),   // "accounts/xxx/locations/yyy"
+    googleLocationId: v.string(),
     accountId:        v.string(),
     displayName:      v.string(),
     address:          v.optional(v.string()),
@@ -76,6 +76,7 @@ export default defineSchema({
       v.literal('approved'),
       v.literal('published'),
       v.literal('rejected'),
+      v.literal('needs_review'),
     ),
     generatedAt: v.number(),
     scheduledAt: v.optional(v.number()),
@@ -83,5 +84,17 @@ export default defineSchema({
   })
     .index('by_review', ['reviewId'])
     .index('by_user', ['userId'])
-    .index('by_user_and_status', ['userId', 'status']),
+    .index('by_user_and_status', ['userId', 'status'])
+    .index('by_status', ['status']),
+
+  similarityChecks: defineTable({
+    replyId:   v.id('replies'),
+    userId:    v.id('users'),
+    attempts:  v.number(),
+    maxScore:  v.number(),
+    outcome:   v.union(v.literal('published'), v.literal('needs_review')),
+    checkedAt: v.number(),
+  })
+    .index('by_reply', ['replyId'])
+    .index('by_user',  ['userId']),
 })

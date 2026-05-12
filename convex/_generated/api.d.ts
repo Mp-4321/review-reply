@@ -9,7 +9,9 @@
  */
 
 import type * as aiSettings from "../aiSettings.js";
+import type * as crons from "../crons.js";
 import type * as locations from "../locations.js";
+import type * as publish from "../publish.js";
 import type * as replies from "../replies.js";
 import type * as reviews from "../reviews.js";
 import type * as seed from "../seed.js";
@@ -23,7 +25,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   aiSettings: typeof aiSettings;
+  crons: typeof crons;
   locations: typeof locations;
+  publish: typeof publish;
   replies: typeof replies;
   reviews: typeof reviews;
   seed: typeof seed;

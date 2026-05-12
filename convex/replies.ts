@@ -37,7 +37,7 @@ export const listDraftsWithReviews = query({
       .unique()
     if (!user) return []
 
-    const [drafts, queued, approved] = await Promise.all([
+    const [drafts, queued, approved, needsReview] = await Promise.all([
       ctx.db
         .query('replies')
         .withIndex('by_user_and_status', q => q.eq('userId', user._id).eq('status', 'draft'))
@@ -53,9 +53,14 @@ export const listDraftsWithReviews = query({
         .withIndex('by_user_and_status', q => q.eq('userId', user._id).eq('status', 'approved'))
         .order('asc')
         .take(50),
+      ctx.db
+        .query('replies')
+        .withIndex('by_user_and_status', q => q.eq('userId', user._id).eq('status', 'needs_review'))
+        .order('desc')
+        .take(50),
     ])
 
-    const all = [...drafts, ...queued, ...approved]
+    const all = [...drafts, ...queued, ...approved, ...needsReview]
     const withReviews = await Promise.all(
       all.map(async reply => {
         const review = await ctx.db.get(reply.reviewId)
