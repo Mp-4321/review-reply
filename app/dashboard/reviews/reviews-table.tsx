@@ -36,7 +36,7 @@ const STATUS_LABEL: Record<Status, string> = {
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (Status | 'All')[] = ['All', 'pending', 'replied', 'ignored']
+const STATUS_OPTIONS: (Status | 'All')[] = ['All', 'pending', 'replied']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7   },
   { label: 'Last 30 days', days: 30  },
@@ -145,26 +145,36 @@ export default function ReviewsTable() {
                 >
                   {getInitials(r.reviewerName)}
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{r.reviewerName}</p>
-                  <p className="text-[11px] text-slate-400">via Google</p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium leading-tight text-slate-900">{r.reviewerName}</p>
+                  <p className="text-[11px] leading-tight text-slate-400">via Google</p>
                 </div>
               </div>
-              <Stars count={RATING_NUM[r.starRating]} />
-              <p className="truncate pr-4 text-[13px] text-slate-600">{r.comment ?? '—'}</p>
-              <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
-                {STATUS_LABEL[r.status]}
-              </span>
-              <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
-              {r.status === 'pending' ? (
-                <button className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
-                  Generate reply
-                </button>
-              ) : (
-                <button className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
-                  View reply
-                </button>
-              )}
+              <div className="flex items-center">
+                <Stars count={RATING_NUM[r.starRating]} />
+              </div>
+              <div className="flex items-center pr-4">
+                <p className="truncate text-[13px] leading-normal text-slate-600">{r.comment ?? '—'}</p>
+              </div>
+              <div className="flex items-center">
+                <span className={`inline-flex min-w-[4.5rem] items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
+                  {STATUS_LABEL[r.status]}
+                </span>
+              </div>
+              <div className="flex items-center">
+                <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
+              </div>
+              <div className="flex items-center justify-end">
+                {r.status === 'pending' ? (
+                  <button className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
+                    Generate reply
+                  </button>
+                ) : (
+                  <button className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+                    View reply
+                  </button>
+                )}
+              </div>
             </div>
           ))
         )}
