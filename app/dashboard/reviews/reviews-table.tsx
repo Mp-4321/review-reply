@@ -178,7 +178,7 @@ export default function ReviewsTable() {
                 </div>
                 <Stars count={RATING_NUM[r.starRating]} />
                 <p className="truncate pr-4 text-[13px] text-slate-600">{r.comment ?? '—'}</p>
-                <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}`}>
+                <span className={`inline-flex min-w-[4.75rem] items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}`}>
                   {STATUS_LABEL[displayStatus]}
                 </span>
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
