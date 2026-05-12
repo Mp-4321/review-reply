@@ -66,7 +66,7 @@ function ReplyModal({ review, onClose }: { review: Doc<'reviews'>; onClose: () =
       >
         {/* Modal header */}
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-sm font-semibold text-slate-900">Review &amp; reply</h2>
+          <h2 className="text-sm font-semibold text-slate-900">Review &amp; Reply</h2>
           <button
             onClick={onClose}
             className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
@@ -79,19 +79,21 @@ function ReplyModal({ review, onClose }: { review: Doc<'reviews'>; onClose: () =
 
         {/* Customer review */}
         <div className="px-6 py-5">
-          <div className="mb-3 flex items-center gap-3">
+          <div className="mb-3 flex items-start gap-3">
             <div
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
               style={{ backgroundColor: nameToColor(review.reviewerName) }}
             >
               {getInitials(review.reviewerName)}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-900">{review.reviewerName}</p>
-              <div className="mt-0.5 flex items-center gap-2">
-                <Stars count={RATING_NUM[review.starRating]} />
-                <span className="text-[11px] text-slate-400">{formatFullDate(review.updateTime)}</span>
+            <div className="flex flex-1 items-start justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">{review.reviewerName}</p>
+                <div className="mt-0.5">
+                  <Stars count={RATING_NUM[review.starRating]} />
+                </div>
               </div>
+              <span className="shrink-0 text-[11px] text-slate-400">{formatFullDate(review.updateTime)}</span>
             </div>
           </div>
           {review.comment
