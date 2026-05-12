@@ -136,9 +136,9 @@ export default function ReviewsTable() {
           filtered.map((r) => (
             <div
               key={r._id}
-              className="grid grid-cols-[1.5fr_1fr_2fr_1fr_1fr_auto] items-center border-b border-slate-50 px-6 py-4 last:border-0 hover:bg-slate-50/60"
+              className="grid min-h-[56px] grid-cols-[1.5fr_1fr_2fr_1fr_1fr_auto] items-stretch border-b border-slate-50 px-6 py-4 last:border-0 hover:bg-slate-50/60"
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center self-center gap-2.5">
                 <div
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
                   style={{ backgroundColor: nameToColor(r.reviewerName) }}
@@ -150,21 +150,21 @@ export default function ReviewsTable() {
                   <p className="text-[11px] leading-tight text-slate-400">via Google</p>
                 </div>
               </div>
-              <div className="flex h-full items-center py-0">
+              <div className="flex items-center self-center py-0">
                 <Stars count={RATING_NUM[r.starRating]} />
               </div>
-              <div className="flex items-center pr-4">
+              <div className="flex items-center self-center pr-4">
                 <p className="truncate text-[13px] leading-normal text-slate-600">{r.comment ?? '—'}</p>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center self-center">
                 <span className={`inline-flex min-w-[4.5rem] items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
                   {STATUS_LABEL[r.status]}
                 </span>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center self-center">
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
               </div>
-              <div className="flex items-center justify-end">
+              <div className="flex items-center self-center justify-end">
                 {r.status === 'pending' ? (
                   <button className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
                     Generate reply
