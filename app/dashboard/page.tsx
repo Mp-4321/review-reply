@@ -17,8 +17,8 @@ const NAV_GROUPS = [
   {
     group: 'Automation',
     items: [
-      { label: 'AI Settings',   href: '/dashboard/ai-settings',  soon: false },
-      { label: 'Notifications', href: '/dashboard/notifications', soon: false },
+      { label: 'AI Settings', href: '/dashboard/ai-settings', soon: false },
+      { label: 'Workflow',    href: '/dashboard/workflow',    soon: false },
     ],
   },
   {
@@ -28,11 +28,12 @@ const NAV_GROUPS = [
     ],
   },
   {
-    group: 'Account',
+    group: 'Settings',
     items: [
-      { label: 'Locations', href: '/dashboard/locations', soon: true  },
-      { label: 'Billing',   href: '/dashboard/billing',   soon: false },
-      { label: 'Settings',  href: '/dashboard/settings',  soon: false },
+      { label: 'Notifications', href: '/dashboard/notifications', soon: false },
+      { label: 'Billing',       href: '/dashboard/billing',       soon: false },
+      { label: 'Locations',     href: '/dashboard/locations',     soon: true  },
+      { label: 'Account',       href: '/dashboard/settings',      soon: false },
     ],
   },
 ]

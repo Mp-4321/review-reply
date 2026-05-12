@@ -1,7 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import AISettingsForm from './settings-form'
+import WorkflowSettings from './workflow-settings'
 import DashboardBackLink from '../dashboard-back-link'
 
 const NAV_GROUPS = [
@@ -10,7 +10,7 @@ const NAV_GROUPS = [
     items: [
       { label: 'All reviews',    href: '/dashboard/reviews',        soon: false },
       { label: 'Awaiting reply', href: '/dashboard/awaiting-reply', soon: false },
-      { label: 'Draft replies',  href: '/dashboard/draft-replies', soon: false },
+      { label: 'Draft replies',  href: '/dashboard/draft-replies',  soon: false },
     ],
   },
   {
@@ -37,7 +37,7 @@ const NAV_GROUPS = [
   },
 ]
 
-export default async function AISettingsPage() {
+export default async function WorkflowPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
@@ -77,7 +77,7 @@ export default async function AISettingsPage() {
                   key={href}
                   href={href}
                   className={`flex items-center justify-between rounded-md px-2 py-1 text-[13px] transition hover:bg-slate-100 hover:text-slate-900 ${
-                    href === '/dashboard/ai-settings'
+                    href === '/dashboard/workflow'
                       ? 'bg-blue-50 font-semibold text-blue-700'
                       : 'text-slate-600'
                   }`}
@@ -111,15 +111,13 @@ export default async function AISettingsPage() {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="mb-7 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">AI Settings</h1>
-            <p className="mt-1 text-sm text-slate-400">Customize how Replyfier generates responses for your business.</p>
+            <h1 className="text-2xl font-bold text-slate-900">Workflow</h1>
+            <p className="mt-1 text-sm text-slate-400">Configure how Replyfier automates your reply workflow.</p>
           </div>
           <DashboardBackLink />
         </div>
 
-        <div className="max-w-2xl">
-          <AISettingsForm />
-        </div>
+        <WorkflowSettings />
       </main>
     </div>
   )
