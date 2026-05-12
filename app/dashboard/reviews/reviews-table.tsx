@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
+import type { Doc } from '@/convex/_generated/dataModel'
 import Link from 'next/link'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
@@ -21,6 +22,9 @@ function formatDate(iso: string, now: number) {
   if (days === 0) return 'Today'
   if (days === 1) return 'Yesterday'
   return `${days}d ago`
+}
+function formatFullDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 type DisplayStatus = 'pending' | 'draft' | 'queued' | 'replied' | 'ignored'
@@ -48,6 +52,74 @@ const DATE_OPTIONS = [
   { label: 'All time',     days: 9999 },
 ]
 
+function ReplyModal({ review, onClose }: { review: Doc<'reviews'>; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" />
+
+      <div
+        className="relative z-10 w-full max-w-lg rounded-2xl bg-white shadow-xl"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Modal header */}
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <h2 className="text-sm font-semibold text-slate-900">Review &amp; reply</h2>
+          <button
+            onClick={onClose}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Customer review */}
+        <div className="px-6 py-5">
+          <div className="mb-3 flex items-center gap-3">
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+              style={{ backgroundColor: nameToColor(review.reviewerName) }}
+            >
+              {getInitials(review.reviewerName)}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900">{review.reviewerName}</p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <Stars count={RATING_NUM[review.starRating]} />
+                <span className="text-[11px] text-slate-400">{formatFullDate(review.updateTime)}</span>
+              </div>
+            </div>
+          </div>
+          {review.comment
+            ? <p className="text-[13.5px] leading-relaxed text-slate-700">{review.comment}</p>
+            : <p className="text-[13px] italic text-slate-400">No comment left.</p>
+          }
+        </div>
+
+        <div className="mx-6 border-t border-slate-100" />
+
+        {/* Published reply */}
+        <div className="px-6 py-5">
+          <div className="mb-2.5 flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Your reply</p>
+            {review.replyUpdateTime && (
+              <span className="text-[11px] text-slate-400">{formatFullDate(review.replyUpdateTime)}</span>
+            )}
+          </div>
+          {review.replyComment
+            ? <p className="text-[13.5px] leading-relaxed text-slate-700">{review.replyComment}</p>
+            : <p className="text-[13px] italic text-slate-400">No reply recorded.</p>
+          }
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Stars({ count }: { count: number }) {
   return (
     <span className="flex items-center gap-0.5 leading-none">
@@ -65,6 +137,7 @@ export default function ReviewsTable() {
   const [statusFilter, setStatusFilter] = useState<DisplayStatus | 'All'>('All')
   const [dateFilter,   setDateFilter]   = useState(9999)
   const [now] = useState(() => Date.now())
+  const [viewReview, setViewReview] = useState<Doc<'reviews'> | null>(null)
 
   const reviews   = useQuery(api.reviews.list, { limit: 50 }) ?? []
   const rawDrafts = useQuery(api.replies.listDraftsWithReviews)
@@ -208,7 +281,10 @@ export default function ReviewsTable() {
                   </Link>
                 )}
                 {(displayStatus === 'replied' || displayStatus === 'ignored') && (
-                  <button className="inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-1 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+                  <button
+                    onClick={() => setViewReview(r)}
+                    className="inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-1 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+                  >
                     View reply
                   </button>
                 )}
@@ -221,6 +297,10 @@ export default function ReviewsTable() {
           Showing {filtered.length} of {reviews.length}
         </div>
       </div>
+
+      {viewReview && (
+        <ReplyModal review={viewReview} onClose={() => setViewReview(null)} />
+      )}
     </div>
   )
 }
