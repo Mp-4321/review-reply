@@ -45,7 +45,7 @@ const DATE_OPTIONS = [
 
 function Stars({ count }: { count: number }) {
   return (
-    <span className="flex items-center gap-0.5">
+    <span className="flex items-center gap-0.5 leading-none">
       {Array.from({ length: 5 }).map((_, i) => (
         <svg key={i} className="h-3.5 w-3.5" viewBox="0 0 24 24" fill={i < count ? '#D97706' : '#E2E8F0'}>
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -150,7 +150,7 @@ export default function ReviewsTable() {
                   <p className="text-[11px] leading-tight text-slate-400">via Google</p>
                 </div>
               </div>
-              <div className="flex items-center">
+              <div className="flex h-full items-center py-0">
                 <Stars count={RATING_NUM[r.starRating]} />
               </div>
               <div className="flex items-center pr-4">
