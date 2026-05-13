@@ -113,6 +113,7 @@ function InboxDraftCard({
   const [regenerating, setRegenerating] = useState(false)
   const [regenError,   setRegenError]   = useState<string | null>(null)
   const [queueing,     setQueueing]     = useState(false)
+  const [actionMenuOpen, setActionMenuOpen] = useState(false)
 
   async function handleSave() {
     setSaving(true)
@@ -120,12 +121,14 @@ function InboxDraftCard({
     finally { setSaving(false) }
   }
   async function handleRegenerate() {
+    setActionMenuOpen(false)
     setRegenerating(true); setRegenError(null)
     try { await onRegenerate() }
     catch (e) { setRegenError(e instanceof Error ? e.message : 'Failed to regenerate') }
     finally { setRegenerating(false) }
   }
   async function handleQueue() {
+    setActionMenuOpen(false)
     setQueueing(true)
     try { await onQueueSingle() }
     finally { setQueueing(false) }
@@ -182,9 +185,9 @@ function InboxDraftCard({
 
           {regenError && <p className="mt-1.5 text-[11px] text-red-500">{regenError}</p>}
 
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-3 min-h-7">
             {editing ? (
-              <>
+              <div className="flex items-center gap-2">
                 <button onClick={handleSave} disabled={saving}
                   className="cursor-pointer rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60">
                   {saving ? 'Saving…' : 'Save'}
@@ -193,22 +196,50 @@ function InboxDraftCard({
                   className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300">
                   Cancel
                 </button>
-              </>
+              </div>
             ) : (
-              <>
-                <button onClick={() => { setEditing(true); setEditText(reply.draft) }}
-                  className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300 hover:text-slate-800">
-                  Edit
-                </button>
-                <button onClick={handleRegenerate} disabled={regenerating}
-                  className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300 hover:text-slate-800 disabled:opacity-60">
-                  {regenerating ? 'Regenerating…' : 'Regenerate'}
-                </button>
+              <div
+                className={`relative flex items-center justify-end gap-2 transition duration-150 ${
+                  actionMenuOpen || queueing || regenerating
+                    ? 'pointer-events-auto opacity-100'
+                    : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+                }`}
+              >
                 <button onClick={handleQueue} disabled={queueing}
                   className="cursor-pointer rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60">
                   {queueing ? 'Queuing…' : 'Queue reply'}
                 </button>
-              </>
+                <div className="relative">
+                  <button
+                    type="button"
+                    aria-label="Reply actions"
+                    aria-expanded={actionMenuOpen}
+                    onClick={() => setActionMenuOpen(open => !open)}
+                    className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-blue-200 bg-white text-sm font-semibold leading-none text-slate-500 transition hover:border-blue-300 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  >
+                    ⋯
+                  </button>
+                  {actionMenuOpen && (
+                    <div className="absolute right-0 top-full z-20 mt-1 w-32 rounded-lg border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/70">
+                      <button
+                        type="button"
+                        onClick={() => { setActionMenuOpen(false); setEditing(true); setEditText(reply.draft) }}
+                        className="block w-full cursor-pointer px-3 py-1.5 text-left text-[12px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleRegenerate}
+                        disabled={regenerating}
+                        className="block w-full cursor-pointer px-3 py-1.5 text-left text-[12px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {regenerating ? 'Regenerating…' : 'Regenerate'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
