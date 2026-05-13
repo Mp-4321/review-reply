@@ -99,7 +99,7 @@ export default function RecentReplies() {
               <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
                 {STATUS_LABEL[r.status]}
               </span>
-              <p className="max-w-[280px] truncate pr-4 text-[13px] text-slate-500">
+              <p className="truncate pr-4 text-[13px] text-slate-500">
                 {r.replyComment ?? (r.comment ? `"${r.comment.slice(0, 60)}…"` : '—')}
               </p>
               <p className="text-[12px] text-slate-400">{formatDate(r.updateTime)}</p>
