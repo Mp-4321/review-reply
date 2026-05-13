@@ -68,29 +68,27 @@ function readAutoGenerate() {
 
 function AutoGenerateBar({ enabled }: { enabled: boolean }) {
   return enabled ? (
-    <div className="mb-6 flex items-center gap-2.5 rounded-xl border border-green-200 bg-green-50 px-4 py-2.5">
+    <div className="mb-6 inline-flex w-fit items-center gap-2.5 rounded-lg border border-green-200 bg-green-50 px-2.5 py-1.5">
       <span className="h-2 w-2 shrink-0 rounded-full bg-green-500" />
-      <p className="text-[12.5px] text-slate-600">
-        <span className="font-semibold text-green-700">Auto-generate enabled</span>
-        {' '}— New reviews automatically receive AI-generated draft replies.
+      <p className="text-xs font-semibold text-green-700">
+        Auto-generate enabled
       </p>
       <Link
         href="/dashboard/workflow"
-        className="ml-auto shrink-0 text-[11px] font-medium text-slate-400 transition hover:text-slate-600"
+        className="shrink-0 text-[11px] font-medium text-slate-400 transition hover:text-slate-600"
       >
         Manage workflow →
       </Link>
     </div>
   ) : (
-    <div className="mb-6 flex items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5">
+    <div className="mb-6 inline-flex w-fit items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5">
       <span className="h-2 w-2 shrink-0 rounded-full bg-slate-300" />
-      <p className="text-[12.5px] text-slate-500">
-        <span className="font-medium text-slate-600">Auto-generate disabled</span>
-        {' '}— Reviews require manual draft generation.
+      <p className="text-xs font-semibold text-slate-600">
+        Auto-generate disabled
       </p>
       <Link
         href="/dashboard/workflow"
-        className="ml-auto shrink-0 text-[11px] font-medium text-slate-400 transition hover:text-slate-600"
+        className="shrink-0 text-[11px] font-medium text-slate-400 transition hover:text-slate-600"
       >
         Manage workflow →
       </Link>
@@ -517,7 +515,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
           </div>
         </div>
 
-        {visible.length > 0 && (
+        {someSelected && visible.length > 0 && (
           <div className="mt-2.5">
             <label className="flex cursor-pointer items-center gap-1.5">
               <input
@@ -564,18 +562,25 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             const isLoading  = generatingSet.has(r._id as string)
 
             return (
-              <div key={r._id} className="flex items-start gap-3">
-                <div className="mt-5 shrink-0 pt-0.5">
+              <div key={r._id} className="group relative">
+                <label
+                  className={`absolute left-3 top-4 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/95 shadow-sm ring-1 ring-slate-200 transition duration-150 hover:ring-blue-200 ${
+                    someSelected || isSelected
+                      ? 'opacity-100'
+                      : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100'
+                  }`}
+                >
                   <input
                     type="checkbox"
+                    aria-label={`Select review from ${r.reviewerName}`}
                     checked={isSelected}
                     onChange={() => toggleSelect(r._id as string)}
-                    className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600"
+                    className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                   />
-                </div>
+                </label>
                 <div
                   ref={el => { cardRefs.current[r._id as string] = el }}
-                  className={`flex-1 rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md ${
+                  className={`rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md ${
                     isFocused
                       ? 'border-blue-300 ring-1 ring-blue-200'
                       : isSelected
@@ -637,6 +642,8 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
             <button
               onClick={() => setSelectedIds(new Set())}
+              aria-label="Clear selection"
+              title="Clear selection"
               className="ml-auto cursor-pointer text-slate-400 transition hover:text-slate-600"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
