@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import { useQuery } from 'convex/react'
+import { useRouter } from 'next/navigation'
 import { api } from '@/convex/_generated/api'
 import type { Doc } from '@/convex/_generated/dataModel'
-import Link from 'next/link'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
@@ -47,7 +47,7 @@ const STATUS_LABEL: Record<DisplayStatus, string> = {
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied', 'needs_review']
+const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7    },
   { label: 'Last 30 days', days: 30   },
@@ -142,6 +142,17 @@ export default function ReviewsTable() {
   const [dateFilter,   setDateFilter]   = useState(9999)
   const [now] = useState(() => Date.now())
   const [viewReview, setViewReview] = useState<Doc<'reviews'> | null>(null)
+  const router = useRouter()
+
+  function handleRowClick(r: typeof reviews[number], displayStatus: DisplayStatus) {
+    if (displayStatus === 'replied' || displayStatus === 'ignored') {
+      setViewReview(r)
+    } else if (displayStatus === 'pending' || displayStatus === 'draft') {
+      router.push(`/dashboard/awaiting-reply?reviewId=${r._id}`)
+    } else if (displayStatus === 'queued' || displayStatus === 'needs_review') {
+      router.push('/dashboard/draft-replies')
+    }
+  }
 
   const reviews   = useQuery(api.reviews.list, { limit: 50 }) ?? []
   const rawDrafts = useQuery(api.replies.listDraftsWithReviews)
@@ -219,9 +230,9 @@ export default function ReviewsTable() {
 
       {/* Table */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr_120px] border-b border-slate-100 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr] border-b border-slate-100 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
           <span>Customer</span><span>Rating</span><span>Review</span>
-          <span>Status</span><span>Date</span><span></span>
+          <span>Status</span><span>Date</span>
         </div>
 
         {reviews.length === 0 ? (
@@ -239,7 +250,12 @@ export default function ReviewsTable() {
             return (
               <div
                 key={r._id}
-                className="grid grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr_120px] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
+                role="button"
+                tabIndex={0}
+                aria-label={`View ${r.reviewerName}'s review`}
+                onClick={() => handleRowClick(r, displayStatus)}
+                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleRowClick(r, displayStatus)}
+                className="grid cursor-pointer grid-cols-[1.5fr_1fr_2.4fr_1fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400"
               >
                 <div className="flex items-center gap-2.5">
                   <div
@@ -259,47 +275,6 @@ export default function ReviewsTable() {
                   {STATUS_LABEL[displayStatus]}
                 </span>
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
-
-                {displayStatus === 'pending' && (
-                  <Link
-                    href={`/dashboard/awaiting-reply?reviewId=${r._id}`}
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-blue-600 px-1 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                  >
-                    Review
-                  </Link>
-                )}
-                {displayStatus === 'draft' && (
-                  <Link
-                    href="/dashboard/draft-replies"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-violet-200 bg-violet-50 px-1 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-100"
-                  >
-                    Review draft
-                  </Link>
-                )}
-                {displayStatus === 'queued' && (
-                  <Link
-                    href="/dashboard/draft-replies"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-sky-200 bg-sky-50 px-1 py-1.5 text-xs font-medium text-sky-700 transition hover:bg-sky-100"
-                  >
-                    View queue
-                  </Link>
-                )}
-                {displayStatus === 'needs_review' && (
-                  <Link
-                    href="/dashboard/draft-replies"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-1 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100"
-                  >
-                    Review now
-                  </Link>
-                )}
-                {(displayStatus === 'replied' || displayStatus === 'ignored') && (
-                  <button
-                    onClick={() => setViewReview(r)}
-                    className="inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-1 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-                  >
-                    View reply
-                  </button>
-                )}
               </div>
             )
           })
