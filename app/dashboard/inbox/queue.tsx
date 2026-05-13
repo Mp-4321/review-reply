@@ -132,9 +132,9 @@ function InboxDraftCard({
   }
 
   return (
-    <div className="flex items-start gap-4 px-5 py-4">
+    <div className="flex items-start gap-4 py-4 pl-2 pr-5">
       <div
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+        className="flex h-9 w-9 shrink-0 translate-x-1 items-center justify-center rounded-full text-xs font-bold text-white"
         style={{ backgroundColor: nameToColor(review.reviewerName) }}
       >
         {getInitials(review.reviewerName)}
@@ -229,10 +229,10 @@ function PendingCard({
 }) {
   return (
     <>
-      <div className="flex items-start gap-5 px-6 py-5">
+      <div className="flex items-start gap-5 py-5 pl-3 pr-6">
         <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
+            className="flex h-10 w-10 translate-x-1 items-center justify-center rounded-full text-sm font-bold text-white"
             style={{ backgroundColor: nameToColor(review.reviewerName) }}
           >
             {getInitials(review.reviewerName)}
@@ -574,9 +574,8 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
           </div>
 
           {toast && (
-            <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-emerald-100 bg-white/95 px-3 py-1 text-[11px] font-medium text-slate-600 shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              {toast}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center whitespace-nowrap px-3 py-1 text-[11px] font-medium text-slate-500">
+              ✓ {toast}
             </div>
           )}
         </div>
