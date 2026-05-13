@@ -490,21 +490,18 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
       {/* Filters */}
       <div className="mb-5">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-slate-400">Stars:</span>
-            {STAR_OPTS.map(s => (
-              <button
-                key={s ?? 'all'}
-                onClick={() => setStarFilter(s)}
-                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition ${
-                  starFilter === s
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-slate-200 bg-white text-slate-500 hover:border-slate-300'
-                }`}
-              >
-                {s === null ? 'All' : '★'.repeat(s)}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400">Stars</span>
+            <select
+              value={starFilter === null ? 'all' : String(starFilter)}
+              onChange={e => setStarFilter(e.target.value === 'all' ? null : Number(e.target.value))}
+              className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All</option>
+              {STAR_OPTS.filter((s): s is number => s !== null).map(s => (
+                <option key={s} value={String(s)}>{s} star{s !== 1 ? 's' : ''}</option>
+              ))}
+            </select>
           </div>
 
           <div className="ml-auto">
