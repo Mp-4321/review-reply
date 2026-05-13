@@ -232,8 +232,17 @@ function PendingCard({
 
 const STAR_OPTS: (number | null)[] = [null, 5, 4, 3, 2, 1]
 
+type SortOption = 'newest' | 'oldest' | 'lowest' | 'highest'
+const SORT_OPTS: { label: string; value: SortOption }[] = [
+  { label: 'Newest first',   value: 'newest'  },
+  { label: 'Oldest first',   value: 'oldest'  },
+  { label: 'Low rating',     value: 'lowest'  },
+  { label: 'High rating',    value: 'highest' },
+]
+
 export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }) {
   const [starFilter,    setStarFilter]    = useState<number | null>(null)
+  const [sort,          setSort]          = useState<SortOption>('newest')
   const [generatingFor, setGeneratingFor] = useState<Id<'reviews'> | null>(null)
   const [error,         setError]         = useState<string | null>(null)
   const [toast,         setToast]         = useState<string | null>(null)
@@ -270,7 +279,12 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
   const visible = reviews
     .filter(r => !queuedReviewIds.has(r._id))
     .filter(r => starFilter === null || RATING_NUM[r.starRating] === starFilter)
-    .sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime())
+    .sort((a, b) => {
+      if (sort === 'lowest')  return RATING_NUM[a.starRating] - RATING_NUM[b.starRating]
+      if (sort === 'highest') return RATING_NUM[b.starRating] - RATING_NUM[a.starRating]
+      if (sort === 'oldest')  return new Date(a.createTime).getTime() - new Date(b.createTime).getTime()
+      return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
+    })
 
   useEffect(() => {
     if (!focusReviewId || rawItems === undefined || rawReviews === undefined) return
@@ -344,7 +358,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   return (
     <div>
-      {/* Star filter */}
+      {/* Filters */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-slate-400">Stars:</span>
@@ -361,6 +375,17 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
               {s === null ? 'All' : '★'.repeat(s)}
             </button>
           ))}
+        </div>
+        <div className="ml-auto">
+          <select
+            value={sort}
+            onChange={e => setSort(e.target.value as SortOption)}
+            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {SORT_OPTS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
         </div>
       </div>
 
