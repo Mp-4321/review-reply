@@ -606,7 +606,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
               <div key={r._id} className="group flex items-start gap-2">
                 <div className="flex w-5 shrink-0 justify-center pt-5">
                   <label
-                    className={`flex h-5 w-5 cursor-pointer items-center justify-center transition duration-150 ${
+                    className={`flex h-5 w-5 translate-x-[7px] cursor-pointer items-center justify-center transition duration-150 ${
                       someSelected || isSelected
                         ? 'opacity-100'
                         : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100'
