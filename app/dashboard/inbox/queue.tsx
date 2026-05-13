@@ -562,31 +562,31 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             const isLoading  = generatingSet.has(r._id as string)
 
             return (
-              <div key={r._id} className="group relative">
-                <label
-                  className={`absolute left-1.5 top-6 z-10 flex h-5 w-5 cursor-pointer items-center justify-center transition duration-150 ${
-                    someSelected || isSelected
-                      ? 'opacity-100'
-                      : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    aria-label={`Select review from ${r.reviewerName}`}
-                    checked={isSelected}
-                    onChange={() => toggleSelect(r._id as string)}
-                    className="h-3.5 w-3.5 cursor-pointer rounded border-slate-300 accent-blue-600 opacity-80 transition hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  />
-                </label>
+              <div key={r._id} className="group flex items-start gap-2">
+                <div className="flex w-5 shrink-0 justify-center pt-5">
+                  <label
+                    className={`flex h-5 w-5 cursor-pointer items-center justify-center transition duration-150 ${
+                      someSelected || isSelected
+                        ? 'opacity-100'
+                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      aria-label={`Select review from ${r.reviewerName}`}
+                      checked={isSelected}
+                      onChange={() => toggleSelect(r._id as string)}
+                      className="h-3.5 w-3.5 cursor-pointer rounded border-slate-300 accent-blue-600 opacity-80 transition hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    />
+                  </label>
+                </div>
                 <div
                   ref={el => { cardRefs.current[r._id as string] = el }}
-                  className={`rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${
-                    isFocused
-                      ? 'border-blue-300 ring-1 ring-blue-200'
-                      : isSelected
-                        ? 'border-slate-200 border-l-blue-400 border-l-[3px] bg-blue-50/20'
-                        : 'border-slate-200'
-                  }`}
+                  className={`flex-1 rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${
+                    isSelected
+                      ? 'border-slate-200 border-l-blue-400 border-l-[3px] bg-blue-50/20'
+                      : 'border-slate-200'
+                  } ${isFocused ? 'ring-1 ring-blue-200' : ''}`}
                 >
                   {draftItem ? (
                     <InboxDraftCard
