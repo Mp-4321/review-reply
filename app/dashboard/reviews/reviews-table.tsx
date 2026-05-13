@@ -230,7 +230,7 @@ export default function ReviewsTable() {
 
       {/* Table */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="grid grid-cols-[1.9fr_1fr_5fr_1.4fr_1fr] border-b border-slate-100 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="grid grid-cols-[1.9fr_1.3fr_5fr_1.4fr_1fr] border-b border-slate-100 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
           <span>Customer</span><span>Rating</span><span>Review</span>
           <span>Status</span><span>Date</span>
         </div>
@@ -255,7 +255,7 @@ export default function ReviewsTable() {
                 aria-label={`View ${r.reviewerName}'s review`}
                 onClick={() => handleRowClick(r, displayStatus)}
                 onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleRowClick(r, displayStatus)}
-                className="grid cursor-pointer grid-cols-[1.9fr_1fr_5fr_1.4fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400"
+                className="grid cursor-pointer grid-cols-[1.9fr_1.3fr_5fr_1.4fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-400"
               >
                 <div className="flex items-center gap-2.5">
                   <div
