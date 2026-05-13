@@ -31,10 +31,15 @@ function formatTime(ts: number): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ` at ${time}`
 }
 function formatScheduleLabel(scheduledAt: number): string {
-  const ms = scheduledAt - Date.now()
-  if (ms <= 0) return 'Publishing soon'
-  if (ms < 60 * 60 * 1000) return `Publishing in ~${Math.max(1, Math.round(ms / 60_000))} min`
-  return `Scheduled for ${formatTime(scheduledAt)}`
+  const ms  = scheduledAt - Date.now()
+  if (ms > 0 && ms < 60 * 60 * 1000) return `Publishing in ~${Math.max(1, Math.round(ms / 60_000))} min`
+  const d   = new Date(scheduledAt)
+  const now = new Date()
+  const tom = new Date(); tom.setDate(now.getDate() + 1)
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  if (d.toDateString() === now.toDateString()) return `Publishing today at ${time}`
+  if (d.toDateString() === tom.toDateString()) return `Publishing tomorrow at ${time}`
+  return `Publishing on ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${time}`
 }
 
 type Item = NonNullable<ReturnType<typeof useQuery<typeof api.replies.listDraftsWithReviews>>>[number]
@@ -57,16 +62,6 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
   const [expanded, setExpanded] = useState(false)
 
   const isNeedsReview = reply.status === 'needs_review'
-
-  const statusBadge = isNeedsReview ? (
-    <span className="shrink-0 rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-medium text-red-700">
-      Needs review
-    </span>
-  ) : (
-    <span className="shrink-0 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[11px] font-medium text-sky-700">
-      Queued
-    </span>
-  )
 
   const scheduleLabel = isNeedsReview
     ? 'Held — similarity check flagged this reply'
@@ -126,12 +121,11 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          {statusBadge}
-          {reply.scheduledAt && !isNeedsReview && (
-            <span className="text-[11px] text-slate-400">{formatTime(reply.scheduledAt)}</span>
-          )}
-        </div>
+        {isNeedsReview && (
+          <span className="shrink-0 rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-medium text-red-700">
+            Needs review
+          </span>
+        )}
       </div>
     </div>
   )
