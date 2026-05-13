@@ -101,8 +101,8 @@ export default function RecentReplies() {
               </span>
               <p className="truncate pr-4 text-[13px] text-slate-500">
                 {r.replyComment
-                  ? r.replyComment.slice(0, 55) + (r.replyComment.length > 55 ? '…' : '')
-                  : r.comment ? `"${r.comment.slice(0, 55)}…"` : '—'}
+                  ? r.replyComment.slice(0, 65) + (r.replyComment.length > 65 ? '…' : '')
+                  : r.comment ? `"${r.comment.slice(0, 65)}…"` : '—'}
               </p>
               <p className="text-[12px] text-slate-400">{formatDate(r.updateTime)}</p>
             </div>
