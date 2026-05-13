@@ -1,7 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import DraftQueue from './draft-queue'
+import QueueMonitor from './draft-queue'
 import DashboardBackLink from '../dashboard-back-link'
 
 const NAV_GROUPS = [
@@ -9,8 +9,8 @@ const NAV_GROUPS = [
     group: 'Reviews',
     items: [
       { label: 'All reviews',    href: '/dashboard/reviews',        soon: false },
-      { label: 'Awaiting reply', href: '/dashboard/awaiting-reply', soon: false },
-      { label: 'Draft replies',  href: '/dashboard/draft-replies', soon: false },
+      { label: 'Inbox', href: '/dashboard/awaiting-reply', soon: false },
+      { label: 'Queue',           href: '/dashboard/draft-replies', soon: false },
     ],
   },
   {
@@ -111,15 +111,15 @@ export default async function DraftRepliesPage() {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="mb-7 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Draft replies</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Queue</h1>
             <p className="mt-1 text-sm text-slate-400">
-              Review and queue AI-generated replies for progressive publishing.
+              Monitor your scheduled replies and progressive publishing queue.
             </p>
           </div>
           <DashboardBackLink />
         </div>
 
-        <DraftQueue />
+        <QueueMonitor />
       </main>
     </div>
   )
