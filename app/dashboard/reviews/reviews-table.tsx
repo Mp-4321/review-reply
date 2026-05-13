@@ -271,7 +271,7 @@ export default function ReviewsTable() {
                 </div>
                 <Stars count={RATING_NUM[r.starRating]} />
                 <p className="truncate pr-4 text-[13px] text-slate-600">
-                  {r.comment ? r.comment.slice(0, 80) + (r.comment.length > 80 ? '…' : '') : '—'}
+                  {r.comment ? r.comment.slice(0, 70) + (r.comment.length > 70 ? '…' : '') : '—'}
                 </p>
                 <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}>
                   {STATUS_LABEL[displayStatus]}
