@@ -32,7 +32,6 @@ const SORT_OPTS: { label: string; value: SortOption }[] = [
   { label: 'Low rating',     value: 'lowest'  },
   { label: 'High rating',    value: 'highest' },
 ]
-const STAR_OPTS: (number | null)[] = [null, 5, 4, 3, 2, 1]
 const WORKFLOW_KEY = 'replyfier.workflowSettings'
 
 type Item = NonNullable<ReturnType<typeof useQuery<typeof api.replies.listDraftsWithReviews>>>[number]
@@ -285,7 +284,6 @@ function PendingCard({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }) {
-  const [starFilter,    setStarFilter]    = useState<number | null>(null)
   const [sort,          setSort]          = useState<SortOption>('newest')
   const [generatingSet, setGeneratingSet] = useState<Set<string>>(new Set())
   const [selectedIds,   setSelectedIds]   = useState<Set<string>>(new Set())
@@ -326,7 +324,6 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   const visible = reviews
     .filter(r => !queuedReviewIds.has(r._id))
-    .filter(r => starFilter === null || RATING_NUM[r.starRating] === starFilter)
     .sort((a, b) => {
       if (sort === 'lowest')  return RATING_NUM[a.starRating] - RATING_NUM[b.starRating]
       if (sort === 'highest') return RATING_NUM[b.starRating] - RATING_NUM[a.starRating]
@@ -452,6 +449,30 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
     showToast(`${success} draft${success !== 1 ? 's' : ''} generated.`)
   }
 
+  async function handleBulkRegenerate() {
+    const toRegenerate = draftSelected
+      .map(id => {
+        const item = reviewDraftMap.get(id)
+        const review = visible.find(r => (r._id as string) === id)
+        return item && review ? { item, review } : null
+      })
+      .filter((entry): entry is { item: Item; review: Doc<'reviews'> } => entry !== null)
+
+    let success = 0
+    for (const { item, review } of toRegenerate) {
+      addGenerating(review._id as string)
+      try {
+        const draft = await callGenerateApi(review.comment ?? '')
+        await updateDraft({ replyId: item.reply._id, draft })
+        success++
+      } catch {} finally {
+        removeGenerating(review._id as string)
+      }
+    }
+    setSelectedIds(new Set())
+    showToast(`${success} draft${success !== 1 ? 's' : ''} regenerated.`)
+  }
+
   async function handleBulkQueue() {
     const replyIds = draftSelected
       .map(id => reviewDraftMap.get(id)?.reply._id)
@@ -482,24 +503,70 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
   }
 
   return (
-    <div className={someSelected ? 'pb-24' : ''}>
+    <div>
       <AutoGenerateBar enabled={autoGenerateEnabled} />
 
       {/* Filters */}
       <div className="mb-5">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">Stars</span>
-            <select
-              value={starFilter === null ? 'all' : String(starFilter)}
-              onChange={e => setStarFilter(e.target.value === 'all' ? null : Number(e.target.value))}
-              className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All</option>
-              {STAR_OPTS.filter((s): s is number => s !== null).map(s => (
-                <option key={s} value={String(s)}>{s} star{s !== 1 ? 's' : ''}</option>
-              ))}
-            </select>
+          <div className="flex min-h-8 flex-wrap items-center gap-2">
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                disabled={visible.length === 0}
+                onChange={toggleAll}
+                className="h-3.5 w-3.5 cursor-pointer rounded border-slate-300 accent-blue-600 disabled:cursor-not-allowed"
+              />
+              <span>{someSelected ? `${selectedIds.size} selected` : 'Select all'}</span>
+            </label>
+
+            {someSelected && (
+              <>
+                {isMixed ? (
+                  <span className="text-[12px] text-slate-400">Mixed selection</span>
+                ) : noDraftSelected.length > 0 ? (
+                  <button
+                    onClick={handleBulkGenerate}
+                    disabled={generatingSet.size > 0}
+                    className="cursor-pointer rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                  >
+                    {generatingSet.size > 0 ? 'Generating...' : 'Generate selected'}
+                  </button>
+                ) : draftSelected.length > 0 ? (
+                  <>
+                    <button
+                      onClick={handleBulkQueue}
+                      className="cursor-pointer rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    >
+                      Queue selected
+                    </button>
+                    <button
+                      onClick={handleBulkRegenerate}
+                      disabled={generatingSet.size > 0}
+                      className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-60"
+                    >
+                      {generatingSet.size > 0 ? 'Regenerating...' : 'Regenerate'}
+                    </button>
+                  </>
+                ) : null}
+
+                <button
+                  type="button"
+                  disabled
+                  className="cursor-not-allowed rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-400 opacity-70"
+                >
+                  More
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedIds(new Set())}
+                  className="cursor-pointer rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-400 transition hover:text-slate-700"
+                >
+                  Clear
+                </button>
+              </>
+            )}
           </div>
 
           <div className="ml-auto">
@@ -514,22 +581,6 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             </select>
           </div>
         </div>
-
-        {someSelected && visible.length > 0 && (
-          <div className="mt-2.5">
-            <label className="flex cursor-pointer items-center gap-1.5">
-              <input
-                type="checkbox"
-                checked={allSelected}
-                onChange={toggleAll}
-                className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600"
-              />
-              <span className="text-[12px] text-slate-500">
-                {allSelected ? 'Deselect all' : `Select all ${visible.length}`}
-              </span>
-            </label>
-          </div>
-        )}
       </div>
 
       {error && (
@@ -607,50 +658,6 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
               </div>
             )
           })}
-        </div>
-      )}
-
-      {/* Bulk action toolbar */}
-      {someSelected && (
-        <div className="fixed bottom-6 left-1/2 z-40 w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2">
-          <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white/95 px-5 py-3 shadow-2xl shadow-slate-900/10 backdrop-blur">
-            <span className="shrink-0 text-sm font-semibold text-slate-900">
-              {selectedIds.size} selected
-            </span>
-            <div className="h-5 w-px bg-slate-200" />
-
-            {isMixed ? (
-              <p className="text-[12px] text-slate-400">
-                Select only one type at a time — drafts or pending reviews.
-              </p>
-            ) : noDraftSelected.length > 0 ? (
-              <button
-                onClick={handleBulkGenerate}
-                disabled={generatingSet.size > 0}
-                className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
-              >
-                {generatingSet.size > 0 ? 'Generating…' : `Generate ${noDraftSelected.length} selected`}
-              </button>
-            ) : draftSelected.length > 0 ? (
-              <button
-                onClick={handleBulkQueue}
-                className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
-              >
-                Queue {draftSelected.length} selected
-              </button>
-            ) : null}
-
-            <button
-              onClick={() => setSelectedIds(new Set())}
-              aria-label="Clear selection"
-              title="Clear selection"
-              className="ml-auto cursor-pointer text-slate-400 transition hover:text-slate-600"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
         </div>
       )}
     </div>
