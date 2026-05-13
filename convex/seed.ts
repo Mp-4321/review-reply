@@ -1,95 +1,46 @@
 import { internalMutation } from './_generated/server'
 
-const REVIEWS = [
-  // ── 6 pending, no draft → Awaiting Reply ──────────────────────────────────
+type SeedReview = {
+  googleReviewId: string
+  reviewerName:   string
+  starRating:     'ONE' | 'TWO' | 'THREE' | 'FOUR' | 'FIVE'
+  comment:        string
+  daysAgo:        number
+  status:         'pending' | 'replied'
+  draft?:         string
+  queued?:        string
+  replyComment?:  string
+  replyDaysAgo?:  number
+}
+
+const REVIEWS: SeedReview[] = [
+  // ── 2 pending ─────────────────────────────────────────────────────────────
   {
     googleReviewId: 'seed-r-001',
-    reviewerName:   'Giulia Ferrero',
-    starRating:     'FIVE' as const,
-    comment:        'Serata indimenticabile per il nostro anniversario! Il personale ha preparato una piccola sorpresa a tavola senza che lo chiedessimo. Cucina raffinata, vini selezionati e servizio impeccabile. Raramente si trova un posto con questa cura per i dettagli.',
-    daysAgo:        1,
+    reviewerName:   'Sofia Caruso',
+    starRating:     'FOUR' as const,
+    comment:        'Cena piacevole in un ambiente accogliente. La pasta fatta in casa era davvero ottima e il personale gentile. Unico neo: tempi un po\' lunghi tra una portata e l\'altra, ma niente che abbia rovinato la serata.',
+    daysAgo:        2,
     status:         'pending' as const,
   },
   {
     googleReviewId: 'seed-r-002',
-    reviewerName:   'Alessandro Ricci',
-    starRating:     'FOUR' as const,
-    comment:        'Ottima cucina, porzioni generose e prezzi onesti. L\'unica pecca è stata l\'attesa per il tavolo — quasi 20 minuti nonostante la prenotazione confermata. Il personale si è scusato e ha offerto un aperitivo in omaggio, quindi apprezzo il gesto.',
-    daysAgo:        3,
-    status:         'pending' as const,
-  },
-  {
-    googleReviewId: 'seed-r-003',
-    reviewerName:   'Federica Gallo',
-    starRating:     'ONE' as const,
-    comment:        'Ho prenotato con una settimana di anticipo e al mio arrivo non trovavano la prenotazione. Siamo rimasti in piedi per trenta minuti senza che nessuno si facesse carico della situazione. Alla fine abbiamo rinunciato e siamo andati altrove. Servizio caotico e poco professionale.',
-    daysAgo:        4,
-    status:         'pending' as const,
-  },
-  {
-    googleReviewId: 'seed-r-004',
-    reviewerName:   'Davide Marino',
+    reviewerName:   'Marco Pellegrini',
     starRating:     'TWO' as const,
-    comment:        'Il cibo era nella norma ma il servizio è stato deludente. Ho dovuto chiedere due volte l\'acqua e aspettare quasi 15 minuti per il conto. Il tavolo accanto al nostro sembrava ricevere attenzione decisamente maggiore. Per i prezzi praticati mi aspettavo di più.',
-    daysAgo:        6,
+    comment:        'Mi aspettavo di più. Il locale è carino ma il servizio era disattento e il conto aveva un errore che ho dovuto far correggere. La cucina nella media, niente che giustifichi i prezzi. Difficilmente tornerò.',
+    daysAgo:        5,
     status:         'pending' as const,
   },
+  // ── 1 replied ─────────────────────────────────────────────────────────────
   {
-    googleReviewId: 'seed-r-005',
-    reviewerName:   'Valentina Bruno',
-    starRating:     'FIVE' as const,
-    comment:        'Ho provato il menù degustazione sabato scorso: ogni piatto era una sorpresa autentica. Lo chef è uscito a salutare i tavoli a fine serata — un gesto raro che fa sentire davvero ospiti speciali. Tornerò con certezza.',
-    daysAgo:        8,
-    status:         'pending' as const,
-  },
-  {
-    googleReviewId: 'seed-r-006',
-    reviewerName:   'Matteo Esposito',
-    starRating:     'THREE' as const,
-    comment:        'Ambiente curato e personale cordiale. La cucina è però altalenante: il risotto era eccellente, il secondo piatto decisamente anonimo. Per il prezzo che si paga ci si aspetta una maggiore consistenza. Forse ci riprovo tra qualche mese.',
-    daysAgo:        10,
-    status:         'pending' as const,
-  },
-  // ── 1 pending with draft → Draft Replies ──────────────────────────────────
-  {
-    googleReviewId: 'seed-r-007',
-    reviewerName:   'Elisa Rossini',
-    starRating:     'FOUR' as const,
-    comment:        'Locale molto piacevole e cucina di qualità. Noto però che il menù potrebbe essere aggiornato con più opzioni vegetariane — come cliente abituale è qualcosa che sento ogni volta. Il personale è sempre gentile e disponibile.',
-    daysAgo:        13,
-    status:         'pending' as const,
-    draft:          'Cara Elisa, grazie mille per la tua fedeltà e per il feedback prezioso! Hai ragione: stiamo lavorando a un aggiornamento del menù che includerà nuove proposte vegetariane. Siamo felici di averti come cliente abituale e non vediamo l\'ora di sorprenderti!',
-  },
-  // ── 1 pending with queued reply ────────────────────────────────────────────
-  {
-    googleReviewId: 'seed-r-008',
-    reviewerName:   'Riccardo Conti',
-    starRating:     'FIVE' as const,
-    comment:        'Pranzo di lavoro perfetto. Velocità, riservatezza e qualità: tutto quello che serve per un incontro professionale importante. Il tavolo riservato era pronto in anticipo e il personale ha capito subito le nostre esigenze senza bisogno di spiegazioni.',
-    daysAgo:        15,
-    status:         'pending' as const,
-    queued:         'Caro Riccardo, siamo molto lieti che il tuo pranzo di lavoro sia andato nel migliore dei modi! Riservatezza e puntualità sono valori in cui crediamo profondamente. Saremo felici di accoglierti nuovamente per i tuoi prossimi impegni professionali.',
-  },
-  // ── 2 replied ──────────────────────────────────────────────────────────────
-  {
-    googleReviewId:  'seed-r-009',
-    reviewerName:    'Camilla Ferretti',
+    googleReviewId:  'seed-r-003',
+    reviewerName:    'Irene Montanari',
     starRating:      'FIVE' as const,
-    comment:         'Festeggiato qui il compleanno di mia sorella con tutto il gruppo. Eravamo in dodici e il personale ha gestito tutto alla perfezione. Nessun ritardo, nessun errore sugli ordini e una torta di compleanno a sorpresa preparata dalla cucina. Consiglio vivamente per le occasioni speciali.',
-    daysAgo:         22,
+    comment:         'Serata perfetta per il nostro anniversario. Tavolo riservato con piccola sorpresa floreale, menù degustazione eccezionale e sommelier preparatissimo. Un\'esperienza che ricorderemo a lungo. Grazie di cuore a tutto lo staff.',
+    daysAgo:         10,
     status:          'replied' as const,
-    replyComment:    'Cara Camilla, che bello sapere che la serata per il compleanno di tua sorella è riuscita così bene! Gestire un gruppo numeroso con cura è sempre una sfida che affrontiamo con entusiasmo. Speriamo di festeggiare con voi ancora tante occasioni speciali!',
-    replyDaysAgo:    21,
-  },
-  {
-    googleReviewId:  'seed-r-010',
-    reviewerName:    'Lorenzo Vitale',
-    starRating:      'TWO' as const,
-    comment:         'Deluso dall\'ultima visita. Ero già venuto mesi fa con una buona impressione, ma questa volta il servizio era disorganizzato e il piatto che avevo scelto non era disponibile — nessuno ce lo aveva comunicato prima di ordinare. Spero fosse solo una serata storta.',
-    daysAgo:         28,
-    status:          'replied' as const,
-    replyComment:    'Gentile Lorenzo, ci dispiace molto per la tua esperienza. Comunicare tempestivamente la disponibilità dei piatti è qualcosa su cui dobbiamo assolutamente migliorare. Ti chiediamo scusa e ti invitiamo a darci una nuova possibilità — faremo il possibile per renderti la visita memorabile.',
-    replyDaysAgo:    26,
+    replyComment:    'Cara Irene, siamo davvero felici di aver reso speciale il vostro anniversario! La cura per i momenti importanti è al centro di tutto quello che facciamo. Speriamo di rivedervi presto per un\'altra serata indimenticabile.',
+    replyDaysAgo:    9,
   },
 ]
 

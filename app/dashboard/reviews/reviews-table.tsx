@@ -185,46 +185,49 @@ export default function ReviewsTable() {
   return (
     <div>
       {/* Filters */}
-      <div className="mb-5 flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-slate-400">Stars:</span>
-          <button
-            onClick={() => setStarFilter(null)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition ${starFilter === null ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300'}`}
-          >All</button>
-          {STAR_OPTIONS.map(s => (
-            <button
-              key={s}
-              onClick={() => setStarFilter(starFilter === s ? null : s)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${starFilter === s ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300'}`}
-            >{'★'.repeat(s)}</button>
-          ))}
+      <div className="mb-5 flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">Stars</span>
+          <select
+            value={starFilter ?? 'all'}
+            onChange={e => setStarFilter(e.target.value === 'all' ? null : Number(e.target.value))}
+            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All</option>
+            {STAR_OPTIONS.map(s => (
+              <option key={s} value={s}>{s} stars</option>
+            ))}
+          </select>
         </div>
 
         <div className="h-4 w-px bg-slate-200" />
 
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-slate-400">Status:</span>
-          {STATUS_OPTIONS.map(s => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${statusFilter === s ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300'}`}
-            >{s === 'All' ? 'All' : STATUS_LABEL[s]}</button>
-          ))}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">Status</span>
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value as DisplayStatus | 'All')}
+            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {STATUS_OPTIONS.map(s => (
+              <option key={s} value={s}>{s === 'All' ? 'All' : STATUS_LABEL[s]}</option>
+            ))}
+          </select>
         </div>
 
         <div className="h-4 w-px bg-slate-200" />
 
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-slate-400">Period:</span>
-          {DATE_OPTIONS.map(({ label, days }) => (
-            <button
-              key={days}
-              onClick={() => setDateFilter(days)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${dateFilter === days ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300'}`}
-            >{label}</button>
-          ))}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">Period</span>
+          <select
+            value={dateFilter}
+            onChange={e => setDateFilter(Number(e.target.value))}
+            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {DATE_OPTIONS.map(({ label, days }) => (
+              <option key={days} value={days}>{label}</option>
+            ))}
+          </select>
         </div>
       </div>
 
