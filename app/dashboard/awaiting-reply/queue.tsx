@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
+import type { Doc } from '@/convex/_generated/dataModel'
 import { Id } from '@/convex/_generated/dataModel'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
@@ -23,14 +24,7 @@ function formatDate(iso: string) {
   return `${days}d ago`
 }
 
-type SortOption = 'newest' | 'oldest' | 'lowest' | 'highest'
-const STAR_OPTS: (number | null)[] = [null, 5, 4, 3, 2, 1]
-const SORT_OPTS: { label: string; value: SortOption }[] = [
-  { label: 'Newest first',   value: 'newest'  },
-  { label: 'Oldest first',   value: 'oldest'  },
-  { label: 'Lowest rating',  value: 'lowest'  },
-  { label: 'Highest rating', value: 'highest' },
-]
+type Item = NonNullable<ReturnType<typeof useQuery<typeof api.replies.listDraftsWithReviews>>>[number]
 
 function Stars({ count }: { count: number }) {
   return (
@@ -44,56 +38,270 @@ function Stars({ count }: { count: number }) {
   )
 }
 
-export default function AwaitingReplyQueue() {
+// ─── Inline draft card ────────────────────────────────────────────────────────
+
+function InboxDraftCard({
+  reply, review, onQueueSingle, onSaveEdit, onRegenerate,
+}: {
+  reply: Item['reply']
+  review: Doc<'reviews'>
+  onQueueSingle: () => Promise<void>
+  onSaveEdit: (text: string) => Promise<void>
+  onRegenerate: () => Promise<void>
+}) {
+  const [expanded,     setExpanded]     = useState(false)
+  const [editing,      setEditing]      = useState(false)
+  const [editText,     setEditText]     = useState(reply.draft)
+  const [saving,       setSaving]       = useState(false)
+  const [regenerating, setRegenerating] = useState(false)
+  const [regenError,   setRegenError]   = useState<string | null>(null)
+  const [queueing,     setQueueing]     = useState(false)
+
+  async function handleSave() {
+    setSaving(true)
+    try { await onSaveEdit(editText); setEditing(false) }
+    finally { setSaving(false) }
+  }
+  async function handleRegenerate() {
+    setRegenerating(true); setRegenError(null)
+    try { await onRegenerate() }
+    catch (e) { setRegenError(e instanceof Error ? e.message : 'Failed to regenerate') }
+    finally { setRegenerating(false) }
+  }
+  async function handleQueue() {
+    setQueueing(true)
+    try { await onQueueSingle() }
+    finally { setQueueing(false) }
+  }
+
+  return (
+    <div className="flex items-start gap-4 px-5 py-4">
+      <div
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+        style={{ backgroundColor: nameToColor(review.reviewerName) }}
+      >
+        {getInitials(review.reviewerName)}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <p className="text-sm font-semibold text-slate-900">{review.reviewerName}</p>
+          <Stars count={RATING_NUM[review.starRating]} />
+          <span className="text-[11px] text-slate-400">{formatDate(review.createTime)}</span>
+        </div>
+        <p className="text-[13px] leading-relaxed text-slate-600 line-clamp-2">
+          {review.comment ?? <span className="italic text-slate-400">No comment left.</span>}
+        </p>
+
+        {/* Draft reply box */}
+        <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+          <div className="mb-1.5 flex items-center gap-1.5">
+            <svg className="h-3.5 w-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span className="text-[11px] font-semibold text-blue-600">Draft reply</span>
+          </div>
+
+          {regenerating ? (
+            <div className="h-10 animate-pulse rounded-lg bg-blue-100" />
+          ) : editing ? (
+            <textarea
+              value={editText}
+              onChange={e => setEditText(e.target.value)}
+              rows={4}
+              className="w-full resize-none rounded-lg border border-blue-200 bg-white px-3 py-2 text-[13px] leading-relaxed text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+          ) : (
+            <>
+              <p className={`text-[13px] leading-relaxed text-slate-700 ${!expanded ? 'line-clamp-2' : ''}`}>
+                {reply.draft}
+              </p>
+              {reply.draft.length > 120 && (
+                <button onClick={() => setExpanded(e => !e)} className="mt-1 text-[11px] font-medium text-blue-500 hover:text-blue-700">
+                  {expanded ? 'Collapse reply' : 'Expand reply'}
+                </button>
+              )}
+            </>
+          )}
+
+          {regenError && <p className="mt-1.5 text-[11px] text-red-500">{regenError}</p>}
+
+          <div className="mt-3 flex items-center gap-2">
+            {editing ? (
+              <>
+                <button onClick={handleSave} disabled={saving}
+                  className="cursor-pointer rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60">
+                  {saving ? 'Saving…' : 'Save'}
+                </button>
+                <button onClick={() => { setEditing(false); setEditText(reply.draft) }}
+                  className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300">
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => { setEditing(true); setEditText(reply.draft) }}
+                  className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300 hover:text-slate-800">
+                  Edit
+                </button>
+                <button onClick={handleRegenerate} disabled={regenerating}
+                  className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300 hover:text-slate-800 disabled:opacity-60">
+                  {regenerating ? 'Regenerating…' : 'Regenerate'}
+                </button>
+                <button onClick={handleQueue} disabled={queueing}
+                  className="cursor-pointer rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60">
+                  {queueing ? 'Queuing…' : 'Queue reply'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <span className="shrink-0 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-0.5 text-[11px] font-medium text-violet-700">
+        Draft
+      </span>
+    </div>
+  )
+}
+
+// ─── Pending card (no draft yet) ──────────────────────────────────────────────
+
+function PendingCard({
+  review, isLoading, onGenerate,
+}: {
+  review: Doc<'reviews'>
+  isLoading: boolean
+  onGenerate: () => void
+}) {
+  return (
+    <>
+      <div className="flex items-start gap-5 px-6 py-5">
+        <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
+          <div
+            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
+            style={{ backgroundColor: nameToColor(review.reviewerName) }}
+          >
+            {getInitials(review.reviewerName)}
+          </div>
+          <Stars count={RATING_NUM[review.starRating]} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 flex items-center gap-2">
+            <p className="text-sm font-semibold text-slate-900">{review.reviewerName}</p>
+            <span className="text-[11px] text-slate-400">via Google</span>
+            <span className="text-[11px] text-slate-300">·</span>
+            <span className="text-[11px] text-slate-400">{formatDate(review.createTime)}</span>
+          </div>
+          <p className="text-[13.5px] leading-relaxed text-slate-600">
+            {review.comment ?? <span className="italic text-slate-400">No comment left.</span>}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 flex-col items-end gap-2.5">
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-700">
+            Pending
+          </span>
+          <button
+            onClick={onGenerate}
+            disabled={isLoading}
+            className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+          >
+            {isLoading ? 'Generating…' : 'Generate reply'}
+          </button>
+        </div>
+      </div>
+
+      {isLoading && (
+        <div className="mx-6 mb-5 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
+          <div className="mb-2.5 flex items-center gap-1.5 text-blue-600">
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span className="text-xs font-semibold">Generating reply…</span>
+          </div>
+          <div className="h-12 animate-pulse rounded-lg bg-blue-100" />
+        </div>
+      )}
+    </>
+  )
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+const STAR_OPTS: (number | null)[] = [null, 5, 4, 3, 2, 1]
+
+export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }) {
   const [starFilter,    setStarFilter]    = useState<number | null>(null)
-  const [sort,          setSort]          = useState<SortOption>('newest')
-  const [expanded,      setExpanded]      = useState<Id<'reviews'> | null>(null)
-  const [dismissed,     setDismissed]     = useState<Id<'reviews'>[]>([])
   const [generatingFor, setGeneratingFor] = useState<Id<'reviews'> | null>(null)
   const [error,         setError]         = useState<string | null>(null)
+  const [toast,         setToast]         = useState<string | null>(null)
 
-  const reviews          = useQuery(api.reviews.list, { status: 'pending', limit: 50 }) ?? []
-  const existingItems    = useQuery(api.replies.listDraftsWithReviews)
-  const aiSettings       = useQuery(api.aiSettings.get)
-  const saveDraft        = useMutation(api.replies.save)
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
-  const reviewIdsWithDrafts = useMemo(
-    () => new Set((existingItems ?? []).map(({ reply }) => reply.reviewId)),
-    [existingItems],
-  )
+  const rawReviews = useQuery(api.reviews.list, { status: 'pending', limit: 50 })
+  const rawItems   = useQuery(api.replies.listDraftsWithReviews)
+  const aiSettings = useQuery(api.aiSettings.get)
+  const saveDraft    = useMutation(api.replies.save)
+  const updateDraft  = useMutation(api.replies.updateDraft)
+  const queueReplies = useMutation(api.replies.queueReplies)
+
+  const reviews = rawReviews ?? []
+
+  const reviewDraftMap = useMemo(() => {
+    const map = new Map<string, Item>()
+    for (const item of (rawItems ?? [])) {
+      if (item.reply.status === 'draft') map.set(item.reply.reviewId, item)
+    }
+    return map
+  }, [rawItems])
+
+  const queuedReviewIds = useMemo(() => {
+    const set = new Set<string>()
+    for (const { reply } of (rawItems ?? [])) {
+      if (reply.status === 'queued' || reply.status === 'approved' || reply.status === 'needs_review') {
+        set.add(reply.reviewId)
+      }
+    }
+    return set
+  }, [rawItems])
 
   const visible = reviews
-    .filter(r => !reviewIdsWithDrafts.has(r._id))
-    .filter(r => !dismissed.includes(r._id))
+    .filter(r => !queuedReviewIds.has(r._id))
     .filter(r => starFilter === null || RATING_NUM[r.starRating] === starFilter)
-    .sort((a, b) => {
-      if (sort === 'lowest')  return RATING_NUM[a.starRating] - RATING_NUM[b.starRating]
-      if (sort === 'highest') return RATING_NUM[b.starRating] - RATING_NUM[a.starRating]
-      if (sort === 'oldest')  return new Date(a.createTime).getTime() - new Date(b.createTime).getTime()
-      return new Date(b.createTime).getTime() - new Date(a.createTime).getTime()
-    })
+    .sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime())
 
-  async function generate(review: typeof reviews[number]) {
-    setGeneratingFor(review._id)
-    setExpanded(review._id)
+  useEffect(() => {
+    if (!focusReviewId || rawItems === undefined || rawReviews === undefined) return
+    const el = cardRefs.current[focusReviewId]
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [focusReviewId, rawItems, rawReviews])
+
+  function showToast(msg: string) {
+    setToast(msg)
+    setTimeout(() => setToast(null), 4000)
+  }
+
+  async function generate(reviewId: Id<'reviews'>, comment: string) {
+    setGeneratingFor(reviewId)
     setError(null)
     try {
       const res = await fetch('/api/generate-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          review:             review.comment ?? '',
-          tone:               aiSettings?.tone,
-          replyLength:        aiSettings?.replyLength,
+          review:              comment,
+          tone:                aiSettings?.tone,
+          replyLength:         aiSettings?.replyLength,
           businessDescription: aiSettings?.businessDescription,
-          signature:          aiSettings?.signature,
-          customInstructions: aiSettings?.customInstructions,
+          signature:           aiSettings?.signature,
+          customInstructions:  aiSettings?.customInstructions,
         }),
       })
-      const data = (await res.json()) as { reply?: string; error?: string }
+      const data = await res.json() as { reply?: string; error?: string }
       if (!res.ok || !data.reply) throw new Error(data.error ?? 'Failed to generate reply')
-
-      await saveDraft({ reviewId: review._id, draft: data.reply })
+      await saveDraft({ reviewId, draft: data.reply })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
@@ -101,9 +309,42 @@ export default function AwaitingReplyQueue() {
     }
   }
 
+  async function handleRegenerate(reply: Item['reply'], review: Doc<'reviews'>) {
+    const res = await fetch('/api/generate-reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        review:              review.comment ?? '',
+        tone:                aiSettings?.tone,
+        replyLength:         aiSettings?.replyLength,
+        businessDescription: aiSettings?.businessDescription,
+        signature:           aiSettings?.signature,
+        customInstructions:  aiSettings?.customInstructions,
+      }),
+    })
+    const data = await res.json() as { reply?: string; error?: string }
+    if (!res.ok || !data.reply) throw new Error(data.error ?? 'Failed to generate reply')
+    await updateDraft({ replyId: reply._id, draft: data.reply })
+  }
+
+  async function handleQueueSingle(replyId: Id<'replies'>) {
+    await queueReplies({ replyIds: [replyId] })
+    showToast('Reply queued for progressive publishing.')
+  }
+
+  if (rawItems === undefined || rawReviews === undefined) {
+    return (
+      <div className="space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="h-40 animate-pulse rounded-2xl bg-slate-100" />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div>
-      {/* Filters */}
+      {/* Star filter */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-slate-400">Stars:</span>
@@ -121,17 +362,6 @@ export default function AwaitingReplyQueue() {
             </button>
           ))}
         </div>
-        <div className="ml-auto">
-          <select
-            value={sort}
-            onChange={e => setSort(e.target.value as SortOption)}
-            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {SORT_OPTS.map(o => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
       </div>
 
       {error && (
@@ -140,83 +370,49 @@ export default function AwaitingReplyQueue() {
         </div>
       )}
 
-      {/* Queue */}
+      {toast && (
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+          <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          {toast}
+        </div>
+      )}
+
       {visible.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
           <p className="text-sm font-medium text-slate-400">
-            All caught up — no reviews awaiting a reply.
+            All caught up — no reviews need a reply right now.
           </p>
         </div>
       ) : (
         <div className="space-y-3">
           {visible.map(r => {
-            const isLoading = generatingFor === r._id
+            const draftItem  = reviewDraftMap.get(r._id)
+            const isFocused  = focusReviewId !== undefined && (r._id as string) === focusReviewId
 
             return (
               <div
                 key={r._id}
-                className="rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+                ref={el => { cardRefs.current[r._id as string] = el }}
+                className={`rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md ${
+                  isFocused ? 'border-blue-300 ring-1 ring-blue-200' : 'border-slate-200'
+                }`}
               >
-                <div className="flex items-start gap-5 px-6 py-5">
-                  {/* Avatar + stars */}
-                  <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
-                    <div
-                      className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
-                      style={{ backgroundColor: nameToColor(r.reviewerName) }}
-                    >
-                      {getInitials(r.reviewerName)}
-                    </div>
-                    <Stars count={RATING_NUM[r.starRating]} />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-semibold text-slate-900">{r.reviewerName}</p>
-                      <span className="text-[11px] text-slate-400">via Google</span>
-                      <span className="text-[11px] text-slate-300">·</span>
-                      <span className="text-[11px] text-slate-400">{formatDate(r.createTime)}</span>
-                    </div>
-                    <p className="text-[13.5px] leading-relaxed text-slate-600">
-                      {r.comment ?? <span className="italic text-slate-400">No comment left.</span>}
-                    </p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex shrink-0 flex-col items-end gap-2.5">
-                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[11px] font-medium text-amber-700">
-                      Pending
-                    </span>
-                    <button
-                      onClick={() => generate(r)}
-                      disabled={isLoading}
-                      className="cursor-pointer whitespace-nowrap rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
-                    >
-                      {isLoading ? 'Generating…' : 'Generate reply'}
-                    </button>
-                    <button
-                      onClick={() => setDismissed(prev => [...prev, r._id])}
-                      className="cursor-pointer text-[11px] text-slate-400 transition hover:text-slate-600"
-                    >
-                      Mark as resolved
-                    </button>
-                  </div>
-                </div>
-
-                {/* Generating panel */}
-                {expanded === r._id && isLoading && (
-                  <div className="mx-6 mb-5 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
-                    <div className="mb-2.5 flex items-center gap-1.5 text-blue-600">
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      <span className="text-xs font-semibold">
-                        Generating reply…
-                      </span>
-                    </div>
-
-                    <div className="h-12 animate-pulse rounded-lg bg-blue-100" />
-                  </div>
+                {draftItem ? (
+                  <InboxDraftCard
+                    reply={draftItem.reply}
+                    review={r}
+                    onQueueSingle={() => handleQueueSingle(draftItem.reply._id)}
+                    onSaveEdit={async text => { await updateDraft({ replyId: draftItem.reply._id, draft: text }) }}
+                    onRegenerate={() => handleRegenerate(draftItem.reply, r)}
+                  />
+                ) : (
+                  <PendingCard
+                    review={r}
+                    isLoading={generatingFor === r._id}
+                    onGenerate={() => generate(r._id, r.comment ?? '')}
+                  />
                 )}
               </div>
             )

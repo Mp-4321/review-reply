@@ -1,7 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import AwaitingReplyQueue from './queue'
+import InboxQueue from './queue'
 import DashboardBackLink from '../dashboard-back-link'
 
 const NAV_GROUPS = [
@@ -9,7 +9,7 @@ const NAV_GROUPS = [
     group: 'Reviews',
     items: [
       { label: 'All reviews',    href: '/dashboard/reviews',        soon: false },
-      { label: 'Awaiting reply', href: '/dashboard/awaiting-reply', soon: false },
+      { label: 'Inbox', href: '/dashboard/awaiting-reply', soon: false },
       { label: 'Draft replies',  href: '/dashboard/draft-replies', soon: false },
     ],
   },
@@ -37,9 +37,15 @@ const NAV_GROUPS = [
   },
 ]
 
-export default async function AwaitingReplyPage() {
+export default async function AwaitingReplyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ reviewId?: string }>
+}) {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
+
+  const { reviewId: focusReviewId } = await searchParams
 
   const user    = await currentUser()
   const email   = user?.emailAddresses[0]?.emailAddress ?? ''
@@ -111,13 +117,13 @@ export default async function AwaitingReplyPage() {
       <main className="flex-1 overflow-y-auto p-8">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Awaiting reply</h1>
-            <p className="mt-1 text-sm text-slate-400">Generate AI replies for reviews that are still pending.</p>
+            <h1 className="text-2xl font-bold text-slate-900">Inbox</h1>
+            <p className="mt-1 text-sm text-slate-400">Your workspace for reviews that need a reply.</p>
           </div>
           <DashboardBackLink />
         </div>
 
-        <AwaitingReplyQueue />
+        <InboxQueue focusReviewId={focusReviewId} />
       </main>
     </div>
   )

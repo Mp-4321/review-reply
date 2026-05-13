@@ -262,7 +262,7 @@ export default function ReviewsTable() {
 
                 {displayStatus === 'pending' && (
                   <Link
-                    href="/dashboard/awaiting-reply"
+                    href={`/dashboard/awaiting-reply?reviewId=${r._id}`}
                     className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-blue-600 px-1 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
                   >
                     Review
