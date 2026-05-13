@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useQuery } from 'convex/react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/convex/_generated/api'
@@ -53,6 +53,65 @@ const DATE_OPTIONS = [
   { label: 'Last 30 days', days: 30   },
   { label: 'All time',     days: 9999 },
 ]
+
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string
+  value: string
+  options: { label: string; value: string }[]
+  onChange: (v: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const selected = options.find(o => o.value === value)
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs transition hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        <span className="text-slate-400">{label}</span>
+        <span className="font-medium text-slate-700">{selected?.label}</span>
+        <svg
+          className={`h-3 w-3 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-1.5 min-w-[140px] rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/10">
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => { onChange(opt.value); setOpen(false) }}
+              className={`flex w-full items-center px-3.5 py-2 text-left text-xs transition hover:bg-slate-50 ${
+                opt.value === value ? 'font-semibold text-blue-600' : 'text-slate-600'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function ReplyModal({ review, onClose }: { review: Doc<'reviews'>; onClose: () => void }) {
   return (
@@ -185,50 +244,34 @@ export default function ReviewsTable() {
   return (
     <div>
       {/* Filters */}
-      <div className="mb-5 flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Stars</span>
-          <select
-            value={starFilter ?? 'all'}
-            onChange={e => setStarFilter(e.target.value === 'all' ? null : Number(e.target.value))}
-            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All</option>
-            {STAR_OPTIONS.map(s => (
-              <option key={s} value={s}>{s} stars</option>
-            ))}
-          </select>
-        </div>
+      <div className="mb-6 flex items-center gap-2">
+        <FilterSelect
+          label="Stars"
+          value={starFilter === null ? 'all' : String(starFilter)}
+          options={[
+            { label: 'All stars', value: 'all' },
+            ...STAR_OPTIONS.map(s => ({ label: `${s} stars`, value: String(s) })),
+          ]}
+          onChange={v => setStarFilter(v === 'all' ? null : Number(v))}
+        />
 
         <div className="h-4 w-px bg-slate-200" />
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Status</span>
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value as DisplayStatus | 'All')}
-            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {STATUS_OPTIONS.map(s => (
-              <option key={s} value={s}>{s === 'All' ? 'All' : STATUS_LABEL[s]}</option>
-            ))}
-          </select>
-        </div>
+        <FilterSelect
+          label="Status"
+          value={statusFilter}
+          options={STATUS_OPTIONS.map(s => ({ label: s === 'All' ? 'All' : STATUS_LABEL[s], value: s }))}
+          onChange={v => setStatusFilter(v as DisplayStatus | 'All')}
+        />
 
         <div className="h-4 w-px bg-slate-200" />
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Period</span>
-          <select
-            value={dateFilter}
-            onChange={e => setDateFilter(Number(e.target.value))}
-            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {DATE_OPTIONS.map(({ label, days }) => (
-              <option key={days} value={days}>{label}</option>
-            ))}
-          </select>
-        </div>
+        <FilterSelect
+          label="Period"
+          value={String(dateFilter)}
+          options={DATE_OPTIONS.map(({ label, days }) => ({ label, value: String(days) }))}
+          onChange={v => setDateFilter(Number(v))}
+        />
       </div>
 
       {/* Table */}
