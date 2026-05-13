@@ -100,7 +100,9 @@ export default function RecentReplies() {
                 {STATUS_LABEL[r.status]}
               </span>
               <p className="truncate pr-4 text-[13px] text-slate-500">
-                {r.replyComment ?? (r.comment ? `"${r.comment.slice(0, 50)}…"` : '—')}
+                {r.replyComment
+                  ? r.replyComment.slice(0, 50) + (r.replyComment.length > 50 ? '…' : '')
+                  : r.comment ? `"${r.comment.slice(0, 50)}…"` : '—'}
               </p>
               <p className="text-[12px] text-slate-400">{formatDate(r.updateTime)}</p>
             </div>
