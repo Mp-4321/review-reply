@@ -134,7 +134,7 @@ function InboxDraftCard({
   return (
     <div className="flex items-start gap-4 py-4 pl-2 pr-5">
       <div
-        className="flex h-9 w-9 shrink-0 translate-x-1 items-center justify-center rounded-full text-xs font-bold text-white"
+        className="flex h-7 w-7 shrink-0 translate-x-1 items-center justify-center rounded-full text-[10px] font-bold text-white"
         style={{ backgroundColor: nameToColor(review.reviewerName) }}
       >
         {getInitials(review.reviewerName)}
@@ -232,7 +232,7 @@ function PendingCard({
       <div className="flex items-start gap-5 py-5 pl-3 pr-6">
         <div className="flex shrink-0 flex-col items-center gap-1.5 pt-0.5">
           <div
-            className="flex h-10 w-10 translate-x-1 items-center justify-center rounded-full text-sm font-bold text-white"
+            className="flex h-8 w-8 translate-x-1 items-center justify-center rounded-full text-[11px] font-bold text-white"
             style={{ backgroundColor: nameToColor(review.reviewerName) }}
           >
             {getInitials(review.reviewerName)}
@@ -529,7 +529,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             </label>
 
             {someSelected && (
-              <div className="ml-4 flex flex-wrap items-center gap-2">
+              <div className="ml-6 flex flex-wrap items-center gap-2.5">
                 {isMixed ? (
                   <span className="text-[12px] text-slate-400">Mixed selection</span>
                 ) : noDraftSelected.length > 0 ? (
@@ -544,14 +544,14 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
                   <>
                     <button
                       onClick={handleBulkQueue}
-                      className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-blue-500/10 transition hover:bg-blue-600"
+                      className="w-[116px] cursor-pointer whitespace-nowrap rounded-lg bg-blue-500 px-3 py-1.5 text-center text-xs font-semibold text-white shadow-sm shadow-blue-500/10 transition hover:bg-blue-600"
                     >
                       Queue selected
                     </button>
                     <button
                       onClick={handleBulkRegenerate}
                       disabled={generatingSet.size > 0}
-                      className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-60"
+                      className="w-[116px] cursor-pointer whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-center text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-60"
                     >
                       {generatingSet.size > 0 ? 'Regenerating...' : 'Regenerate'}
                     </button>
@@ -602,7 +602,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             const isLoading  = generatingSet.has(r._id as string)
 
             return (
-              <div key={r._id} className="group flex items-start gap-2">
+              <div key={r._id} className="group flex items-start gap-2.5">
                 <div className="flex w-5 shrink-0 justify-center pt-5">
                   <label
                     className={`flex h-5 w-5 translate-x-[7px] cursor-pointer items-center justify-center transition duration-150 ${
