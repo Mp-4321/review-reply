@@ -23,9 +23,9 @@ function formatDate(iso: string) {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  replied: 'bg-green-55 text-green-700 border border-green-200',
-  pending: 'bg-amber-55 text-amber-700 border border-amber-200',
-  ignored: 'bg-slate-55 text-slate-550 border border-slate-200',
+  replied: 'bg-green-50 text-green-700 border border-green-200',
+  pending: 'bg-amber-50 text-amber-700 border border-amber-200',
+  ignored: 'bg-slate-50 text-slate-500 border border-slate-200',
 }
 const STATUS_LABEL: Record<string, string> = {
   replied: 'Replied',
@@ -81,7 +81,7 @@ export default function RecentReplies() {
           {rows.map((r) => (
             <div
               key={r._id}
-              className="grid grid-cols-[1.5fr_1fr_1fr_4fr_1fr] items-center border-b border-slate-55 px-6 py-3.5 last:border-0 hover:bg-slate-55/60"
+              className="grid grid-cols-[1.5fr_1fr_1fr_4fr_1fr] items-center border-b border-slate-50 px-6 py-3.5 last:border-0 hover:bg-slate-50/60"
             >
               <div className="flex items-center gap-2.5">
                 <div
@@ -99,7 +99,7 @@ export default function RecentReplies() {
               <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[r.status]}`}>
                 {STATUS_LABEL[r.status]}
               </span>
-              <p className="truncate pr-4 text-[13px] text-slate-550">
+              <p className="truncate pr-4 text-[13px] text-slate-500">
                 {r.replyComment
                   ? r.replyComment.slice(0, 55) + (r.replyComment.length > 55 ? '…' : '')
                   : r.comment ? `"${r.comment.slice(0, 55)}…"` : '—'}
