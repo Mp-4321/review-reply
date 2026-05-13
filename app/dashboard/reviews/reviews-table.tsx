@@ -207,9 +207,9 @@ export default function ReviewsTable() {
     if (displayStatus === 'replied' || displayStatus === 'ignored') {
       setViewReview(r)
     } else if (displayStatus === 'pending' || displayStatus === 'draft') {
-      router.push(`/dashboard/awaiting-reply?reviewId=${r._id}`)
+      router.push(`/dashboard/inbox?reviewId=${r._id}`)
     } else if (displayStatus === 'queued' || displayStatus === 'needs_review') {
-      router.push('/dashboard/draft-replies')
+      router.push('/dashboard/queue')
     }
   }
 
@@ -249,7 +249,7 @@ export default function ReviewsTable() {
           label="Stars"
           value={starFilter === null ? 'all' : String(starFilter)}
           options={[
-            { label: 'All stars', value: 'all' },
+            { label: 'All', value: 'all' },
             ...STAR_OPTIONS.map(s => ({ label: `${s} stars`, value: String(s) })),
           ]}
           onChange={v => setStarFilter(v === 'all' ? null : Number(v))}
@@ -269,7 +269,10 @@ export default function ReviewsTable() {
         <FilterSelect
           label="Period"
           value={String(dateFilter)}
-          options={DATE_OPTIONS.map(({ label, days }) => ({ label, value: String(days) }))}
+          options={[
+              { label: 'All', value: '9999' },
+              ...DATE_OPTIONS.filter(d => d.days !== 9999).map(({ label, days }) => ({ label, value: String(days) })),
+            ]}
           onChange={v => setDateFilter(Number(v))}
         />
       </div>

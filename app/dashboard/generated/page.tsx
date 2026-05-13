@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default function GeneratedDraftRepliesRedirect() {
-  redirect('/dashboard/draft-replies')
+  redirect('/dashboard/queue')
 }

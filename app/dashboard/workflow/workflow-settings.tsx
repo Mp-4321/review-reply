@@ -43,6 +43,7 @@ function loadSettings(): WorkflowSettingsState {
 function saveSettings(settings: WorkflowSettingsState) {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+  window.dispatchEvent(new Event('replyfier:workflowChanged'))
 }
 
 function Toggle({

@@ -51,7 +51,14 @@ function Stars({ count }: { count: number }) {
 
 // ─── Auto-generate status bar ─────────────────────────────────────────────────
 
-const noopSubscribe = () => () => {}
+function subscribe(callback: () => void) {
+  window.addEventListener('storage', callback)
+  window.addEventListener('replyfier:workflowChanged', callback)
+  return () => {
+    window.removeEventListener('storage', callback)
+    window.removeEventListener('replyfier:workflowChanged', callback)
+  }
+}
 function readAutoGenerate() {
   try {
     const stored = window.localStorage.getItem(WORKFLOW_KEY)
@@ -59,9 +66,7 @@ function readAutoGenerate() {
   } catch { return false }
 }
 
-function AutoGenerateBar() {
-  const enabled = useSyncExternalStore(noopSubscribe, readAutoGenerate, () => false)
-
+function AutoGenerateBar({ enabled }: { enabled: boolean }) {
   return enabled ? (
     <div className="mb-6 flex items-center gap-2.5 rounded-xl border border-green-200 bg-green-50 px-4 py-2.5">
       <span className="h-2 w-2 shrink-0 rounded-full bg-green-500" />
@@ -212,9 +217,6 @@ function InboxDraftCard({
         </div>
       </div>
 
-      <span className="shrink-0 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-0.5 text-[11px] font-medium text-violet-700">
-        Draft ready
-      </span>
     </div>
   )
 }
@@ -292,6 +294,9 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
   const [error,         setError]         = useState<string | null>(null)
   const [toast,         setToast]         = useState<string | null>(null)
 
+  const autoGenerateEnabled = useSyncExternalStore(subscribe, readAutoGenerate, () => false)
+  const didAutoGenerateRef  = useRef(false)
+
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const rawReviews = useQuery(api.reviews.list, { status: 'pending', limit: 50 })
@@ -363,6 +368,40 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
     setToast(msg)
     setTimeout(() => setToast(null), 4000)
   }
+
+  // Auto-generate drafts when the setting is enabled
+  useEffect(() => {
+    if (!autoGenerateEnabled) {
+      didAutoGenerateRef.current = false
+      return
+    }
+    if (rawReviews === undefined || rawItems === undefined) return
+    if (didAutoGenerateRef.current) return
+
+    const toGenerate = rawReviews.filter(r =>
+      !queuedReviewIds.has(r._id as string) && !reviewDraftMap.has(r._id as string)
+    )
+    if (toGenerate.length === 0) return
+
+    didAutoGenerateRef.current = true
+    void (async () => {
+      let count = 0
+      for (const r of toGenerate) {
+        addGenerating(r._id as string)
+        try {
+          const draft = await callGenerateApi(r.comment ?? '')
+          await saveDraft({ reviewId: r._id, draft })
+          count++
+        } catch {
+          // continue with others
+        } finally {
+          removeGenerating(r._id as string)
+        }
+      }
+      if (count > 0) showToast(`${count} draft${count !== 1 ? 's' : ''} auto-generated.`)
+    })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoGenerateEnabled, rawReviews, rawItems])
 
   function addGenerating(id: string)    { setGeneratingSet(prev => new Set([...prev, id])) }
   function removeGenerating(id: string) { setGeneratingSet(prev => { const s = new Set(prev); s.delete(id); return s }) }
@@ -446,12 +485,43 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   return (
     <div className={someSelected ? 'pb-24' : ''}>
-      <AutoGenerateBar />
+      <AutoGenerateBar enabled={autoGenerateEnabled} />
 
-      {/* Filters + select all */}
-      <div className="mb-5 flex flex-wrap items-center gap-3">
+      {/* Filters */}
+      <div className="mb-5">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-slate-400">Stars:</span>
+            {STAR_OPTS.map(s => (
+              <button
+                key={s ?? 'all'}
+                onClick={() => setStarFilter(s)}
+                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition ${
+                  starFilter === s
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                }`}
+              >
+                {s === null ? 'All' : '★'.repeat(s)}
+              </button>
+            ))}
+          </div>
+
+          <div className="ml-auto">
+            <select
+              value={sort}
+              onChange={e => setSort(e.target.value as SortOption)}
+              className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {SORT_OPTS.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {visible.length > 0 && (
-          <>
+          <div className="mt-2.5">
             <label className="flex cursor-pointer items-center gap-1.5">
               <input
                 type="checkbox"
@@ -463,38 +533,8 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
                 {allSelected ? 'Deselect all' : `Select all ${visible.length}`}
               </span>
             </label>
-            <div className="h-4 w-px bg-slate-200" />
-          </>
+          </div>
         )}
-
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-slate-400">Stars:</span>
-          {STAR_OPTS.map(s => (
-            <button
-              key={s ?? 'all'}
-              onClick={() => setStarFilter(s)}
-              className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition ${
-                starFilter === s
-                  ? 'bg-blue-600 text-white'
-                  : 'border border-slate-200 bg-white text-slate-500 hover:border-slate-300'
-              }`}
-            >
-              {s === null ? 'All' : '★'.repeat(s)}
-            </button>
-          ))}
-        </div>
-
-        <div className="ml-auto">
-          <select
-            value={sort}
-            onChange={e => setSort(e.target.value as SortOption)}
-            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {SORT_OPTS.map(o => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
       </div>
 
       {error && (

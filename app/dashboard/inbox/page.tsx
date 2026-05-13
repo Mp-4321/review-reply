@@ -9,8 +9,8 @@ const NAV_GROUPS = [
     group: 'Reviews',
     items: [
       { label: 'All reviews',    href: '/dashboard/reviews',        soon: false },
-      { label: 'Inbox', href: '/dashboard/awaiting-reply', soon: false },
-      { label: 'Queue',  href: '/dashboard/draft-replies', soon: false },
+      { label: 'Inbox', href: '/dashboard/inbox', soon: false },
+      { label: 'Queue',  href: '/dashboard/queue', soon: false },
     ],
   },
   {
@@ -83,7 +83,7 @@ export default async function AwaitingReplyPage({
                   key={href}
                   href={href}
                   className={`flex items-center justify-between rounded-md px-2 py-1 text-[13px] transition hover:bg-slate-100 hover:text-slate-900 ${
-                    href === '/dashboard/awaiting-reply'
+                    href === '/dashboard/inbox'
                       ? 'bg-blue-50 font-semibold text-blue-700'
                       : 'text-slate-600'
                   }`}
