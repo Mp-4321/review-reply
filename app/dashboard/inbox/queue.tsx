@@ -361,7 +361,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   function showToast(msg: string) {
     setToast(msg)
-    setTimeout(() => setToast(null), 4000)
+    setTimeout(() => setToast(null), 2600)
   }
 
   // Auto-generate drafts when the setting is enabled
@@ -458,19 +458,26 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
       })
       .filter((entry): entry is { item: Item; review: Doc<'reviews'> } => entry !== null)
 
-    let success = 0
-    for (const { item, review } of toRegenerate) {
-      addGenerating(review._id as string)
-      try {
+    if (toRegenerate.length === 0) return
+
+    setError(null)
+    toRegenerate.forEach(({ review }) => addGenerating(review._id as string))
+
+    const results = await Promise.allSettled(
+      toRegenerate.map(async ({ item, review }) => {
         const draft = await callGenerateApi(review.comment ?? '')
         await updateDraft({ replyId: item.reply._id, draft })
-        success++
-      } catch {} finally {
-        removeGenerating(review._id as string)
-      }
-    }
+      })
+    )
+
+    toRegenerate.forEach(({ review }) => removeGenerating(review._id as string))
+
+    const success = results.filter(result => result.status === 'fulfilled').length
+    const failed = toRegenerate.length - success
+
     setSelectedIds(new Set())
-    showToast(`${success} draft${success !== 1 ? 's' : ''} regenerated.`)
+    if (success > 0) showToast(`${success} draft${success !== 1 ? 's' : ''} regenerated`)
+    if (failed > 0) setError(`${failed} draft${failed !== 1 ? 's' : ''} could not be regenerated.`)
   }
 
   async function handleBulkQueue() {
@@ -479,7 +486,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
       .filter((id): id is Id<'replies'> => id !== undefined)
     await queueReplies({ replyIds })
     setSelectedIds(new Set())
-    showToast(`${replyIds.length} repl${replyIds.length !== 1 ? 'ies' : 'y'} queued for progressive publishing.`)
+    showToast(`${replyIds.length} repl${replyIds.length !== 1 ? 'ies' : 'y'} queued`)
   }
 
   async function handleRegenerate(reply: Item['reply'], review: Doc<'reviews'>) {
@@ -489,7 +496,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   async function handleQueueSingle(replyId: Id<'replies'>) {
     await queueReplies({ replyIds: [replyId] })
-    showToast('Reply queued for progressive publishing.')
+    showToast('Reply queued')
   }
 
   if (rawItems === undefined || rawReviews === undefined) {
@@ -507,7 +514,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
       <AutoGenerateBar enabled={autoGenerateEnabled} />
 
       {/* Filters */}
-      <div className="mb-5">
+      <div className="relative mb-5">
         <div className="flex items-center gap-3">
           <div className="flex min-h-8 flex-wrap items-center gap-2">
             <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
@@ -522,14 +529,14 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             </label>
 
             {someSelected && (
-              <>
+              <div className="ml-4 flex flex-wrap items-center gap-2">
                 {isMixed ? (
                   <span className="text-[12px] text-slate-400">Mixed selection</span>
                 ) : noDraftSelected.length > 0 ? (
                   <button
                     onClick={handleBulkGenerate}
                     disabled={generatingSet.size > 0}
-                    className="cursor-pointer rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60"
+                    className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-blue-500/10 transition hover:bg-blue-600 disabled:opacity-60"
                   >
                     {generatingSet.size > 0 ? 'Generating...' : 'Generate selected'}
                   </button>
@@ -537,7 +544,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
                   <>
                     <button
                       onClick={handleBulkQueue}
-                      className="cursor-pointer rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                      className="cursor-pointer rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-blue-500/10 transition hover:bg-blue-600"
                     >
                       Queue selected
                     </button>
@@ -550,22 +557,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
                     </button>
                   </>
                 ) : null}
-
-                <button
-                  type="button"
-                  disabled
-                  className="cursor-not-allowed rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-400 opacity-70"
-                >
-                  More
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedIds(new Set())}
-                  className="cursor-pointer rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-400 transition hover:text-slate-700"
-                >
-                  Clear
-                </button>
-              </>
+              </div>
             )}
           </div>
 
@@ -580,21 +572,19 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
               ))}
             </select>
           </div>
+
+          {toast && (
+            <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-emerald-100 bg-white/95 px-3 py-1 text-[11px] font-medium text-slate-600 shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              {toast}
+            </div>
+          )}
         </div>
       </div>
 
       {error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
-        </div>
-      )}
-
-      {toast && (
-        <div className="mb-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
-          <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          {toast}
         </div>
       )}
 
