@@ -580,11 +580,11 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
                 </label>
                 <div
                   ref={el => { cardRefs.current[r._id as string] = el }}
-                  className={`rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md ${
+                  className={`rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${
                     isFocused
                       ? 'border-blue-300 ring-1 ring-blue-200'
                       : isSelected
-                        ? 'border-blue-200 ring-1 ring-blue-100'
+                        ? 'border-slate-200 border-l-blue-400 border-l-[3px] bg-blue-50/20'
                         : 'border-slate-200'
                   }`}
                 >
