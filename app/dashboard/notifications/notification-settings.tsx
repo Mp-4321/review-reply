@@ -225,16 +225,6 @@ export default function NotificationSettings() {
 
       <SettingsCard title="Review alerts" icon={<Bell className="h-4 w-4 text-blue-600" strokeWidth={2} />}>
         <SettingRow
-          title="New reviews"
-          description="Get notified when new Google reviews arrive."
-        >
-          <Toggle
-            checked={settings.newReviewEnabled}
-            onChange={newReviewEnabled => updateSettings({ newReviewEnabled })}
-          />
-        </SettingRow>
-
-        <SettingRow
           title="Low-rating reviews"
           description="Get notified when a review needs urgent attention."
         >
