@@ -174,7 +174,7 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Zap className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Auto-generate draft replies"
-        description="Automatically generate AI draft replies for new reviews."
+        description="Automatically generate AI draft replies for all reviews."
         checked={settings.autoGenerateEnabled}
         onChange={autoGenerateEnabled => update({ autoGenerateEnabled })}
       />
