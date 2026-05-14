@@ -154,7 +154,7 @@ export default function QueueMonitor() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+      <div className="max-w-[1300px] rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
         <p className="text-sm font-medium text-slate-400">
           No replies in the queue — approve drafts from your Inbox to start publishing.
         </p>
@@ -172,7 +172,7 @@ export default function QueueMonitor() {
   const queuedCount      = sorted.length - needsReviewCount
 
   return (
-    <div>
+    <div className="max-w-[1300px]">
       {/* Summary bar */}
       <div className="mb-5 flex flex-wrap items-center gap-4">
         {queuedCount > 0 && (

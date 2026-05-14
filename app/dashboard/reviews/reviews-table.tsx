@@ -245,7 +245,7 @@ export default function ReviewsTable() {
   })
 
   return (
-    <div>
+    <div className="max-w-[1300px]">
       {/* Filters */}
       <div className="mb-6 flex items-center gap-2">
         <FilterSelect

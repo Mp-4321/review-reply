@@ -567,7 +567,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
   }
 
   return (
-    <div>
+    <div className="max-w-[1300px]">
       <AutoGenerateBar enabled={autoGenerateEnabled} />
 
       {/* Filters */}

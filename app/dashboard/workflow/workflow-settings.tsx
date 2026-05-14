@@ -16,7 +16,7 @@ type WorkflowSettingsState = {
 const STORAGE_KEY = 'replyfier.workflowSettings'
 
 const DEFAULT_SETTINGS: WorkflowSettingsState = {
-  autoGenerateEnabled: false,
+  autoGenerateEnabled: true,
   progressivePublishingEnabled: false,
   autoApprovalDelay: '24h',
 }
@@ -138,7 +138,7 @@ export default function WorkflowSettings() {
   const convexSettings = useQuery(api.workflowSettings.get)
   const saveConvex     = useMutation(api.workflowSettings.save)
 
-  const autoPublishEnabled   = convexSettings?.autoPublishEnabled   ?? false
+  const autoPublishEnabled   = convexSettings?.autoPublishEnabled   ?? true
   const emailApprovalEnabled = convexSettings?.emailApprovalEnabled ?? false
 
   function update(patch: Partial<WorkflowSettingsState>) {
@@ -187,15 +187,13 @@ export default function WorkflowSettings() {
         onChange={v => void updateConvex({ autoPublishEnabled: v })}
       />
 
-      {!autoPublishEnabled && (
-        <WorkflowCard
-          icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
-          title="Email approval"
-          description="Receive an email for each new draft reply — approve, reject, or open in dashboard to edit."
-          checked={emailApprovalEnabled}
-          onChange={v => void updateConvex({ emailApprovalEnabled: v })}
-        />
-      )}
+      <WorkflowCard
+        icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
+        title="Email approval"
+        description="Receive an email for each new draft reply — approve, reject, or open in dashboard to edit."
+        checked={emailApprovalEnabled}
+        onChange={v => void updateConvex({ emailApprovalEnabled: v })}
+      />
     </div>
   )
 }
