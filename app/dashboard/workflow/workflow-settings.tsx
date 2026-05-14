@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Zap, Clock, AlarmClock } from 'lucide-react'
+import { Zap, Clock, AlarmClock, Send, Mail } from 'lucide-react'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
 type AutoApprovalDelay = '2h' | '6h' | '12h' | '24h' | '48h'
 
@@ -89,6 +91,7 @@ function WorkflowCard({
   description,
   badge,
   locked,
+  hint,
   checked,
   onChange,
   extra,
@@ -98,6 +101,7 @@ function WorkflowCard({
   description: string
   badge?: React.ReactNode
   locked?: boolean
+  hint?: string
   checked: boolean
   onChange: (checked: boolean) => void
   extra?: React.ReactNode
@@ -114,7 +118,8 @@ function WorkflowCard({
               <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
               {badge}
             </div>
-            <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{description}</p>
+            <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-slate-500">{description}</p>
+            {hint && <p className="mt-1.5 text-[11px] italic text-slate-400">{hint}</p>}
             {extra && <div className="mt-3">{extra}</div>}
           </div>
         </div>
@@ -126,9 +131,17 @@ function WorkflowCard({
   )
 }
 
+const NOTIF_STORAGE_KEY = 'replyfier.notificationSettings'
+
 export default function WorkflowSettings() {
   const [settings, setSettings] = useState(loadSettings)
-  const [saved, setSaved] = useState(false)
+  const [saved, setSaved]       = useState(false)
+
+  const convexSettings = useQuery(api.workflowSettings.get)
+  const saveConvex     = useMutation(api.workflowSettings.save)
+
+  const autoPublishEnabled   = convexSettings?.autoPublishEnabled   ?? false
+  const emailApprovalEnabled = convexSettings?.emailApprovalEnabled ?? false
 
   function update(patch: Partial<WorkflowSettingsState>) {
     setSettings(current => {
@@ -136,6 +149,23 @@ export default function WorkflowSettings() {
       saveSettings(next)
       return next
     })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1600)
+  }
+
+  async function updateConvex(patch: { autoPublishEnabled?: boolean; emailApprovalEnabled?: boolean }) {
+    const next = {
+      autoPublishEnabled:   patch.autoPublishEnabled   ?? autoPublishEnabled,
+      emailApprovalEnabled: patch.emailApprovalEnabled ?? emailApprovalEnabled,
+    }
+    await saveConvex(next)
+    if (patch.emailApprovalEnabled) {
+      try {
+        const stored  = window.localStorage.getItem(NOTIF_STORAGE_KEY)
+        const current = stored ? (JSON.parse(stored) as Record<string, unknown>) : {}
+        window.localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify({ ...current, newReviewEnabled: true }))
+      } catch {}
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 1600)
   }
@@ -161,9 +191,27 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Clock className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Progressive publishing"
-        description="Approved replies are published gradually — one every 10 to 180 minutes, up to 5 per day — for a natural posting pattern."
+        description={"Approved replies are published gradually to maintain a natural posting pattern.\nMax. 5 replies per day, with randomized intervals between 10 and 180 minutes."}
         checked={settings.progressivePublishingEnabled}
         onChange={progressivePublishingEnabled => update({ progressivePublishingEnabled })}
+      />
+
+      <WorkflowCard
+        icon={<Send className="h-4 w-4 text-blue-600" strokeWidth={2} />}
+        title="Auto-publish replies"
+        description="Automatically approve and publish eligible draft replies using progressive publishing. Maximum 5 replies per day, with randomized publishing intervals and built-in safety checks."
+        checked={autoPublishEnabled}
+        onChange={v => void updateConvex({ autoPublishEnabled: v })}
+      />
+
+      <WorkflowCard
+        icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
+        title="Email approval"
+        description="Receive an email with each draft reply and approve or reject it directly from your inbox."
+        locked={autoPublishEnabled}
+        hint={autoPublishEnabled ? 'Not available when Auto-publish is enabled' : undefined}
+        checked={!autoPublishEnabled && emailApprovalEnabled}
+        onChange={v => void updateConvex({ emailApprovalEnabled: v })}
       />
 
       <WorkflowCard

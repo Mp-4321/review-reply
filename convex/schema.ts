@@ -88,6 +88,12 @@ export default defineSchema({
     .index('by_user_and_status', ['userId', 'status'])
     .index('by_status', ['status']),
 
+  workflowSettings: defineTable({
+    userId:               v.id('users'),
+    autoPublishEnabled:   v.optional(v.boolean()),
+    emailApprovalEnabled: v.optional(v.boolean()),
+  }).index('by_user', ['userId']),
+
   similarityChecks: defineTable({
     replyId:   v.id('replies'),
     userId:    v.id('users'),
