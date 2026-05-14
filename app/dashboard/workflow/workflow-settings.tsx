@@ -182,7 +182,7 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Send className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Auto-publish replies"
-        description="Automatically publish approved replies using progressive pacing for more natural timing — max 5 per day with randomized intervals."
+        description={"Automatically publish approved replies using progressive pacing for more natural timing.\nMax. 5 per day with randomized intervals."}
         checked={autoPublishEnabled}
         onChange={v => void updateConvex({ autoPublishEnabled: v })}
       />
