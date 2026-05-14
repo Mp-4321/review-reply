@@ -191,7 +191,7 @@ export default function WorkflowSettings() {
         <WorkflowCard
           icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
           title="Email approval"
-          description="Receive an email for each new draft reply — review the AI-generated response and approve or reject it with one click."
+          description="Receive an email for each new draft reply — approve, reject, or open in dashboard to edit with one click."
           checked={emailApprovalEnabled}
           onChange={v => void updateConvex({ emailApprovalEnabled: v })}
         />
