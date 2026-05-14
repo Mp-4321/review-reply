@@ -182,7 +182,7 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Send className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Auto-publish replies"
-        description="Publish drafts automatically using progressive pacing — max 5 per day, randomized intervals."
+        description="Automatically publish approved replies using progressive pacing for more natural timing — max 5 per day with randomized intervals."
         checked={autoPublishEnabled}
         onChange={v => void updateConvex({ autoPublishEnabled: v })}
       />
@@ -191,7 +191,7 @@ export default function WorkflowSettings() {
         <WorkflowCard
           icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
           title="Email approval"
-          description="Receive an email for each new draft reply — approve, reject, or open in dashboard to edit with one click."
+          description="Receive an email for each new draft reply — approve, reject, or open in dashboard to edit."
           checked={emailApprovalEnabled}
           onChange={v => void updateConvex({ emailApprovalEnabled: v })}
         />
