@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Zap, Clock, AlarmClock, Send, Mail } from 'lucide-react'
+import { Zap, Send, Mail } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 
@@ -183,60 +183,28 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Zap className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Auto-generate draft replies"
-        description="Automatically generate draft replies for new reviews. Drafts are queued for your approval before publishing."
+        description="Automatically generate AI draft replies for new reviews."
         checked={settings.autoGenerateEnabled}
         onChange={autoGenerateEnabled => update({ autoGenerateEnabled })}
       />
 
       <WorkflowCard
-        icon={<Clock className="h-4 w-4 text-blue-600" strokeWidth={2} />}
-        title="Progressive publishing"
-        description={"Approved replies are published gradually to maintain a natural posting pattern.\nMax. 5 replies per day, with randomized intervals between 10 and 180 minutes."}
-        checked={settings.progressivePublishingEnabled}
-        onChange={progressivePublishingEnabled => update({ progressivePublishingEnabled })}
-      />
-
-      <WorkflowCard
         icon={<Send className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Auto-publish replies"
-        description="Automatically approve and publish eligible draft replies using progressive publishing. Maximum 5 replies per day, with randomized publishing intervals and built-in safety checks."
+        description="Publish drafts automatically using progressive pacing — max 5 per day, randomized intervals."
         checked={autoPublishEnabled}
         onChange={v => void updateConvex({ autoPublishEnabled: v })}
       />
 
-      <WorkflowCard
-        icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
-        title="Email approval"
-        description="Receive an email with each draft reply and approve or reject it directly from your inbox."
-        locked={autoPublishEnabled}
-        hint={autoPublishEnabled ? 'Not available when Auto-publish is enabled' : undefined}
-        checked={!autoPublishEnabled && emailApprovalEnabled}
-        onChange={v => void updateConvex({ emailApprovalEnabled: v })}
-      />
-
-      <WorkflowCard
-        icon={<AlarmClock className="h-4 w-4 text-blue-600" strokeWidth={2} />}
-        title="Auto-approval"
-        badge={!IS_PRO ? <ProBadge /> : undefined}
-        description="Automatically approve and queue drafts that haven't been reviewed within a set time. Available on Pro plan."
-        locked={!IS_PRO}
-        checked={false}
-        onChange={() => {}}
-        extra={IS_PRO ? (
-          <div className="flex items-center gap-2">
-            <span className="text-[12px] text-slate-500">Auto-approve after</span>
-            <select
-              value={settings.autoApprovalDelay}
-              onChange={e => update({ autoApprovalDelay: e.target.value as AutoApprovalDelay })}
-              className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[12px] text-slate-700 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-100"
-            >
-              {DELAY_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-        ) : undefined}
-      />
+      {!autoPublishEnabled && (
+        <WorkflowCard
+          icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
+          title="Email approval"
+          description="Get each draft by email and approve or reject directly from your inbox."
+          checked={emailApprovalEnabled}
+          onChange={v => void updateConvex({ emailApprovalEnabled: v })}
+        />
+      )}
     </div>
   )
 }
