@@ -35,7 +35,7 @@ const STATUS_STYLES: Record<DisplayStatus, string> = {
   queued:       'bg-sky-50 text-sky-700 border border-sky-200',
   replied:      'bg-green-50 text-green-700 border border-green-200',
   ignored:      'bg-slate-50 text-slate-500 border border-slate-200',
-  needs_review: 'bg-red-50 text-red-700 border border-red-200',
+  needs_review: 'bg-amber-50 text-amber-700 border border-amber-200',
 }
 const STATUS_LABEL: Record<DisplayStatus, string> = {
   pending:      'Pending',
@@ -43,11 +43,11 @@ const STATUS_LABEL: Record<DisplayStatus, string> = {
   queued:       'Queued',
   replied:      'Replied',
   ignored:      'Ignored',
-  needs_review: 'Needs review',
+  needs_review: 'Pending',
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied', 'needs_review']
+const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7    },
   { label: 'Last 30 days', days: 30   },
@@ -325,14 +325,24 @@ export default function ReviewsTable() {
                 <p className="truncate pr-4 text-[13px] text-slate-600">
                   {r.comment ? r.comment.slice(0, 70) + (r.comment.length > 70 ? '…' : '') : '—'}
                 </p>
-                <span
-                  className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}
-                  title={displayStatus === 'needs_review'
-                    ? (reviewReplyMap.get(r._id)?.reason ?? 'Reply flagged for manual review — please check and re-queue manually')
-                    : undefined}
-                >
-                  {STATUS_LABEL[displayStatus]}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}
+                    title={displayStatus === 'needs_review'
+                      ? (reviewReplyMap.get(r._id)?.reason ?? 'Reply flagged for manual review — please check and re-queue manually')
+                      : undefined}
+                  >
+                    {STATUS_LABEL[displayStatus]}
+                  </span>
+                  {displayStatus === 'needs_review' && (
+                    <svg className="h-3.5 w-3.5 shrink-0 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
+                      title={reviewReplyMap.get(r._id)?.reason ?? 'Reply flagged for manual review'}>
+                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                  )}
+                </div>
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
               </div>
             )
