@@ -6,25 +6,25 @@ import type { Id } from './_generated/dataModel'
 const SIMILARITY_THRESHOLD = 0.6
 const MAX_ATTEMPTS = 3
 
-// ─── Similarity ───────────────────────────────────────────────────────────────
+// ─── Preprocessing & similarity ───────────────────────────────────────────────
 
-function jaccardSimilarity(a: string, b: string): number {
-  const tokenize = (s: string) => new Set(s.toLowerCase().match(/\w+/g) ?? [])
-  const setA = tokenize(a)
-  const setB = tokenize(b)
-  if (setA.size === 0 && setB.size === 0) return 1
-  if (setA.size === 0 || setB.size === 0) return 0
-  let intersection = 0
-  for (const t of setA) if (setB.has(t)) intersection++
-  return intersection / (setA.size + setB.size - intersection)
-}
-
-function maxSimilarity(candidate: string, corpus: string[]): number {
-  if (corpus.length === 0) return 0
-  return Math.max(...corpus.map(t => jaccardSimilarity(candidate, t)))
-}
-
-// ─── AI regeneration (fetch — no SDK, no "use node") ─────────────────────────
+const STOPWORDS = new Set([
+  // English
+  'a','an','the','and','or','but','if','then','so','as','at','by','for',
+  'in','of','on','to','up','it','is','be','do','no','not','we','i','you',
+  'he','she','they','our','your','his','her','their','my','me','him',
+  'us','them','its','this','that','with','from','are','was','were','been',
+  'have','has','had','will','would','could','should','may','might','can',
+  'did','does','also','just','more','very','all','any','some','here','there',
+  'when','where','which','who','than','into','out','about','over','after',
+  'being','much','how','what','each','both','few','those','too','own','same',
+  // Italian
+  'il','lo','la','le','gli','i','un','una','uno','di','da','in','su','per',
+  'con','al','del','della','dei','delle','degli','si','non','ci','ne','vi',
+  'mi','ti','se','ma','e','o','a','ha','ho','hai','sono','era','erano',
+  'che','questo','questa','questi','queste','molto','anche','tutto','ogni',
+  'suo','sua','suoi','sue','loro','lui','lei','noi','voi','qui',
+])
 
 type AISettings = {
   tone?:                string
@@ -33,6 +33,43 @@ type AISettings = {
   signature?:           string
   customInstructions?:  string
 } | null
+
+function buildStopTokens(aiSettings: AISettings): Set<string> {
+  const extra = new Set<string>()
+  const bizWords = (aiSettings?.businessDescription ?? '').toLowerCase().match(/\w+/g) ?? []
+  for (const w of bizWords) if (w.length > 2) extra.add(w)
+  const sigWords = (aiSettings?.signature ?? '').toLowerCase().match(/\w+/g) ?? []
+  for (const w of sigWords) if (w.length > 2) extra.add(w)
+  return extra
+}
+
+function buildTokenSet(text: string, stopTokens: Set<string>): Set<string> {
+  const tokens = text.toLowerCase().match(/\w+/g) ?? []
+  return new Set(tokens.filter(t => t.length > 2 && !STOPWORDS.has(t) && !stopTokens.has(t)))
+}
+
+function jaccardSets(setA: Set<string>, setB: Set<string>): number {
+  if (setA.size === 0 && setB.size === 0) return 1
+  if (setA.size === 0 || setB.size === 0) return 0
+  let intersection = 0
+  for (const t of setA) if (setB.has(t)) intersection++
+  return intersection / (setA.size + setB.size - intersection)
+}
+
+function maxSimilarity(candidateSet: Set<string>, corpusSets: Set<string>[]): number {
+  if (corpusSets.length === 0) return 0
+  return Math.max(...corpusSets.map(s => jaccardSets(candidateSet, s)))
+}
+
+function adaptiveThreshold(tokenCount: number): number {
+  return tokenCount < 12 ? 0.75 : SIMILARITY_THRESHOLD
+}
+
+function randomMs(minMin: number, maxMin: number): number {
+  return (Math.floor(Math.random() * (maxMin - minMin + 1)) + minMin) * 60 * 1000
+}
+
+// ─── AI regeneration (fetch — no SDK, no "use node") ─────────────────────────
 
 const TONE_INSTRUCTIONS: Record<string, string> = {
   professional: 'Use a professional and polished tone.',
@@ -119,24 +156,73 @@ export const getCheckData = internalQuery({
       .withIndex('by_user', q => q.eq('userId', reply.userId))
       .unique()
 
-    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
-    const published = await ctx.db
+    const now           = Date.now()
+    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000
+    const oneHourAgo    = now - 60 * 60 * 1000
+    const oneDayAgo     = now - 24 * 60 * 60 * 1000
+
+    // ── Per-location similarity scope ──────────────────────────────────────
+    const locationReviews = await ctx.db
+      .query('reviews')
+      .withIndex('by_location', q => q.eq('locationId', review.locationId))
+      .take(500)
+    const locationReviewIds = new Set(locationReviews.map(r => r._id as string))
+
+    // Rate limits: per-user (Google API limits apply across the account)
+    const allPublished = await ctx.db
       .query('replies')
       .withIndex('by_user_and_status', q =>
         q.eq('userId', reply.userId).eq('status', 'published'),
       )
       .take(200)
 
-    const recentTexts = published
-      .filter(r => r.publishedAt !== undefined && r.publishedAt >= thirtyDaysAgo)
+    const hourlyCount = allPublished
+      .filter(r => r.publishedAt !== undefined && r.publishedAt >= oneHourAgo)
+      .length
+
+    const dailyPublished = allPublished
+      .filter(r => r.publishedAt !== undefined && r.publishedAt >= oneDayAgo)
+      .sort((a, b) => (a.publishedAt ?? 0) - (b.publishedAt ?? 0))
+    const dailyCount    = dailyPublished.length
+    const oldestDailyAt = dailyPublished[0]?.publishedAt
+
+    const lastPublishedAt = allPublished.reduce<number | undefined>(
+      (max, r) => r.publishedAt !== undefined ? Math.max(max ?? 0, r.publishedAt) : max,
+      undefined,
+    )
+
+    // ── Similarity corpus: published (last 30 days) + queued — per location ─
+    const locationPublishedTexts = allPublished
+      .filter(r =>
+        r.publishedAt !== undefined &&
+        r.publishedAt >= thirtyDaysAgo &&
+        locationReviewIds.has(r.reviewId as string),
+      )
       .map(r => r.draft)
 
+    const allQueued = await ctx.db
+      .query('replies')
+      .withIndex('by_user_and_status', q =>
+        q.eq('userId', reply.userId).eq('status', 'queued'),
+      )
+      .take(200)
+
+    const locationQueuedTexts = allQueued
+      .filter(r => r._id !== replyId && locationReviewIds.has(r.reviewId as string))
+      .map(r => r.draft)
+
+    const corpusTexts = [...locationPublishedTexts, ...locationQueuedTexts]
+
     return {
-      replyText:  reply.draft,
-      reviewText: review.comment ?? '',
-      reviewId:   review._id,
-      userId:     reply.userId,
-      recentTexts,
+      replyText:      reply.draft,
+      reviewText:     review.comment ?? '',
+      reviewId:       review._id,
+      userId:         reply.userId,
+      corpusTexts,
+      hourlyCount,
+      dailyCount,
+      oldestDailyAt,
+      lastPublishedAt,
       aiSettings: aiSettings
         ? {
             tone:                aiSettings.tone,
@@ -182,22 +268,34 @@ export const publishReply = internalMutation({
   },
 })
 
+export const rescheduleReply = internalMutation({
+  args: { replyId: v.id('replies'), scheduledAt: v.number() },
+  handler: async (ctx, { replyId, scheduledAt }) => {
+    await ctx.db.patch(replyId, { scheduledAt })
+  },
+})
+
 export const markNeedsReview = internalMutation({
   args: {
     replyId:  v.id('replies'),
     userId:   v.id('users'),
     score:    v.number(),
     attempts: v.number(),
+    reason:   v.string(),
   },
   handler: async (ctx, args) => {
     const now = Date.now()
-    await ctx.db.patch(args.replyId, { status: 'needs_review' })
+    await ctx.db.patch(args.replyId, {
+      status:            'needs_review',
+      needsReviewReason: args.reason,
+    })
     await ctx.db.insert('similarityChecks', {
       replyId:   args.replyId,
       userId:    args.userId,
       attempts:  args.attempts,
       maxScore:  args.score,
       outcome:   'needs_review',
+      reason:    args.reason,
       checkedAt: now,
     })
   },
@@ -232,34 +330,73 @@ export const checkAndPublish = internalAction({
   args: { replyId: v.id('replies') },
   handler: async (ctx, { replyId }) => {
     const data: {
-      replyText:  string
-      reviewText: string
-      reviewId:   Id<'reviews'>
-      userId:     Id<'users'>
-      recentTexts: string[]
-      aiSettings: AISettings
+      replyText:       string
+      reviewText:      string
+      reviewId:        Id<'reviews'>
+      userId:          Id<'users'>
+      corpusTexts:     string[]
+      hourlyCount:     number
+      dailyCount:      number
+      oldestDailyAt:   number | undefined
+      lastPublishedAt: number | undefined
+      aiSettings:      AISettings
     } | null = await ctx.runQuery(internal.publish.getCheckData, { replyId })
 
     if (!data) return
 
-    const { reviewText, reviewId, userId, recentTexts, aiSettings } = data
-    let currentText = data.replyText
-    let attempts = 0
-    let score = maxSimilarity(currentText, recentTexts)
+    const now     = Date.now()
+    const ONE_DAY = 24 * 60 * 60 * 1000
+    const MIN_GAP = 20 * 60 * 1000
 
-    while (score > SIMILARITY_THRESHOLD && attempts < MAX_ATTEMPTS) {
+    // ── Rate limits ─────────────────────────────────────────────────────────
+    if (data.dailyCount >= 5) {
+      const rescheduleAt = data.oldestDailyAt !== undefined
+        ? data.oldestDailyAt + ONE_DAY
+        : now + ONE_DAY
+      await ctx.runMutation(internal.publish.rescheduleReply, { replyId, scheduledAt: rescheduleAt })
+      return
+    }
+
+    if (data.hourlyCount >= 2) {
+      await ctx.runMutation(internal.publish.rescheduleReply, { replyId, scheduledAt: now + randomMs(30, 90) })
+      return
+    }
+
+    if (data.lastPublishedAt !== undefined && now - data.lastPublishedAt < MIN_GAP) {
+      await ctx.runMutation(internal.publish.rescheduleReply, {
+        replyId,
+        scheduledAt: data.lastPublishedAt + randomMs(20, 180),
+      })
+      return
+    }
+
+    // ── Similarity check with preprocessing ─────────────────────────────────
+    const { reviewText, reviewId, userId, corpusTexts, aiSettings } = data
+    const stopTokens = buildStopTokens(aiSettings)
+    const corpusSets = corpusTexts.map(t => buildTokenSet(t, stopTokens))
+
+    let currentText = data.replyText
+    let candidateSet = buildTokenSet(currentText, stopTokens)
+    let threshold    = adaptiveThreshold(candidateSet.size)
+    let score        = maxSimilarity(candidateSet, corpusSets)
+    let attempts     = 0
+
+    while (score > threshold && attempts < MAX_ATTEMPTS) {
       attempts++
       const newText = await generateVariedReply(reviewText, aiSettings, attempts)
       if (newText) {
         await ctx.runMutation(internal.publish.updateReplyText, { replyId, text: newText })
-        currentText = newText
+        currentText  = newText
+        candidateSet = buildTokenSet(currentText, stopTokens)
+        threshold    = adaptiveThreshold(candidateSet.size)
       }
-      score = maxSimilarity(currentText, recentTexts)
+      score = maxSimilarity(candidateSet, corpusSets)
     }
 
-    if (score > SIMILARITY_THRESHOLD) {
+    if (score > threshold) {
+      const reason = `Reply too similar to recent responses — similarity score ${(score * 100).toFixed(0)}% after ${attempts} regeneration attempt${attempts !== 1 ? 's' : ''}`
       await ctx.runMutation(internal.publish.markNeedsReview, {
-        replyId, userId, score, attempts,
+        replyId, userId, score, attempts, reason,
       })
     } else {
       await ctx.runMutation(internal.publish.publishReply, {

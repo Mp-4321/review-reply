@@ -78,9 +78,10 @@ export default defineSchema({
       v.literal('rejected'),
       v.literal('needs_review'),
     ),
-    generatedAt: v.number(),
-    scheduledAt: v.optional(v.number()),
-    publishedAt: v.optional(v.number()),
+    generatedAt:        v.number(),
+    scheduledAt:        v.optional(v.number()),
+    publishedAt:        v.optional(v.number()),
+    needsReviewReason:  v.optional(v.string()),
   })
     .index('by_review', ['reviewId'])
     .index('by_user', ['userId'])
@@ -93,6 +94,7 @@ export default defineSchema({
     attempts:  v.number(),
     maxScore:  v.number(),
     outcome:   v.union(v.literal('published'), v.literal('needs_review')),
+    reason:    v.optional(v.string()),
     checkedAt: v.number(),
   })
     .index('by_reply', ['replyId'])

@@ -43,11 +43,11 @@ const STATUS_LABEL: Record<DisplayStatus, string> = {
   queued:       'Queued',
   replied:      'Replied',
   ignored:      'Ignored',
-  needs_review: 'Review',
+  needs_review: 'Needs review',
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied']
+const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied', 'needs_review']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7    },
   { label: 'Last 30 days', days: 30   },
@@ -216,12 +216,15 @@ export default function ReviewsTable() {
   const reviews   = useQuery(api.reviews.list, { limit: 50 }) ?? []
   const rawDrafts = useQuery(api.replies.listDraftsWithReviews)
 
-  // Map reviewId → display-level reply status
+  // Map reviewId → display-level reply status + optional reason
   const reviewReplyMap = useMemo(() => {
-    const map = new Map<string, 'draft' | 'queued' | 'needs_review'>()
+    const map = new Map<string, { status: 'draft' | 'queued' | 'needs_review'; reason?: string }>()
     for (const { reply } of (rawDrafts ?? [])) {
       if (reply.status === 'draft' || reply.status === 'queued' || reply.status === 'needs_review') {
-        map.set(reply.reviewId, reply.status)
+        map.set(reply.reviewId, {
+          status: reply.status,
+          reason: reply.needsReviewReason,
+        })
       }
     }
     return map
@@ -230,7 +233,7 @@ export default function ReviewsTable() {
   function getDisplayStatus(r: typeof reviews[number]): DisplayStatus {
     if (r.status === 'replied') return 'replied'
     if (r.status === 'ignored') return 'ignored'
-    return (reviewReplyMap.get(r._id) ?? 'pending') as DisplayStatus
+    return (reviewReplyMap.get(r._id)?.status ?? 'pending') as DisplayStatus
   }
 
   const filtered = reviews.filter(r => {
@@ -322,7 +325,12 @@ export default function ReviewsTable() {
                 <p className="truncate pr-4 text-[13px] text-slate-600">
                   {r.comment ? r.comment.slice(0, 70) + (r.comment.length > 70 ? '…' : '') : '—'}
                 </p>
-                <span className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}>
+                <span
+                  className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}
+                  title={displayStatus === 'needs_review'
+                    ? (reviewReplyMap.get(r._id)?.reason ?? 'Reply flagged for manual review — please check and re-queue manually')
+                    : undefined}
+                >
                   {STATUS_LABEL[displayStatus]}
                 </span>
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
