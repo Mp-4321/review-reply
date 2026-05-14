@@ -131,8 +131,6 @@ function WorkflowCard({
   )
 }
 
-const NOTIF_STORAGE_KEY = 'replyfier.notificationSettings'
-
 export default function WorkflowSettings() {
   const [settings, setSettings] = useState(loadSettings)
   const [saved, setSaved]       = useState(false)
@@ -159,13 +157,6 @@ export default function WorkflowSettings() {
       emailApprovalEnabled: patch.emailApprovalEnabled ?? emailApprovalEnabled,
     }
     await saveConvex(next)
-    if (patch.emailApprovalEnabled) {
-      try {
-        const stored  = window.localStorage.getItem(NOTIF_STORAGE_KEY)
-        const current = stored ? (JSON.parse(stored) as Record<string, unknown>) : {}
-        window.localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify({ ...current, newReviewEnabled: true }))
-      } catch {}
-    }
     setSaved(true)
     setTimeout(() => setSaved(false), 1600)
   }
@@ -200,7 +191,7 @@ export default function WorkflowSettings() {
         <WorkflowCard
           icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
           title="Email approval"
-          description="Get each draft by email and approve or reject directly from your inbox."
+          description="Receive an email for each new draft reply — review the AI-generated response and approve or reject it with one click."
           checked={emailApprovalEnabled}
           onChange={v => void updateConvex({ emailApprovalEnabled: v })}
         />
