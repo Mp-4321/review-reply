@@ -1,8 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
-const WorkflowSettings = dynamic(() => import('./workflow-settings'), { ssr: false })
+import WorkflowSettingsClient from './workflow-settings-client'
 import DashboardBackLink from '../dashboard-back-link'
 
 const NAV_GROUPS = [
@@ -118,7 +117,7 @@ export default async function WorkflowPage() {
           <DashboardBackLink />
         </div>
 
-        <WorkflowSettings />
+        <WorkflowSettingsClient />
       </main>
     </div>
   )
