@@ -114,7 +114,15 @@ function InboxDraftCard({
   const [regenError,   setRegenError]   = useState<string | null>(null)
   const [queueing,     setQueueing]     = useState(false)
   const [menuOpen,     setMenuOpen]     = useState(false)
-  const [isHovering,   setIsHovering]   = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   async function handleSave() {
     setSaving(true)
@@ -134,7 +142,7 @@ function InboxDraftCard({
   }
 
   return (
-    <div className="flex items-start gap-4 py-4 pl-2 pr-5" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => { setIsHovering(false); setMenuOpen(false) }}>
+    <div className="flex items-start gap-4 py-4 pl-2 pr-5" onMouseLeave={() => setMenuOpen(false)}>
       <div
         className="flex h-7 w-7 shrink-0 translate-x-1 items-center justify-center rounded-full text-[10px] font-bold text-white"
         style={{ backgroundColor: nameToColor(review.reviewerName) }}
@@ -184,7 +192,7 @@ function InboxDraftCard({
 
           {regenError && <p className="mt-1.5 text-[11px] text-red-500">{regenError}</p>}
 
-          <div className={`mt-1.5 mb-1 ${editing ? '' : 'min-h-7'}`}>
+          <div className="mt-1.5 min-h-7">
             {editing ? (
               <div className="flex items-center gap-2">
                 <button onClick={handleSave} disabled={saving}
@@ -198,10 +206,11 @@ function InboxDraftCard({
               </div>
             ) : (
               <div
+                ref={menuRef}
                 className={`relative flex h-7 items-center justify-center transition duration-150 ${
-                  isHovering || menuOpen || queueing || regenerating
+                  menuOpen || queueing || regenerating
                     ? 'pointer-events-auto opacity-100'
-                    : 'pointer-events-none opacity-0'
+                    : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
                 }`}
               >
                 {/* Manage button — fades out when expanded */}
@@ -228,32 +237,31 @@ function InboxDraftCard({
                   <button
                     type="button"
                     onClick={handleQueue}
-                    className="flex cursor-pointer items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100"
+                    className="cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100"
                   >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                    </svg>
                     Queue
                   </button>
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); setEditing(true); setEditText(reply.draft) }}
-                    className="flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                    className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
                   >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-                    </svg>
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={handleRegenerate}
-                    className="flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                    className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
                   >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                    </svg>
-                    Rewrite
+                    Regenerate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(false)}
+                    aria-label="Close"
+                    className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-[10px] text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                  >
+                    ✕
                   </button>
                     </>
                   )}
@@ -602,16 +610,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
                       disabled={generatingSet.size > 0}
                       className="w-[116px] cursor-pointer whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-center text-xs font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-60"
                     >
-                      {generatingSet.size > 0 ? 'Rewriting...' : 'Rewrite'}
-                    </button>
-                    <button
-                      onClick={() => setSelectedIds(new Set())}
-                      aria-label="Clear selection"
-                      className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                    >
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      {generatingSet.size > 0 ? 'Regenerating...' : 'Regenerate'}
                     </button>
                   </>
                 ) : null}
