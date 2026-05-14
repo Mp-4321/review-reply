@@ -198,58 +198,69 @@ function InboxDraftCard({
             {editing ? (
               <div className="flex items-center gap-2">
                 <button onClick={handleSave} disabled={saving}
-                  className="cursor-pointer rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60">
+                  className="cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100 disabled:opacity-60">
                   {saving ? 'Saving…' : 'Save'}
                 </button>
                 <button onClick={() => { setEditing(false); setEditText(reply.draft) }}
-                  className="cursor-pointer rounded-full border border-blue-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-blue-300">
+                  className="cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 py-1 text-[11px] font-medium text-slate-500 transition hover:border-slate-300 hover:bg-slate-50">
                   Cancel
                 </button>
               </div>
             ) : (
-              <div className={`flex justify-center transition duration-150 ${
-                menuOpen || queueing || regenerating
-                  ? 'pointer-events-auto opacity-100'
-                  : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
-              }`}>
-                <div ref={menuRef} className="relative">
+              <div
+                ref={menuRef}
+                className={`relative flex h-7 items-center justify-center transition duration-150 ${
+                  menuOpen || queueing || regenerating
+                    ? 'pointer-events-auto opacity-100'
+                    : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+                }`}
+              >
+                {/* Manage button — fades out when expanded */}
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(true)}
+                  className={`absolute left-1/2 -translate-x-1/2 cursor-pointer rounded-full border border-blue-200 bg-white px-4 py-1 text-[11px] font-medium text-slate-500 shadow-sm transition-all duration-200 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                    menuOpen ? 'pointer-events-none scale-95 opacity-0' : 'scale-100 opacity-100'
+                  }`}
+                >
+                  Manage
+                </button>
+
+                {/* Inline expanded actions — fades in when expanded */}
+                <div className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-1.5 transition-all duration-200 ${
+                  menuOpen ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+                }`}>
                   <button
                     type="button"
-                    aria-label="Reply actions"
-                    aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen(o => !o)}
-                    className="cursor-pointer rounded-full border border-blue-200 bg-white px-4 py-1 text-[11px] font-medium text-slate-600 shadow-sm transition hover:border-blue-300 hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    onClick={handleQueue}
+                    disabled={queueing}
+                    className="cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100 disabled:opacity-60"
                   >
-                    {queueing ? 'Queuing…' : regenerating ? 'Working…' : 'Manage'}
+                    {queueing ? 'Queuing…' : 'Queue'}
                   </button>
-
-                  {menuOpen && (
-                    <div className="absolute bottom-full left-1/2 z-20 mb-2 w-36 -translate-x-1/2 rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/10">
-                      <button
-                        type="button"
-                        onClick={handleQueue}
-                        disabled={queueing}
-                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-                      >
-                        Queue reply
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setMenuOpen(false); setEditing(true); setEditText(reply.draft) }}
-                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50"
-                      >
-                        Edit draft
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleRegenerate}
-                        disabled={regenerating}
-                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-                      >
-                        Regenerate
-                      </button>
-                    </div>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => { setMenuOpen(false); setEditing(true); setEditText(reply.draft) }}
+                    className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRegenerate}
+                    disabled={regenerating}
+                    className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+                  >
+                    {regenerating ? 'Working…' : 'Regenerate'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(false)}
+                    aria-label="Close"
+                    className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-[10px] text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                  >
+                    ✕
+                  </button>
                 </div>
               </div>
             )}
