@@ -130,21 +130,19 @@ function InboxDraftCard({
     finally { setSaving(false) }
   }
   async function handleRegenerate() {
-    setMenuOpen(false)
     setRegenerating(true); setRegenError(null)
     try { await onRegenerate() }
     catch (e) { setRegenError(e instanceof Error ? e.message : 'Failed to regenerate') }
     finally { setRegenerating(false) }
   }
   async function handleQueue() {
-    setMenuOpen(false)
     setQueueing(true)
     try { await onQueueSingle() }
     finally { setQueueing(false) }
   }
 
   return (
-    <div className="flex items-start gap-4 py-4 pl-2 pr-5">
+    <div className="flex items-start gap-4 py-4 pl-2 pr-5" onMouseLeave={() => setMenuOpen(false)}>
       <div
         className="flex h-7 w-7 shrink-0 translate-x-1 items-center justify-center rounded-full text-[10px] font-bold text-white"
         style={{ backgroundColor: nameToColor(review.reviewerName) }}
@@ -162,7 +160,7 @@ function InboxDraftCard({
           {review.comment ?? <span className="italic text-slate-400">No comment left.</span>}
         </p>
 
-        <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+        <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-2">
           <div className="mb-1.5 flex items-center gap-1.5">
             <svg className="h-3.5 w-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -194,7 +192,7 @@ function InboxDraftCard({
 
           {regenError && <p className="mt-1.5 text-[11px] text-red-500">{regenError}</p>}
 
-          <div className="mt-3 min-h-7">
+          <div className="mt-1.5 min-h-7">
             {editing ? (
               <div className="flex items-center gap-2">
                 <button onClick={handleSave} disabled={saving}
@@ -220,7 +218,7 @@ function InboxDraftCard({
                   type="button"
                   onClick={() => setMenuOpen(true)}
                   className={`absolute left-1/2 -translate-x-1/2 cursor-pointer rounded-full border border-blue-200 bg-white px-4 py-1 text-[11px] font-medium text-slate-500 shadow-sm transition-all duration-200 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-                    menuOpen ? 'pointer-events-none scale-95 opacity-0' : 'scale-100 opacity-100'
+                    menuOpen || regenerating || queueing ? 'pointer-events-none scale-95 opacity-0' : 'scale-100 opacity-100'
                   }`}
                 >
                   Manage
@@ -228,15 +226,20 @@ function InboxDraftCard({
 
                 {/* Inline expanded actions — fades in when expanded */}
                 <div className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-1.5 transition-all duration-200 ${
-                  menuOpen ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+                  menuOpen || regenerating || queueing ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                 }`}>
+                  {regenerating || queueing ? (
+                    <span className="text-[11px] font-medium text-slate-400">
+                      {regenerating ? 'Working…' : 'Queuing…'}
+                    </span>
+                  ) : (
+                    <>
                   <button
                     type="button"
                     onClick={handleQueue}
-                    disabled={queueing}
-                    className="cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100 disabled:opacity-60"
+                    className="cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100"
                   >
-                    {queueing ? 'Queuing…' : 'Queue'}
+                    Queue
                   </button>
                   <button
                     type="button"
@@ -248,10 +251,9 @@ function InboxDraftCard({
                   <button
                     type="button"
                     onClick={handleRegenerate}
-                    disabled={regenerating}
-                    className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60"
+                    className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
                   >
-                    {regenerating ? 'Working…' : 'Regenerate'}
+                    Regenerate
                   </button>
                   <button
                     type="button"
@@ -261,6 +263,8 @@ function InboxDraftCard({
                   >
                     ✕
                   </button>
+                    </>
+                  )}
                 </div>
               </div>
             )}
