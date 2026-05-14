@@ -106,14 +106,23 @@ function InboxDraftCard({
   onSaveEdit: (text: string) => Promise<void>
   onRegenerate: () => Promise<void>
 }) {
-  const [expanded,     setExpanded]     = useState(false)
+  const [expanded,     setExpanded]     = useState(true)
   const [editing,      setEditing]      = useState(false)
   const [editText,     setEditText]     = useState(reply.draft)
   const [saving,       setSaving]       = useState(false)
   const [regenerating, setRegenerating] = useState(false)
   const [regenError,   setRegenError]   = useState<string | null>(null)
   const [queueing,     setQueueing]     = useState(false)
-  const [actionMenuOpen, setActionMenuOpen] = useState(false)
+  const [menuOpen,     setMenuOpen]     = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   async function handleSave() {
     setSaving(true)
@@ -121,14 +130,14 @@ function InboxDraftCard({
     finally { setSaving(false) }
   }
   async function handleRegenerate() {
-    setActionMenuOpen(false)
+    setMenuOpen(false)
     setRegenerating(true); setRegenError(null)
     try { await onRegenerate() }
     catch (e) { setRegenError(e instanceof Error ? e.message : 'Failed to regenerate') }
     finally { setRegenerating(false) }
   }
   async function handleQueue() {
-    setActionMenuOpen(false)
+    setMenuOpen(false)
     setQueueing(true)
     try { await onQueueSingle() }
     finally { setQueueing(false) }
@@ -198,43 +207,46 @@ function InboxDraftCard({
                 </button>
               </div>
             ) : (
-              <div
-                className={`relative flex items-center justify-end gap-2 transition duration-150 ${
-                  actionMenuOpen || queueing || regenerating
-                    ? 'pointer-events-auto opacity-100'
-                    : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
-                }`}
-              >
-                <button onClick={handleQueue} disabled={queueing}
-                  className="cursor-pointer rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60">
-                  {queueing ? 'Queuing…' : 'Queue reply'}
-                </button>
-                <div className="relative">
+              <div className={`flex justify-center transition duration-150 ${
+                menuOpen || queueing || regenerating
+                  ? 'pointer-events-auto opacity-100'
+                  : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100'
+              }`}>
+                <div ref={menuRef} className="relative">
                   <button
                     type="button"
                     aria-label="Reply actions"
-                    aria-expanded={actionMenuOpen}
-                    onClick={() => setActionMenuOpen(open => !open)}
-                    className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-blue-200 bg-white text-sm font-semibold leading-none text-slate-500 transition hover:border-blue-300 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    aria-expanded={menuOpen}
+                    onClick={() => setMenuOpen(o => !o)}
+                    className="cursor-pointer rounded-full border border-blue-200 bg-white px-4 py-1 text-[11px] font-medium text-slate-600 shadow-sm transition hover:border-blue-300 hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
-                    ⋯
+                    {queueing ? 'Queuing…' : regenerating ? 'Working…' : 'Manage'}
                   </button>
-                  {actionMenuOpen && (
-                    <div className="absolute right-0 top-full z-20 mt-1 w-32 rounded-lg border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/70">
+
+                  {menuOpen && (
+                    <div className="absolute bottom-full left-1/2 z-20 mb-2 w-36 -translate-x-1/2 rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/10">
                       <button
                         type="button"
-                        onClick={() => { setActionMenuOpen(false); setEditing(true); setEditText(reply.draft) }}
-                        className="block w-full cursor-pointer px-3 py-1.5 text-left text-[12px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                        onClick={handleQueue}
+                        disabled={queueing}
+                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                       >
-                        Edit
+                        Queue reply
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setMenuOpen(false); setEditing(true); setEditText(reply.draft) }}
+                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50"
+                      >
+                        Edit draft
                       </button>
                       <button
                         type="button"
                         onClick={handleRegenerate}
                         disabled={regenerating}
-                        className="block w-full cursor-pointer px-3 py-1.5 text-left text-[12px] font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                       >
-                        {regenerating ? 'Regenerating…' : 'Regenerate'}
+                        Regenerate
                       </button>
                     </div>
                   )}
@@ -244,7 +256,6 @@ function InboxDraftCard({
           </div>
         </div>
       </div>
-
     </div>
   )
 }
