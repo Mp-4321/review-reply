@@ -185,6 +185,22 @@ export const queueReplies = mutation({
   },
 })
 
+export const removeFromQueue = mutation({
+  args: { replyId: v.id('replies') },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new Error('Unauthenticated')
+    const reply = await ctx.db.get(args.replyId)
+    if (!reply) throw new Error('Reply not found')
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_token', q => q.eq('tokenIdentifier', identity.tokenIdentifier))
+      .unique()
+    if (!user || reply.userId !== user._id) throw new Error('Unauthorized')
+    await ctx.db.patch(args.replyId, { status: 'draft', scheduledAt: undefined })
+  },
+})
+
 export const discardDrafts = mutation({
   args: { replyIds: v.array(v.id('replies')) },
   handler: async (ctx, args) => {

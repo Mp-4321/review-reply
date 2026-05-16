@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useQuery } from 'convex/react'
+import { useState, useRef, useEffect } from 'react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
@@ -59,7 +59,25 @@ function Stars({ count }: { count: number }) {
 // ─── Queue card ───────────────────────────────────────────────────────────────
 
 function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['review'] }) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded,    setExpanded]    = useState(false)
+  const [menuOpen,    setMenuOpen]    = useState(false)
+  const [removing,    setRemoving]    = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const removeFromQueue = useMutation(api.replies.removeFromQueue)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  async function handleRemove() {
+    setRemoving(true)
+    try { await removeFromQueue({ replyId: reply._id }) }
+    finally { setRemoving(false); setMenuOpen(false) }
+  }
 
   const isNeedsReview = reply.status === 'needs_review'
 
@@ -121,11 +139,37 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
           </div>
         </div>
 
-        {isNeedsReview && (
-          <span className="shrink-0 rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-medium text-red-700">
-            Needs review
-          </span>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          {isNeedsReview && (
+            <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-medium text-red-700">
+              Needs review
+            </span>
+          )}
+          <div ref={menuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(o => !o)}
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+              aria-label="More options"
+            >
+              <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/10">
+                <button
+                  type="button"
+                  onClick={handleRemove}
+                  disabled={removing}
+                  className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                >
+                  {removing ? 'Removing…' : 'Remove from queue'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
