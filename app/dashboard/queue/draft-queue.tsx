@@ -167,7 +167,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
             )}
 
             {/* Controls — centered at bottom of preview box, matching Inbox Manage button position */}
-            <div className="mt-1 mb-0 flex h-7 items-center justify-center">
+            <div className="mt-0 mb-0 flex h-6 items-center justify-center">
               {isNeedsReview ? (
                 <button
                   type="button"
