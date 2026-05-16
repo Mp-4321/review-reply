@@ -10,6 +10,7 @@
 
 import type * as aiSettings from "../aiSettings.js";
 import type * as crons from "../crons.js";
+import type * as emailApproval from "../emailApproval.js";
 import type * as locations from "../locations.js";
 import type * as publish from "../publish.js";
 import type * as replies from "../replies.js";
@@ -27,6 +28,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   aiSettings: typeof aiSettings;
   crons: typeof crons;
+  emailApproval: typeof emailApproval;
   locations: typeof locations;
   publish: typeof publish;
   replies: typeof replies;
