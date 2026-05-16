@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
+import type { Id } from '@/convex/_generated/dataModel'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
@@ -66,6 +67,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
   const menuRef = useRef<HTMLDivElement>(null)
   const removeFromQueue = useMutation(api.replies.removeFromQueue)
   const updateDraft     = useMutation(api.replies.updateDraft)
+  const queueReplies    = useMutation(api.replies.queueReplies)
   const aiSettings      = useQuery(api.aiSettings.get)
 
   useEffect(() => {
@@ -98,7 +100,10 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
         }),
       })
       const data = await res.json() as { reply?: string }
-      if (data.reply) await updateDraft({ replyId: reply._id, draft: data.reply })
+      if (data.reply) {
+        await updateDraft({ replyId: reply._id, draft: data.reply })
+        await queueReplies({ replyIds: [reply._id as Id<'replies'>] })
+      }
     } finally {
       setRewriting(false)
     }
@@ -124,7 +129,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
 
   return (
     <div className={`rounded-2xl border bg-white shadow-sm ${isNeedsReview ? 'border-red-200' : 'border-slate-200'}`}>
-      <div className="flex items-center gap-4 px-5 py-4">
+      <div className="flex items-start gap-4 px-5 py-4">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
           style={{ backgroundColor: nameToColor(review.reviewerName) }}
@@ -160,46 +165,45 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
                 {expanded ? 'Collapse reply' : 'Expand reply'}
               </button>
             )}
-          </div>
-        </div>
 
-        <div className="flex shrink-0 items-center gap-2">
-          {isNeedsReview && (
-            <button
-              type="button"
-              onClick={handleRewrite}
-              disabled={rewriting}
-              className="flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-60"
-            >
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-              {rewriting ? 'Rewriting…' : 'Rewrite'}
-            </button>
-          )}
-          <div ref={menuRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(o => !o)}
-              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-              aria-label="More options"
-            >
-              <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-                <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
-              </svg>
-            </button>
-            {menuOpen && (
-              <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/10">
+            {/* Controls — centered at bottom of preview box, matching Inbox Manage button position */}
+            <div className="mt-1.5 mb-1 flex h-7 items-center justify-center">
+              {isNeedsReview ? (
                 <button
                   type="button"
-                  onClick={handleRemove}
-                  disabled={removing}
-                  className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                  onClick={handleRewrite}
+                  disabled={rewriting}
+                  className="cursor-pointer rounded-full border border-red-200 bg-white px-4 py-1 text-[11px] font-medium text-slate-500 shadow-sm transition hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:opacity-60"
                 >
-                  {removing ? 'Removing…' : 'Remove from queue'}
+                  {rewriting ? 'Rewriting…' : 'Rewrite'}
                 </button>
-              </div>
-            )}
+              ) : (
+                <div ref={menuRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(o => !o)}
+                    className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-200 hover:text-slate-600"
+                    aria-label="More options"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+                    </svg>
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute left-1/2 top-full z-20 mt-1 w-44 -translate-x-1/2 rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-900/10">
+                      <button
+                        type="button"
+                        onClick={handleRemove}
+                        disabled={removing}
+                        className="block w-full cursor-pointer px-4 py-2 text-left text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                      >
+                        {removing ? 'Removing…' : 'Remove from queue'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
