@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import type { Id } from '@/convex/_generated/dataModel'
+import type { Doc } from '@/convex/_generated/dataModel'
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
@@ -59,7 +60,7 @@ function Stars({ count }: { count: number }) {
 
 // ─── Queue card ───────────────────────────────────────────────────────────────
 
-function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['review'] }) {
+function QueueCard({ reply, review, isSelected }: { reply: Item['reply']; review: Item['review']; isSelected?: boolean }) {
   const [expanded,   setExpanded]   = useState(false)
   const [menuOpen,   setMenuOpen]   = useState(false)
   const [removing,   setRemoving]   = useState(false)
@@ -128,7 +129,11 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
   )
 
   return (
-    <div className={`rounded-2xl border bg-white shadow-sm ${isNeedsReview ? 'border-red-200' : 'border-slate-200'}`}>
+    <div className={`rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md ${
+      isSelected        ? 'border-l-[3px] border-slate-200 border-l-blue-400 bg-blue-50/20'
+      : isNeedsReview   ? 'border-red-200'
+                        : 'border-slate-200'
+    }`}>
       <div className="flex items-start gap-4 px-5 py-3">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
@@ -214,7 +219,11 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function QueueMonitor() {
-  const rawItems = useQuery(api.replies.listDraftsWithReviews)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [removing,    setRemoving]    = useState(false)
+
+  const rawItems        = useQuery(api.replies.listDraftsWithReviews)
+  const removeFromQueue = useMutation(api.replies.removeFromQueue)
 
   if (rawItems === undefined) {
     return (
@@ -250,33 +259,106 @@ export default function QueueMonitor() {
 
   const needsReviewCount = sorted.filter(i => i.reply.status === 'needs_review').length
   const queuedCount      = sorted.length - needsReviewCount
+  const allIds           = sorted.map(i => i.reply._id as string)
+  const allSelected      = allIds.length > 0 && allIds.every(id => selectedIds.has(id))
+  const someSelected     = selectedIds.size > 0
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleAll() {
+    setSelectedIds(allSelected ? new Set() : new Set(allIds))
+  }
+
+  async function handleBulkRemove() {
+    setRemoving(true)
+    try {
+      await Promise.all(
+        [...selectedIds].map(id => removeFromQueue({ replyId: id as Id<'replies'> }))
+      )
+      setSelectedIds(new Set())
+    } finally {
+      setRemoving(false)
+    }
+  }
 
   return (
     <div className="max-w-[1300px]">
-      {/* Summary bar */}
+      {/* Filters bar */}
       <div className="mb-5 flex flex-wrap items-center gap-4">
-        {queuedCount > 0 && (
-          <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-sky-400" />
-            <span className="text-xs text-slate-500">
-              <span className="font-semibold text-slate-700">{queuedCount}</span> queued
-            </span>
-          </div>
+        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onChange={toggleAll}
+            className="h-3.5 w-3.5 cursor-pointer rounded border-slate-300 accent-blue-600"
+          />
+          <span>{someSelected ? `${selectedIds.size} selected` : 'Select all'}</span>
+        </label>
+
+        {someSelected && (
+          <button
+            onClick={handleBulkRemove}
+            disabled={removing}
+            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-red-300 hover:text-red-600 disabled:opacity-60"
+          >
+            {removing ? 'Removing…' : 'Remove selected'}
+          </button>
         )}
-        {needsReviewCount > 0 && (
-          <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-red-400" />
-            <span className="text-xs text-slate-500">
-              <span className="font-semibold text-slate-700">{needsReviewCount}</span> need review
-            </span>
-          </div>
-        )}
+
+        {/* Summary dots */}
+        <div className="ml-auto flex items-center gap-4">
+          {queuedCount > 0 && (
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-sky-400" />
+              <span className="text-xs text-slate-500">
+                <span className="font-semibold text-slate-700">{queuedCount}</span> queued
+              </span>
+            </div>
+          )}
+          {needsReviewCount > 0 && (
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-red-400" />
+              <span className="text-xs text-slate-500">
+                <span className="font-semibold text-slate-700">{needsReviewCount}</span> need review
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">
-        {sorted.map(({ reply, review }) => (
-          <QueueCard key={reply._id} reply={reply} review={review} />
-        ))}
+        {sorted.map(({ reply, review }) => {
+          const isSelected = selectedIds.has(reply._id as string)
+          return (
+            <div key={reply._id} className="group flex items-start gap-2.5">
+              <div className="flex w-5 shrink-0 justify-center pt-4">
+                <label className={`flex h-5 w-5 translate-x-[7px] cursor-pointer items-center justify-center transition duration-150 ${
+                  someSelected || isSelected
+                    ? 'opacity-100'
+                    : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100'
+                }`}>
+                  <input
+                    type="checkbox"
+                    aria-label={`Select reply from ${review.reviewerName}`}
+                    checked={isSelected}
+                    onChange={() => toggleSelect(reply._id as string)}
+                    className="h-3.5 w-3.5 cursor-pointer rounded border-slate-300 accent-blue-600 opacity-80 transition hover:opacity-100"
+                  />
+                </label>
+              </div>
+              <div className="flex-1">
+                <QueueCard reply={reply} review={review} isSelected={isSelected} />
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
