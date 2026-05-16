@@ -303,13 +303,24 @@ export default function QueueMonitor() {
         </label>
 
         {someSelected && (
-          <button
-            onClick={handleBulkRemove}
-            disabled={removing}
-            className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-red-300 hover:text-red-600 disabled:opacity-60"
-          >
-            {removing ? 'Removing…' : 'Remove selected'}
-          </button>
+          <>
+            <button
+              onClick={handleBulkRemove}
+              disabled={removing}
+              className="cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-red-300 hover:text-red-600 disabled:opacity-60"
+            >
+              {removing ? 'Removing…' : 'Cancel queue'}
+            </button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              aria-label="Clear selection"
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </>
         )}
 
         {/* Summary dots */}
