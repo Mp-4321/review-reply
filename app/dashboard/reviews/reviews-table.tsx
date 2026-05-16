@@ -47,7 +47,7 @@ const STATUS_LABEL: Record<DisplayStatus, string> = {
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'pending', 'draft', 'queued', 'replied']
+const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'draft', 'queued', 'replied']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7    },
   { label: 'Last 30 days', days: 30   },
