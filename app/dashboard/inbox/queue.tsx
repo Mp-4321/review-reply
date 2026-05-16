@@ -368,12 +368,27 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
-  const rawReviews = useQuery(api.reviews.list, { status: 'pending', limit: 50 })
-  const rawItems   = useQuery(api.replies.listDraftsWithReviews)
-  const aiSettings = useQuery(api.aiSettings.get)
+  const rawReviews      = useQuery(api.reviews.list, { status: 'pending', limit: 50 })
+  const rawItems        = useQuery(api.replies.listDraftsWithReviews)
+  const aiSettings      = useQuery(api.aiSettings.get)
+  const workflowSettings = useQuery(api.workflowSettings.get)
   const saveDraft    = useMutation(api.replies.save)
   const updateDraft  = useMutation(api.replies.updateDraft)
   const queueReplies = useMutation(api.replies.queueReplies)
+
+  const emailApprovalEnabled = workflowSettings?.emailApprovalEnabled ?? false
+
+  async function sendApprovalEmail(replyId: string) {
+    try {
+      await fetch('/api/email-approval/send', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ replyId }),
+      })
+    } catch (e) {
+      console.error('Failed to send approval email', e)
+    }
+  }
 
   const reviews = rawReviews ?? []
 
@@ -462,8 +477,9 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
       for (const r of toGenerate) {
         addGenerating(r._id as string)
         try {
-          const draft = await callGenerateApi(r.comment ?? '')
-          await saveDraft({ reviewId: r._id, draft })
+          const draft   = await callGenerateApi(r.comment ?? '')
+          const replyId = await saveDraft({ reviewId: r._id, draft })
+          if (emailApprovalEnabled && replyId) void sendApprovalEmail(replyId as string)
           count++
         } catch {
           // continue with others
@@ -501,8 +517,9 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
     addGenerating(reviewId as string)
     setError(null)
     try {
-      const draft = await callGenerateApi(comment)
-      await saveDraft({ reviewId, draft })
+      const draft   = await callGenerateApi(comment)
+      const replyId = await saveDraft({ reviewId, draft })
+      if (emailApprovalEnabled && replyId) void sendApprovalEmail(replyId as string)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {

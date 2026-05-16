@@ -81,12 +81,15 @@ export default defineSchema({
     generatedAt:        v.number(),
     scheduledAt:        v.optional(v.number()),
     publishedAt:        v.optional(v.number()),
-    needsReviewReason:  v.optional(v.string()),
+    needsReviewReason:      v.optional(v.string()),
+    approvalToken:          v.optional(v.string()),
+    approvalTokenExpiresAt: v.optional(v.number()),
   })
     .index('by_review', ['reviewId'])
     .index('by_user', ['userId'])
     .index('by_user_and_status', ['userId', 'status'])
-    .index('by_status', ['status']),
+    .index('by_status', ['status'])
+    .index('by_approval_token', ['approvalToken']),
 
   workflowSettings: defineTable({
     userId:               v.id('users'),
