@@ -5,31 +5,15 @@ import { Zap, Send, Mail } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 
-type AutoApprovalDelay = '2h' | '6h' | '12h' | '24h' | '48h'
-
 type WorkflowSettingsState = {
   autoGenerateEnabled: boolean
-  progressivePublishingEnabled: boolean
-  autoApprovalDelay: AutoApprovalDelay
 }
 
 const STORAGE_KEY = 'replyfier.workflowSettings'
 
 const DEFAULT_SETTINGS: WorkflowSettingsState = {
   autoGenerateEnabled: true,
-  progressivePublishingEnabled: false,
-  autoApprovalDelay: '24h',
 }
-
-const IS_PRO = false
-
-const DELAY_OPTIONS: { value: AutoApprovalDelay; label: string }[] = [
-  { value: '2h',  label: '2 hours'  },
-  { value: '6h',  label: '6 hours'  },
-  { value: '12h', label: '12 hours' },
-  { value: '24h', label: '24 hours' },
-  { value: '48h', label: '48 hours' },
-]
 
 function loadSettings(): WorkflowSettingsState {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS
@@ -77,13 +61,6 @@ function Toggle({
   )
 }
 
-function ProBadge() {
-  return (
-    <span className="rounded-full border border-amber-200 bg-amber-50 px-1.5 py-px text-[9px] font-semibold text-amber-600">
-      Pro
-    </span>
-  )
-}
 
 function WorkflowCard({
   icon,
@@ -182,7 +159,7 @@ export default function WorkflowSettings() {
       <WorkflowCard
         icon={<Send className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Auto-publish replies"
-        description={"Automatically publish approved replies using progressive pacing for more natural timing.\nMax. 5 per day with randomized intervals."}
+        description={"Automatically publish draft replies using progressive pacing for more natural timing.\nMax. 5 per day with randomized intervals."}
         checked={autoPublishEnabled}
         onChange={v => void updateConvex({ autoPublishEnabled: v })}
       />
@@ -191,6 +168,8 @@ export default function WorkflowSettings() {
         icon={<Mail className="h-4 w-4 text-blue-600" strokeWidth={2} />}
         title="Email approval"
         description="Receive an email for each new draft reply — approve, reject, or open in dashboard to edit."
+        locked={autoPublishEnabled}
+        hint={autoPublishEnabled ? 'Not available when Auto-publish is enabled.' : undefined}
         checked={emailApprovalEnabled}
         onChange={v => void updateConvex({ emailApprovalEnabled: v })}
       />
