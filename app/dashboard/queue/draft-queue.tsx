@@ -167,7 +167,7 @@ function QueueCard({ reply, review, isSelected }: { reply: Item['reply']; review
             )}
 
             {/* Controls — fade in on hover, same pattern as Inbox */}
-            <div className={`mt-0 mb-0 flex h-4 items-center justify-center transition duration-150 ${
+            <div className={`mt-0 mb-2 flex h-4 items-center justify-center transition duration-150 ${
               isHovering || rewriting || removing
                 ? 'pointer-events-auto opacity-100'
                 : 'pointer-events-none opacity-0'
