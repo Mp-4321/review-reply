@@ -59,11 +59,14 @@ function Stars({ count }: { count: number }) {
 // ─── Queue card ───────────────────────────────────────────────────────────────
 
 function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['review'] }) {
-  const [expanded,    setExpanded]    = useState(false)
-  const [menuOpen,    setMenuOpen]    = useState(false)
-  const [removing,    setRemoving]    = useState(false)
+  const [expanded,   setExpanded]   = useState(false)
+  const [menuOpen,   setMenuOpen]   = useState(false)
+  const [removing,   setRemoving]   = useState(false)
+  const [rewriting,  setRewriting]  = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const removeFromQueue = useMutation(api.replies.removeFromQueue)
+  const updateDraft     = useMutation(api.replies.updateDraft)
+  const aiSettings      = useQuery(api.aiSettings.get)
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -77,6 +80,28 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
     setRemoving(true)
     try { await removeFromQueue({ replyId: reply._id }) }
     finally { setRemoving(false); setMenuOpen(false) }
+  }
+
+  async function handleRewrite() {
+    setRewriting(true)
+    try {
+      const res = await fetch('/api/generate-reply', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          review:              review.comment ?? '',
+          tone:                aiSettings?.tone,
+          replyLength:         aiSettings?.replyLength,
+          businessDescription: aiSettings?.businessDescription,
+          signature:           aiSettings?.signature,
+          customInstructions:  aiSettings?.customInstructions,
+        }),
+      })
+      const data = await res.json() as { reply?: string }
+      if (data.reply) await updateDraft({ replyId: reply._id, draft: data.reply })
+    } finally {
+      setRewriting(false)
+    }
   }
 
   const isNeedsReview = reply.status === 'needs_review'
@@ -99,7 +124,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
 
   return (
     <div className={`rounded-2xl border bg-white shadow-sm ${isNeedsReview ? 'border-red-200' : 'border-slate-200'}`}>
-      <div className="flex items-start gap-4 px-5 py-4">
+      <div className="flex items-center gap-4 px-5 py-4">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
           style={{ backgroundColor: nameToColor(review.reviewerName) }}
@@ -117,7 +142,6 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
             {review.comment ?? <span className="italic text-slate-400">No comment left.</span>}
           </p>
 
-          {/* Schedule info + reply preview */}
           <div className={`mt-3 rounded-xl border px-4 py-3 ${isNeedsReview ? 'border-red-100 bg-red-50' : 'border-slate-200 bg-slate-50'}`}>
             <div className="mb-1.5 flex items-center gap-1.5">
               {scheduleIcon}
@@ -126,9 +150,9 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
               </span>
             </div>
             <p className={`text-[13px] leading-relaxed text-slate-700 ${!expanded ? 'line-clamp-2' : ''}`}>
-              {reply.draft}
+              {rewriting ? <span className="italic text-slate-400">Rewriting…</span> : reply.draft}
             </p>
-            {reply.draft.length > 120 && (
+            {!rewriting && reply.draft.length > 120 && (
               <button
                 onClick={() => setExpanded(e => !e)}
                 className={`mt-1 text-[11px] font-medium ${isNeedsReview ? 'text-red-500 hover:text-red-700' : 'text-blue-600 hover:text-blue-700'}`}
@@ -139,11 +163,19 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {isNeedsReview && (
-            <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-medium text-red-700">
-              Needs review
-            </span>
+            <button
+              type="button"
+              onClick={handleRewrite}
+              disabled={rewriting}
+              className="flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-60"
+            >
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+              {rewriting ? 'Rewriting…' : 'Rewrite'}
+            </button>
           )}
           <div ref={menuRef} className="relative">
             <button
