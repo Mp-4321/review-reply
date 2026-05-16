@@ -5,6 +5,10 @@ const MIN_INTERVAL_MS = 10  * 60 * 1000  // 10 minutes
 const MAX_INTERVAL_MS = 180 * 60 * 1000  // 180 minutes
 const MAX_PER_DAY     = 5
 
+function autoQueueDelay(): number {
+  return (20 + Math.floor(Math.random() * 161)) * 60 * 1000
+}
+
 export const listDrafts = query({
   args: {},
   handler: async (ctx) => {
@@ -86,13 +90,24 @@ export const save = mutation({
       .unique()
     if (!user) throw new Error('User not found')
 
-    return ctx.db.insert('replies', {
+    const workflowSettings = await ctx.db
+      .query('workflowSettings')
+      .withIndex('by_user', q => q.eq('userId', user._id))
+      .unique()
+
+    const autoPublish = workflowSettings?.autoPublishEnabled ?? false
+    const now = Date.now()
+
+    const replyId = await ctx.db.insert('replies', {
       userId:      user._id,
       reviewId:    args.reviewId,
       draft:       args.draft,
-      status:      'draft',
-      generatedAt: Date.now(),
+      status:      autoPublish ? 'queued' : 'draft',
+      generatedAt: now,
+      ...(autoPublish ? { scheduledAt: now + autoQueueDelay() } : {}),
     })
+
+    return replyId
   },
 })
 
