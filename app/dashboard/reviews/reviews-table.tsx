@@ -1,10 +1,26 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef, useEffect, useSyncExternalStore } from 'react'
 import { useQuery } from 'convex/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { api } from '@/convex/_generated/api'
 import type { Doc } from '@/convex/_generated/dataModel'
+
+const WORKFLOW_KEY = 'replyfier.workflowSettings'
+function subscribeWorkflow(cb: () => void) {
+  window.addEventListener('storage', cb)
+  window.addEventListener('replyfier:workflowChanged', cb)
+  return () => {
+    window.removeEventListener('storage', cb)
+    window.removeEventListener('replyfier:workflowChanged', cb)
+  }
+}
+function readAutoGenerate() {
+  try {
+    const stored = window.localStorage.getItem(WORKFLOW_KEY)
+    return stored ? (JSON.parse(stored).autoGenerateEnabled ?? true) : true
+  } catch { return true }
+}
 
 const COLORS = ['#6366f1','#f59e0b','#10b981','#3b82f6','#ec4899','#8b5cf6','#14b8a6','#f97316','#64748b']
 const RATING_NUM = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 } as const
@@ -239,16 +255,34 @@ export default function ReviewsTable() {
     return (reviewReplyMap.get(r._id)?.status ?? 'pending') as DisplayStatus
   }
 
-  const hasNeedsReview = reviews.some(r => getDisplayStatus(r) === 'needs_review')
-  const statusOptions: (DisplayStatus | 'All')[] = hasNeedsReview
+  const autoGenerateEnabled = useSyncExternalStore(subscribeWorkflow, readAutoGenerate, () => true)
+
+  const pendingLabel = autoGenerateEnabled ? 'No reply' : 'Pending'
+  const pendingStyle = autoGenerateEnabled
+    ? 'bg-slate-50 text-slate-500 border border-slate-200'
+    : 'bg-amber-50 text-amber-700 border border-amber-200'
+
+  function getStatusLabel(s: DisplayStatus) { return s === 'pending' ? pendingLabel : STATUS_LABEL[s] }
+  function getStatusStyle(s: DisplayStatus) { return s === 'pending' ? pendingStyle : STATUS_STYLES[s] }
+
+  const hasNeedsReview   = reviews.some(r => getDisplayStatus(r) === 'needs_review')
+  const hasPendingNoGen  = !autoGenerateEnabled && reviews.some(r => getDisplayStatus(r) === 'pending')
+  const showPendingFilter = hasNeedsReview || hasPendingNoGen
+
+  const statusOptions: (DisplayStatus | 'All')[] = showPendingFilter
     ? ['All', 'needs_review', 'draft', 'queued', 'replied']
     : BASE_STATUS_OPTIONS
 
   const filtered = reviews.filter(r => {
-    if (starFilter   !== null  && RATING_NUM[r.starRating] !== starFilter)  return false
-    if (statusFilter !== 'All' && getDisplayStatus(r) !== statusFilter)     return false
+    if (starFilter !== null && RATING_NUM[r.starRating] !== starFilter) return false
+    if (statusFilter !== 'All') {
+      const ds = getDisplayStatus(r)
+      // "Pending" filter (needs_review) also captures pending reviews when auto-generate is off
+      const matchesPending = statusFilter === 'needs_review' && !autoGenerateEnabled && ds === 'pending'
+      if (ds !== statusFilter && !matchesPending) return false
+    }
     const days = (now - new Date(r.updateTime).getTime()) / 86_400_000
-    if (days > dateFilter)                                                   return false
+    if (days > dateFilter) return false
     return true
   })
 
@@ -335,9 +369,9 @@ export default function ReviewsTable() {
                 </p>
                 <div className="flex items-center gap-1.5">
                   <span
-                    className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${STATUS_STYLES[displayStatus]}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}
+                    className={`w-fit rounded-full px-2.5 py-0.5 text-[11px] font-medium ${getStatusStyle(displayStatus)}${displayStatus === 'draft' ? ' min-w-[3.75rem] text-center' : ''}`}
                   >
-                    {STATUS_LABEL[displayStatus]}
+                    {getStatusLabel(displayStatus)}
                   </span>
                 </div>
                 <p className="text-[12px] text-slate-400">{formatDate(r.updateTime, now)}</p>
