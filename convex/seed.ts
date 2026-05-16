@@ -1,46 +1,75 @@
 import { internalMutation } from './_generated/server'
 
+type ReplyStatus = 'draft' | 'queued' | 'needs_review'
+
 type SeedReview = {
-  googleReviewId: string
-  reviewerName:   string
-  starRating:     'ONE' | 'TWO' | 'THREE' | 'FOUR' | 'FIVE'
-  comment:        string
-  daysAgo:        number
-  status:         'pending' | 'replied'
-  draft?:         string
-  queued?:        string
-  replyComment?:  string
-  replyDaysAgo?:  number
+  googleReviewId:    string
+  reviewerName:      string
+  starRating:        'ONE' | 'TWO' | 'THREE' | 'FOUR' | 'FIVE'
+  comment:           string
+  daysAgo:           number
+  status:            'pending' | 'replied'
+  replyStatus?:      ReplyStatus
+  draft?:            string
+  needsReviewReason?: string
+  replyComment?:     string
+  replyDaysAgo?:     number
 }
 
 const REVIEWS: SeedReview[] = [
-  // ── 2 pending ─────────────────────────────────────────────────────────────
+  // ── pending — no draft yet ────────────────────────────────────────────────
   {
     googleReviewId: 'seed-r-001',
     reviewerName:   'Sofia Caruso',
-    starRating:     'FOUR' as const,
+    starRating:     'FOUR',
     comment:        'Cena piacevole in un ambiente accogliente. La pasta fatta in casa era davvero ottima e il personale gentile. Unico neo: tempi un po\' lunghi tra una portata e l\'altra, ma niente che abbia rovinato la serata.',
     daysAgo:        2,
-    status:         'pending' as const,
+    status:         'pending',
   },
+  // ── draft — bozza generata, in attesa di approvazione ────────────────────
   {
     googleReviewId: 'seed-r-002',
     reviewerName:   'Marco Pellegrini',
-    starRating:     'TWO' as const,
+    starRating:     'TWO',
     comment:        'Mi aspettavo di più. Il locale è carino ma il servizio era disattento e il conto aveva un errore che ho dovuto far correggere. La cucina nella media, niente che giustifichi i prezzi. Difficilmente tornerò.',
     daysAgo:        5,
-    status:         'pending' as const,
+    status:         'pending',
+    replyStatus:    'draft',
+    draft:          'Gentile Marco, la ringraziamo per il feedback. Siamo dispiaciuti per i disagi riscontrati — ci impegniamo a migliorare il servizio e l\'attenzione ai dettagli. Ci auguriamo di poterla accogliere nuovamente per dimostrarle la qualità che meritiamo di offrire.',
   },
-  // ── 1 replied ─────────────────────────────────────────────────────────────
+  // ── queued — in coda per la pubblicazione ─────────────────────────────────
   {
-    googleReviewId:  'seed-r-003',
-    reviewerName:    'Irene Montanari',
-    starRating:      'FIVE' as const,
-    comment:         'Serata perfetta per il nostro anniversario. Tavolo riservato con piccola sorpresa floreale, menù degustazione eccezionale e sommelier preparatissimo. Un\'esperienza che ricorderemo a lungo. Grazie di cuore a tutto lo staff.',
-    daysAgo:         10,
-    status:          'replied' as const,
-    replyComment:    'Cara Irene, siamo davvero felici di aver reso speciale il vostro anniversario! La cura per i momenti importanti è al centro di tutto quello che facciamo. Speriamo di rivedervi presto per un\'altra serata indimenticabile.',
-    replyDaysAgo:    9,
+    googleReviewId: 'seed-r-003',
+    reviewerName:   'Giulia Ferretti',
+    starRating:     'FIVE',
+    comment:        'Pranzo di lavoro perfetto. Ambiente elegante ma non formale, menu variegato, servizio puntuale. Il risotto al tartufo era eccezionale. Il team ha apprezzato molto. Torneremo sicuramente.',
+    daysAgo:        3,
+    status:         'pending',
+    replyStatus:    'queued',
+    draft:          'Cara Giulia, siamo lieti che il pranzo di lavoro sia stato all\'altezza delle aspettative. Il risotto al tartufo è uno dei nostri piatti del cuore — felici che abbia conquistato tutto il team. Vi aspettiamo presto!',
+  },
+  // ── needs_review — similarity check fallito ───────────────────────────────
+  {
+    googleReviewId:    'seed-r-004',
+    reviewerName:      'Luca Bernardi',
+    starRating:        'THREE',
+    comment:           'Posto nella media. Cibo discreto, niente di straordinario. Prezzi un po\' alti per quello che offrono. Servizio nella norma. Potrebbe migliorare.',
+    daysAgo:           7,
+    status:            'pending',
+    replyStatus:       'needs_review',
+    draft:             'Gentile Luca, grazie per il suo riscontro. Prendiamo nota delle sue osservazioni su prezzo e qualità e lavoreremo per migliorare la sua esperienza in futuro.',
+    needsReviewReason: 'Reply too similar to recent responses — similarity score 74% after 3 regeneration attempts',
+  },
+  // ── replied — già pubblicata ──────────────────────────────────────────────
+  {
+    googleReviewId: 'seed-r-005',
+    reviewerName:   'Irene Montanari',
+    starRating:     'FIVE',
+    comment:        'Serata perfetta per il nostro anniversario. Tavolo riservato con piccola sorpresa floreale, menù degustazione eccezionale e sommelier preparatissimo. Un\'esperienza che ricorderemo a lungo. Grazie di cuore a tutto lo staff.',
+    daysAgo:        10,
+    status:         'replied',
+    replyComment:   'Cara Irene, siamo davvero felici di aver reso speciale il vostro anniversario! La cura per i momenti importanti è al centro di tutto quello che facciamo. Speriamo di rivedervi presto per un\'altra serata indimenticabile.',
+    replyDaysAgo:   9,
   },
 ]
 
@@ -115,24 +144,15 @@ export const run = internalMutation({
         status: r.status,
       })
 
-      if (r.draft) {
+      if (r.draft && r.replyStatus) {
         await ctx.db.insert('replies', {
-          userId:      user._id,
+          userId:            user._id,
           reviewId,
-          draft:       r.draft,
-          status:      'draft',
-          generatedAt: Date.now(),
-        })
-      }
-
-      if (r.queued) {
-        await ctx.db.insert('replies', {
-          userId:      user._id,
-          reviewId,
-          draft:       r.queued,
-          status:      'queued',
-          generatedAt: Date.now(),
-          scheduledAt: Date.now() + 25 * 60 * 1000,
+          draft:             r.draft,
+          status:            r.replyStatus,
+          generatedAt:       Date.now(),
+          ...(r.replyStatus === 'queued'       ? { scheduledAt: Date.now() + 35 * 60 * 1000 } : {}),
+          ...(r.replyStatus === 'needs_review' ? { needsReviewReason: r.needsReviewReason }   : {}),
         })
       }
     }
