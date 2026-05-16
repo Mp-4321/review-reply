@@ -189,7 +189,7 @@ function QueueCard({ reply, review, isSelected }: { reply: Item['reply']; review
                   type="button"
                   onClick={handleRemove}
                   disabled={removing}
-                  className="flex cursor-pointer items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium text-slate-500 transition hover:bg-slate-200 hover:text-slate-900 disabled:opacity-60"
+                  className="flex cursor-pointer items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-100 disabled:opacity-60"
                 >
                   {removing ? 'Removing…' : 'Remove from queue'}
                 </button>
