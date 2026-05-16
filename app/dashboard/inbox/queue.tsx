@@ -65,6 +65,30 @@ function readAutoGenerate() {
   } catch { return false }
 }
 
+function NeedsReviewBanner({ count }: { count: number }) {
+  if (count === 0) return null
+  return (
+    <div className="mb-5 flex items-center justify-between gap-4 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5">
+      <div className="flex items-center gap-2">
+        <svg className="h-4 w-4 shrink-0 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <p className="text-[13px] font-medium text-amber-800">
+          {count === 1 ? '1 reply needs' : `${count} replies need`} your attention — similarity or safety checks failed.
+        </p>
+      </div>
+      <Link
+        href="/dashboard/reviews?status=needs_review"
+        className="shrink-0 text-[12px] font-semibold text-amber-700 transition hover:text-amber-900"
+      >
+        View in All Reviews →
+      </Link>
+    </div>
+  )
+}
+
 function AutoGenerateBar({ enabled }: { enabled: boolean }) {
   return enabled ? (
     <div className="mb-6 inline-flex w-fit items-center gap-2.5 rounded-lg border border-green-200 bg-green-50 px-2.5 py-1.5">
@@ -371,6 +395,11 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
     return set
   }, [rawItems])
 
+  const needsReviewCount = useMemo(
+    () => (rawItems ?? []).filter(({ reply }) => reply.status === 'needs_review').length,
+    [rawItems],
+  )
+
   const visible = reviews
     .filter(r => !queuedReviewIds.has(r._id))
     .sort((a, b) => {
@@ -560,6 +589,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   return (
     <div className="max-w-[1300px]">
+      <NeedsReviewBanner count={needsReviewCount} />
       <AutoGenerateBar enabled={autoGenerateEnabled} />
 
       {/* Filters */}

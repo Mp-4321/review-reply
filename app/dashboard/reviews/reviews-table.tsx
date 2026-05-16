@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useQuery } from 'convex/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { api } from '@/convex/_generated/api'
 import type { Doc } from '@/convex/_generated/dataModel'
 
@@ -196,8 +196,11 @@ function Stars({ count }: { count: number }) {
 }
 
 export default function ReviewsTable() {
+  const searchParams = useSearchParams()
+  const initialStatus = (searchParams.get('status') ?? 'All') as DisplayStatus | 'All'
+
   const [starFilter,   setStarFilter]   = useState<number | null>(null)
-  const [statusFilter, setStatusFilter] = useState<DisplayStatus | 'All'>('All')
+  const [statusFilter, setStatusFilter] = useState<DisplayStatus | 'All'>(initialStatus)
   const [dateFilter,   setDateFilter]   = useState(9999)
   const [now] = useState(() => Date.now())
   const [viewReview, setViewReview] = useState<Doc<'reviews'> | null>(null)
