@@ -129,7 +129,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
 
   return (
     <div className={`rounded-2xl border bg-white shadow-sm ${isNeedsReview ? 'border-red-200' : 'border-slate-200'}`}>
-      <div className="flex items-start gap-4 px-5 py-4">
+      <div className="flex items-start gap-4 px-5 py-3">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
           style={{ backgroundColor: nameToColor(review.reviewerName) }}
@@ -147,7 +147,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
             {review.comment ?? <span className="italic text-slate-400">No comment left.</span>}
           </p>
 
-          <div className={`mt-3 rounded-xl border px-4 py-3 ${isNeedsReview ? 'border-red-100 bg-red-50' : 'border-slate-200 bg-slate-50'}`}>
+          <div className={`mt-3 rounded-xl border px-4 pt-3 pb-1 ${isNeedsReview ? 'border-red-100 bg-red-50' : 'border-slate-200 bg-slate-50'}`}>
             <div className="mb-1.5 flex items-center gap-1.5">
               {scheduleIcon}
               <span className={`text-[11px] font-semibold ${isNeedsReview ? 'text-red-600' : 'text-blue-700'}`}>
