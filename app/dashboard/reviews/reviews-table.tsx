@@ -47,7 +47,7 @@ const STATUS_LABEL: Record<DisplayStatus, string> = {
 }
 
 const STAR_OPTIONS = [5, 4, 3, 2, 1]
-const STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'draft', 'queued', 'replied']
+const BASE_STATUS_OPTIONS: (DisplayStatus | 'All')[] = ['All', 'draft', 'queued', 'replied']
 const DATE_OPTIONS = [
   { label: 'Last 7 days',  days: 7    },
   { label: 'Last 30 days', days: 30   },
@@ -239,6 +239,11 @@ export default function ReviewsTable() {
     return (reviewReplyMap.get(r._id)?.status ?? 'pending') as DisplayStatus
   }
 
+  const hasNeedsReview = reviews.some(r => getDisplayStatus(r) === 'needs_review')
+  const statusOptions: (DisplayStatus | 'All')[] = hasNeedsReview
+    ? ['All', 'needs_review', 'draft', 'queued', 'replied']
+    : BASE_STATUS_OPTIONS
+
   const filtered = reviews.filter(r => {
     if (starFilter   !== null  && RATING_NUM[r.starRating] !== starFilter)  return false
     if (statusFilter !== 'All' && getDisplayStatus(r) !== statusFilter)     return false
@@ -266,7 +271,7 @@ export default function ReviewsTable() {
         <FilterSelect
           label="Status"
           value={statusFilter}
-          options={STATUS_OPTIONS.map(s => ({ label: s === 'All' ? 'All' : STATUS_LABEL[s], value: s }))}
+          options={statusOptions.map(s => ({ label: s === 'All' ? 'All' : STATUS_LABEL[s], value: s }))}
           onChange={v => setStatusFilter(v as DisplayStatus | 'All')}
         />
 
