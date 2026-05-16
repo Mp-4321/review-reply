@@ -362,12 +362,6 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
   const [selectedIds,   setSelectedIds]   = useState<Set<string>>(new Set())
   const [error,         setError]         = useState<string | null>(null)
   const [toast,         setToast]         = useState<string | null>(null)
-  // PREVIEW ONLY — shows banner for 4s on load, then disappears
-  const [previewBanner, setPreviewBanner] = useState(true)
-  useEffect(() => {
-    const t = setTimeout(() => setPreviewBanner(false), 4000)
-    return () => clearTimeout(t)
-  }, [])
 
   const autoGenerateEnabled = useSyncExternalStore(subscribe, readAutoGenerate, () => false)
   const didAutoGenerateRef  = useRef(false)
@@ -595,7 +589,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
 
   return (
     <div className="max-w-[1300px]">
-      <NeedsReviewBanner count={needsReviewCount > 0 ? needsReviewCount : previewBanner ? 2 : 0} />
+      <NeedsReviewBanner count={needsReviewCount} />
       <AutoGenerateBar enabled={autoGenerateEnabled} />
 
       {/* Filters */}
