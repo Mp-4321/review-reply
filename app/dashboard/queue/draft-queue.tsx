@@ -147,7 +147,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
             {review.comment ?? <span className="italic text-slate-400">No comment left.</span>}
           </p>
 
-          <div className={`mt-3 rounded-xl border px-4 pt-3 pb-1 ${isNeedsReview ? 'border-red-100 bg-red-50' : 'border-slate-200 bg-slate-50'}`}>
+          <div className={`mt-3 rounded-xl border px-4 pt-3 pb-0 ${isNeedsReview ? 'border-red-100 bg-red-50' : 'border-slate-200 bg-slate-50'}`}>
             <div className="mb-1.5 flex items-center gap-1.5">
               {scheduleIcon}
               <span className={`text-[11px] font-semibold ${isNeedsReview ? 'text-red-600' : 'text-blue-700'}`}>
@@ -167,7 +167,7 @@ function QueueCard({ reply, review }: { reply: Item['reply']; review: Item['revi
             )}
 
             {/* Controls — centered at bottom of preview box, matching Inbox Manage button position */}
-            <div className="mt-1.5 mb-1 flex h-7 items-center justify-center">
+            <div className="mt-1 mb-0 flex h-7 items-center justify-center">
               {isNeedsReview ? (
                 <button
                   type="button"
