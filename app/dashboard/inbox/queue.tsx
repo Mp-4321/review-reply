@@ -593,7 +593,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
       <AutoGenerateBar enabled={autoGenerateEnabled} />
 
       {/* Filters */}
-      <div className="relative mb-5">
+      {visible.length > 0 && <div className="relative mb-5">
         <div className="flex items-center gap-3">
           <div className="flex min-h-8 flex-wrap items-center gap-2">
             <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900">
@@ -667,7 +667,7 @@ export default function InboxQueue({ focusReviewId }: { focusReviewId?: string }
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       {error && (
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
